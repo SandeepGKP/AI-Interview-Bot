@@ -103,7 +103,7 @@ Return only the introduction, no additional commentary with bullet point.`;
     const introduction = introResponse?.choices?.[0]?.message?.content?.trim() || "Welcome to the interview!";
 
     // AI questions prompt
-    const questionsPrompt = `must generate 6 or more interview questions for the role of ${roleTitle}.
+    const questionsPrompt = `Generate 6 or more interview questions for the role of ${roleTitle}.
 Role Description: ${roleDescription}
 Questions should:
 - Be relevant to the role
