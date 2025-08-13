@@ -1,0 +1,38 @@
+{
+  "name": "ai-video-interview-bot",
+  "version": "1.0.0",
+  "description": "AI-Powered Video Interview Bot MVP for streamlined recruitment process",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "nodemon server.js",
+    "client": "cd client && npm start",
+    "build": "cd client && npm run build",
+    "install-all": "npm install && cd client && npm install"
+  },
+  "keywords": [
+    "ai",
+    "interview",
+    "video",
+    "recruitment",
+    "bot"
+  ],
+  "author": "AI Interview Bot Team",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.21.2",
+    "fs-extra": "^11.1.1",
+    "groq-sdk": "^0.30.0",
+    "multer": "^1.4.5-lts.1",
+    "openai": "^4.20.1",
+    "path": "^0.12.7",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "nodemon": "^3.0.1"
+  }
+}
