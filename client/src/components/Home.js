@@ -23,7 +23,7 @@ const fetchIntroduction = async (roleTitle, roleDescription) => {
     const response = await axios.post('https://ai-interview-bot-backend.onrender.com/api/generate-groq-introduction', {
       roleTitle,
       roleDescription,
-    });
+    }, { timeout: 30000 }); // Increased timeout to 30 seconds
     return response.data.introduction;
   } catch (error) {
     console.error('Error fetching introduction:', error);
@@ -63,7 +63,7 @@ const Home = () => {
         candidateName: candidateName.trim(),
         roleTitle: roleTitle.trim(),
         roleDescription: roleDescription.trim()
-      });
+      }, { timeout: 30000 }); // Increased timeout to 30 seconds
 
       const { sessionId, introduction, questions } = response.data;
 
