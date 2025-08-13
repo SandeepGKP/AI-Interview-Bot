@@ -3,7 +3,6 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const config = require('./config');
-
 const apiRoutes = require('./routes/api');
 
 const app = express();
@@ -11,7 +10,10 @@ const PORT = config.port;
 
 // CORS configuration
 const corsOptions = {
-  origin: ['http://localhost:3000', 'https://ai-interview-bot-hfa6.onrender.com'], // Add your frontend production URL here if different
+  origin: [
+    'http://localhost:3000',
+    'https://ai-interview-bot-hfa6.onrender.com'
+  ],
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true,
   optionsSuccessStatus: 204
@@ -26,13 +28,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // API Routes
 app.use('/api', apiRoutes);
 
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, 'client/build')));
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
-  });
-}
-
+// Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
@@ -40,7 +36,9 @@ app.get('/api/health', (req, res) => {
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ error: 'Something went wrong!', details: err.message });
+  res
+    .status(500)
+    .json({ error: 'Something went wrong!', details: err.message });
 });
 
 app.listen(PORT, () => {
