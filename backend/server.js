@@ -11,7 +11,7 @@ const PORT = config.port;
 
 // CORS configuration
 const corsOptions = {
-  origin: ['http://localhost:3000', 'https://ai-interview-bot-backend.onrender.com'], // Add your frontend production URL here if different
+  origin: ['http://localhost:3000', 'https://ai-interview-bot-hfa6.onrender.com'], // Add your frontend production URL here if different
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true,
   optionsSuccessStatus: 204
