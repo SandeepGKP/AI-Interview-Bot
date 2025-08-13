@@ -238,6 +238,27 @@ router.get('/candidates', (req, res) => {
 });
 
 /*
+ * DELETE /api/candidates/:sessionId
+ * Deletes a candidate session
+ */
+router.delete('/candidates/:sessionId', (req, res) => {
+  const { sessionId } = req.params;
+  if (interviewSessions[sessionId]) {
+    // Delete associated video files
+    interviewSessions[sessionId].responses.forEach(response => {
+      if (response.videoPath) {
+        fs.remove(response.videoPath)
+          .then(() => console.log(`Deleted video file: ${response.videoPath}`))
+          .catch(err => console.error(`Error deleting video file ${response.videoPath}:`, err));
+      }
+    });
+    delete interviewSessions[sessionId];
+    return res.status(200).json({ message: 'Candidate session deleted successfully' });
+  }
+  res.status(404).json({ error: 'Candidate session not found' });
+});
+
+/*
  * Generate AI evaluation report
  */
 router.post('/generate-report/:sessionId', async (req, res, next) => {

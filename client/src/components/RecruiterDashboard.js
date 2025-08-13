@@ -17,7 +17,14 @@ import {
   Box,
   TextField,
   Chip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  IconButton,
 } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
@@ -29,6 +36,8 @@ const RecruiterDashboard = () => {
   const [candidates, setCandidates] = useState([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [candidateToDelete, setCandidateToDelete] = useState(null);
   const navigate = useNavigate();
   const mountedRef = useRef(false);
   const timerRef = useRef(null);
@@ -88,6 +97,38 @@ const RecruiterDashboard = () => {
 
   const viewDetails = (candidateId) => {
     navigate(`/candidate/${candidateId}`);
+  };
+
+  const handleDeleteClick = (candidate) => {
+    setCandidateToDelete(candidate);
+    setOpenDeleteDialog(true);
+  };
+
+  const handleCloseDeleteDialog = () => {
+    setOpenDeleteDialog(false);
+    setCandidateToDelete(null);
+  };
+
+  const confirmDelete = async () => {
+    if (!candidateToDelete) return;
+
+    setLoading(true);
+    setError('');
+    try {
+      await axios.delete(`https://ai-interview-bot-backend.onrender.com/api/candidates/${candidateToDelete.id}`);
+      if (mountedRef.current) {
+        setCandidates(prev => prev.filter(c => c.id !== candidateToDelete.id));
+        handleCloseDeleteDialog();
+        setError('');
+      }
+    } catch (err) {
+      console.error('Error deleting candidate:', err);
+      if (mountedRef.current) {
+        setError('Failed to delete candidate. Please try again.');
+      }
+    } finally {
+      if (mountedRef.current) setLoading(false);
+    }
   };
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -158,9 +199,12 @@ const RecruiterDashboard = () => {
                           <Chip label={t(candidate.status)} color={candidate.status === 'active' ? 'primary' : 'default'} size="small" />
                         </TableCell>
                         <TableCell align="center">
-                          <Button variant="contained" color="primary" onClick={() => viewDetails(candidate.id)} sx={{ borderRadius: 2 }}>
+                          <Button variant="contained" color="primary" onClick={() => viewDetails(candidate.id)} sx={{ borderRadius: 2, mr: 1 }}>
                             {t('view_details')}
                           </Button>
+                          <IconButton color="error" onClick={() => handleDeleteClick(candidate)} aria-label={t('delete')}>
+                            <DeleteIcon />
+                          </IconButton>
                         </TableCell>
                       </TableRow>
                     ))
@@ -171,6 +215,28 @@ const RecruiterDashboard = () => {
           )}
         </CardContent>
       </Card>
+
+      <Dialog
+        open={openDeleteDialog}
+        onClose={handleCloseDeleteDialog}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">{t('confirm_delete')}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            {t('delete_candidate_confirmation', { candidateName: candidateToDelete?.name })}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDeleteDialog} color="primary">
+            {t('cancel')}
+          </Button>
+          <Button onClick={confirmDelete} color="error" autoFocus>
+            {t('delete')}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 };
