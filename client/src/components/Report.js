@@ -43,7 +43,7 @@ const Report = () => {
     setLoading(true);
     setError('');
     try {
-      const res = await axios.post(`http://localhost:5000/api/generate-report/${sessionId}`, {});
+      const res = await axios.post(`https://ai-interview-bot-backend.onrender.com/api/generate-report/${sessionId}`, {});
       setReport(res.data);
     } catch (err) {
       console.error('Error fetching/generating report:', err);

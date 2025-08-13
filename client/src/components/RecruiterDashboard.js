@@ -66,7 +66,7 @@ const RecruiterDashboard = () => {
     }
 
     try {
-      const response = await axios.get('http://localhost:5000/api/candidates', { timeout: 8000 });
+      const response = await axios.get('https://ai-interview-bot-backend.onrender.com/api/candidates', { timeout: 8000 });
       if (!mountedRef.current) return;
 
       const normalized = (response.data || []).map((c) => ({

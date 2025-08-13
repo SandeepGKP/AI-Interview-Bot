@@ -40,7 +40,7 @@ const CandidateDetails = () => {
     setLoading(true);
     setError('');
     try {
-      const res = await axios.get(`http://localhost:5000/api/session/${candidateId}`);
+      const res = await axios.get(`https://ai-interview-bot-backend.onrender.com/api/session/${candidateId}`);
       setSession(res.data);
     } catch (err) {
       console.error('Error loading session:', err);
@@ -54,7 +54,7 @@ const CandidateDetails = () => {
     if (!session) return;
     setReportLoading(true);
     try {
-      const res = await axios.post(`http://localhost:5000/api/generate-report/${session.id}`, {});
+      const res = await axios.post(`https://ai-interview-bot-backend.onrender.com/api/generate-report/${session.id}`, {});
       // backend returns report JSON — navigate to report page with session id
       navigate(`/report/${session.id}`, { state: { report: res.data } });
     } catch (err) {
@@ -139,7 +139,7 @@ const CandidateDetails = () => {
                         </Typography>
                         {resp.videoFilename && (
                           <video
-                            src={`http://localhost:5000/uploads/${resp.videoFilename}`}
+                            src={`https://ai-interview-bot-backend.onrender.com/uploads/${resp.videoFilename}`}
                             controls
                             style={{ width: '100%', borderRadius: '8px', backgroundColor: 'black' }}
                           />

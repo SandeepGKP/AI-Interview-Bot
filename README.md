@@ -1,293 +1,109 @@
 # AI-Powered Video Interview Bot (MVP)
 
-A comprehensive browser-based AI interview bot that streamlines the recruitment process by conducting automated video interviews with AI-generated questions, real-time transcription, and intelligent candidate evaluation.
+This project is an AI-powered video interview bot designed to streamline the recruitment process by automating initial candidate screenings.
 
-## 🚀 Features
+## Documentation
 
-### Core Functionality
-- **AI-Generated Introductions**: Personalized, role-specific welcome messages
-- **Dynamic Question Generation**: 5-7 tailored interview questions based on job descriptions
-- **Browser-Based Video Recording**: Seamless video capture using WebRTC/MediaRecorder API
-- **Real-Time Transcription**: AI-powered speech-to-text using OpenAI Whisper
-- **Intelligent Evaluation**: Comprehensive candidate assessment with skill ratings
-- **Recruiter Dashboard**: Overview of all interview sessions and reports
+### Tech Stack Used
 
-### Advanced Features
-- **Multi-Role Support**: Customizable for any job position
-- **Structured Reporting**: Detailed evaluation reports with strengths, weaknesses, and recommendations
-- **Skills Assessment**: Technical and soft skills rating (1-5 scale)
-- **Session Management**: Track interview progress and completion status
-- **Export Capabilities**: JSON-based reports for easy integration
+The project is divided into a backend (server) and a frontend (client).
 
-## 🛠️ Tech Stack
+**Backend:**
+*   **Node.js**: Runtime environment.
+*   **Express.js**: Web application framework for building APIs.
+*   **Groq SDK**: For interacting with Large Language Models (LLMs) for generating interview content and reports, and for audio transcription.
+*   **Multer**: Middleware for handling `multipart/form-data`, primarily for video uploads.
+*   **uuid**: For generating unique session IDs.
+*   **fs-extra**: For file system operations (e.g., ensuring directories exist).
+*   **dotenv**: For loading environment variables.
+*   **cors**: Middleware for enabling Cross-Origin Resource Sharing.
+*   **nodemon**: (Development) For automatically restarting the server during development.
+*   **concurrently**: (Development) For running both client and server concurrently.
 
-### Backend
-- **Node.js** with Express.js
-- **OpenAI GPT-3.5/4** for question generation and evaluation
-- **OpenAI Whisper** for speech-to-text transcription
-- **Multer** for video file handling
-- **UUID** for session management
+**Frontend:**
+*   **React**: JavaScript library for building user interfaces.
+*   **Material-UI (MUI)**: React component library for a consistent and modern UI.
+*   **Axios**: Promise-based HTTP client for making API requests.
+*   **React Router DOM**: For declarative routing in the React application.
+*   **i18next & react-i18next**: For internationalization (i18n) to support multiple languages.
+*   **Chart.js & react-chartjs-2**: For creating charts and data visualizations in reports.
+*   **Tailwind CSS**: (Development) A utility-first CSS framework for styling.
+*   **Autoprefixer & PostCSS**: (Development) For processing CSS.
 
-### Frontend
-- **React.js** with modern hooks
-- **Material-UI** for professional UI components
-- **WebRTC/MediaRecorder API** for video recording
-- **Axios** for API communication
-- **React Router** for navigation
+### Prompt Design Approach for LLM Usage
 
-### Storage
-- **In-memory storage** for MVP (easily extensible to databases)
-- **Local file system** for video storage and reports
-- **JSON-based** configuration and reports
+The application leverages Groq's LLMs for various tasks, with specific prompt engineering strategies for each:
 
-## 📋 Prerequisites
+1.  **Interview Introduction Generation**:
+    *   **Model**: `qwen/qwen3-32b`
+    *   **Prompt Goal**: To generate a warm, professional, and concise introduction for the candidate.
+    *   **Approach**: The prompt explicitly defines the desired tone ("warm, professional"), content requirements (welcome, brief explanation of process, encouraging), and length constraints (2-3 sentences). It also instructs the LLM to return *only* the introduction, avoiding additional commentary.
 
-- Node.js (v14 or higher)
-- npm or yarn
-- OpenAI API key
-- Modern web browser with WebRTC support
+2.  **Interview Question Generation**:
+    *   **Model**: `qwen/qwen3-32b`
+    *   **Prompt Goal**: To generate a set of relevant and structured interview questions.
+    *   **Approach**: The prompt specifies the minimum number of questions (6 or more), relevance to the role, progression (general to specific), inclusion of behavioral and technical aspects, clarity, and conciseness. It also mandates the output format as a numbered list.
 
-## 🔧 Installation & Setup
+3.  **Video Response Transcription**:
+    *   **Model**: `whisper-large-v3`
+    *   **Approach**: The Groq SDK's audio transcription API is used. The audio file (video response) is streamed directly to the `whisper-large-v3` model for accurate speech-to-text conversion.
 
-### 1. Clone and Install Dependencies
+4.  **AI Evaluation Report Generation**:
+    *   **Model**: `meta-llama/llama-4-scout-17b-16e-instruct`
+    *   **Prompt Goal**: To provide a comprehensive evaluation of a candidate's performance based on their interview responses.
+    *   **Approach**:
+        *   **System Message**: A `system` role message ("You are an expert HR interviewer. Always include the JSON object at the end of your response.") is used to set the persona and enforce the required output structure.
+        *   **User Prompt**: The `user` prompt includes all relevant context: candidate name, role, and a detailed list of questions and their transcribed answers.
+        *   **Evaluation Criteria**: The prompt explicitly asks for specific evaluation categories: Strengths, Weaknesses, Communication Skills, Technical Competence, Cultural Fit, and Suggested Next Steps.
+        *   **Structured Output (JSON)**: A critical part of the prompt is the instruction to include a JSON object at the end, containing a `skills` breakdown with `technical_skills` and `soft_skills`, each listing relevant skills with a rating out of 10. This ensures a machine-readable and consistent data structure for skill assessment.
 
+### Setup Instructions for Running Locally
+
+To set up and run the AI-Powered Video Interview Bot locally, follow these steps:
+
+**Prerequisites:**
+*   Node.js (v18 or higher recommended)
+*   npm (Node Package Manager)
+
+**1. Clone the Repository:**
+If you haven't already, clone the project repository from GitHub:
 ```bash
-# Clone the repository
-git clone <repository-url>
-cd ai-video-interview-bot
+git clone https://github.com/SandeepGKP/AI-Interview-Bot.git
+cd AI-Interview-Bot
+```
 
-# Install backend dependencies
-npm install
-
-# Install frontend dependencies
+**2. Install Dependencies:**
+The project has dependencies for both the backend and the frontend.
+```bash
+npm install # Installs backend dependencies
 cd client
-npm install
-cd ..
+npm install # Installs frontend dependencies
+cd .. # Go back to the root directory
 ```
-
-### 2. Environment Configuration
-
+Alternatively, you can use the combined script:
 ```bash
-# Copy environment template
-cp .env.example .env
-
-# Edit .env file and add your OpenAI API key
-OPENAI_API_KEY=your_openai_api_key_here
+npm run install-all
 ```
 
-### 3. Run the Application
-
-```bash
-# Development mode (runs both backend and frontend)
-npm run dev
-
-# Or run separately:
-# Backend only
-npm run server
-
-# Frontend only (in another terminal)
-npm run client
+**3. Configure Environment Variables:**
+Create a `.env` file in the `backend/` directory. This file will store your API keys and other sensitive information.
 ```
-
-### 4. Access the Application
-
-- **Candidate Interface**: http://localhost:3000
-- **Recruiter Dashboard**: http://localhost:3000/recruiter
-- **API Health Check**: http://localhost:5000/api/health
-
-## 🎯 Usage Guide
-
-### For Recruiters
-
-1. **Create Interview Session**:
-   - Navigate to the recruiter dashboard
-   - Enter job title and detailed role description
-   - System generates personalized introduction and questions
-
-2. **Share with Candidates**:
-   - Copy the generated session link
-   - Send to candidates via email or recruitment platform
-
-3. **Review Results**:
-   - Monitor interview progress in real-time
-   - Access detailed evaluation reports
-   - Export data for further analysis
-
-### For Candidates
-
-1. **Start Interview**:
-   - Click on the provided interview link
-   - Read the AI-generated introduction
-   - Ensure camera and microphone permissions
-
-2. **Record Responses**:
-   - Answer questions one at a time
-   - Record video responses (recommended 1-3 minutes each)
-   - Review and re-record if needed
-
-3. **Submit Interview**:
-   - Complete all questions
-   - Submit for AI evaluation
-   - Receive confirmation of successful submission
-
-## 🏗️ Architecture Overview
-
-### Interview Flow
+# backend/.env
+GROQ_API_KEY=your_groq_api_key_here
 ```
-Role Input → AI Question Generation → Video Recording → 
-Speech Transcription → AI Evaluation → Report Generation
-```
+Replace `your_groq_api_key_here` with your actual API key obtained from Groq.
 
-### API Endpoints
-- `POST /api/generate-interview` - Create new interview session
-- `POST /api/upload-response/:sessionId/:questionIndex` - Upload video response
-- `GET /api/session/:sessionId` - Get session details
-- `POST /api/generate-report/:sessionId` - Generate evaluation report
-- `GET /api/sessions` - List all sessions (recruiter dashboard)
-
-### Prompt Engineering Strategy
-
-#### Question Generation
-- Role-specific context analysis
-- Progressive difficulty (general → specific)
-- Behavioral and technical balance
-- Clear, actionable questions
-
-#### Evaluation Criteria
-- Comprehensive skill assessment
-- Structured feedback format
-- Quantitative ratings (1-5, 1-10 scales)
-- Actionable recommendations
-
-## 🔒 Security Considerations
-
-- **API Key Protection**: Environment variables for sensitive data
-- **File Upload Limits**: 50MB maximum video file size
-- **Session Management**: UUID-based session identification
-- **CORS Configuration**: Controlled cross-origin requests
-
-## 📊 Evaluation Metrics
-
-### Technical Skills Assessment
-- Programming proficiency
-- Problem-solving approach
-- System design understanding
-- Technology-specific knowledge
-
-### Soft Skills Assessment
-- Communication clarity
-- Leadership potential
-- Teamwork collaboration
-- Adaptability and learning
-
-### Overall Scoring
-- 1-10 scale with detailed justification
-- Hire/Consider/Pass recommendations
-- Cultural fit assessment
-- Specific improvement areas
-
-## 🚀 Deployment Options
-
-### Local Development
+**4. Run the Application:**
+You can start both the backend and frontend concurrently using a single command from the root directory:
 ```bash
 npm run dev
 ```
+This command will:
+*   Start the backend server using `nodemon` (for automatic restarts on file changes).
+*   Navigate into the `client` directory and start the React development server.
 
-### Production Build
-```bash
-npm run build
-npm start
-```
+**5. Access the Application:**
+*   The backend API will typically run on `http://localhost:5000`.
+*   The frontend application will typically be accessible at `http://localhost:3000` in your web browser.
 
-### Docker Deployment (Optional)
-```dockerfile
-# Dockerfile example for containerization
-FROM node:16-alpine
-WORKDIR /app
-COPY package*.json ./
-RUN npm install
-COPY . .
-RUN npm run build
-EXPOSE 5000
-CMD ["npm", "start"]
-```
-
-## 🔄 Extensibility
-
-### Adding New Features
-- **Multi-language Support**: Extend prompts for different languages
-- **Custom Scoring Rubrics**: Configurable evaluation criteria
-- **Integration APIs**: Connect with ATS systems
-- **Advanced Analytics**: Candidate comparison and trends
-
-### Database Integration
-- Replace in-memory storage with MongoDB/PostgreSQL
-- Add user authentication and authorization
-- Implement data persistence and backup
-
-### AI Model Customization
-- Fine-tune prompts for specific industries
-- Integrate additional AI services
-- Implement custom evaluation algorithms
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-1. **OpenAI API Errors**:
-   - Verify API key is correctly set
-   - Check API usage limits and billing
-   - Ensure proper network connectivity
-
-2. **Video Recording Issues**:
-   - Confirm browser WebRTC support
-   - Check camera/microphone permissions
-   - Test with different browsers
-
-3. **File Upload Problems**:
-   - Verify file size limits
-   - Check disk space availability
-   - Ensure proper directory permissions
-
-### Debug Mode
-```bash
-# Enable detailed logging
-DEBUG=* npm run server
-```
-
-## 📈 Performance Optimization
-
-- **Video Compression**: Optimize recording settings
-- **Async Processing**: Background transcription and evaluation
-- **Caching Strategy**: Store frequently accessed data
-- **CDN Integration**: Serve static assets efficiently
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open Pull Request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- OpenAI for GPT and Whisper APIs
-- React team for the excellent framework
-- Material-UI for beautiful components
-- WebRTC community for browser APIs
-
-## 📞 Support
-
-For support and questions:
-- Create an issue in the repository
-- Check the troubleshooting section
-- Review API documentation
-
----
-
-**Built with ❤️ for streamlined recruitment processes**
+You should now be able to use the AI-Powered Video Interview Bot locally.

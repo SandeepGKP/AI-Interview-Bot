@@ -35,7 +35,7 @@ import { useTranslation } from 'react-i18next';
 
 const fetchIntroduction = async (roleTitle, roleDescription) => {
   try {
-    const response = await axios.post('http://localhost:5000/api/generate-groq-introduction', {
+    const response = await axios.post('https://ai-interview-bot-backend.onrender.com/api/generate-groq-introduction', {
       roleTitle,
       roleDescription,
     });
@@ -74,7 +74,7 @@ const Interview = () => {
     const loadSession = async () => {
       let introduction = 'Welcome, and thank you for joining us today. In this session, you will be asked questions designed to assess your communication skills, experience with agile methodologies, and ability to deliver customer-focused solutions. We look forward to learning more about your expertise and professional achievements.';
       try {
-        const response = await axios.get(`http://localhost:5000/api/session/${sessionId}`);
+        const response = await axios.get(`https://ai-interview-bot-backend.onrender.com/api/session/${sessionId}`);
         introduction = await fetchIntroduction(response.data.roleTitle, response.data.roleDescription);
         setSession({ ...response.data, introduction });
         setResponses(new Array(response.data.questions.length).fill(null));
@@ -168,7 +168,7 @@ const Interview = () => {
       formData.append('video', recordedBlob, `response-${currentQuestionIndex}.webm`);
 
       const response = await axios.post(
-        `http://localhost:5000/api/upload-response/${sessionId}/${currentQuestionIndex}`,
+        `https://ai-interview-bot-backend.onrender.com/api/upload-response/${sessionId}/${currentQuestionIndex}`,
         formData,
         {
           headers: {

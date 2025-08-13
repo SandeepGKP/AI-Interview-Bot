@@ -20,7 +20,7 @@ import { useTranslation } from 'react-i18next';
 
 const fetchIntroduction = async (roleTitle, roleDescription) => {
   try {
-    const response = await axios.post('http://localhost:5000/api/generate-groq-introduction', {
+    const response = await axios.post('https://ai-interview-bot-backend.onrender.com/api/generate-groq-introduction', {
       roleTitle,
       roleDescription,
     });
@@ -59,7 +59,7 @@ const Home = () => {
     setSessionId(null);
 
     try {
-      const response = await axios.post('http://localhost:5000/api/generate-interview', {
+      const response = await axios.post('https://ai-interview-bot-backend.onrender.com/api/generate-interview', {
         candidateName: candidateName.trim(),
         roleTitle: roleTitle.trim(),
         roleDescription: roleDescription.trim()
