@@ -26,7 +26,8 @@ import {
   Videocam,
   Mic,
   NavigateNext,
-  NavigateBefore
+  NavigateBefore,
+  Replay
 } from '@mui/icons-material';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
