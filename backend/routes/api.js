@@ -106,7 +106,7 @@ Return only the introduction, no additional commentary with bullet point.`;
     const questionsPrompt = `Generate 6 or more interview questions for the role of ${roleTitle}.
 Role Description: ${roleDescription}
 Questions should:
-- Be relevant to the role
+- Be relevant to the role and each question should be unique in one line atleast
 - Progress from general to specific
 - Include behavioral and technical aspects
 - Be clear and concise
