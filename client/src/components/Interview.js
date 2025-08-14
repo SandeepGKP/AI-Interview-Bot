@@ -32,8 +32,9 @@ import {
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
+import i18n from '../i18n';
 
-const fetchIntroduction = async (roleTitle, roleDescription) => {
+const fetchIntroduction = async (roleTitle, roleDescription, t) => {
   try {
     const response = await axios.post('https://ai-interview-bot-backend.onrender.com/api/generate-groq-introduction', {
       roleTitle,
@@ -75,7 +76,7 @@ const Interview = () => {
       let introduction = t('default_session_introduction');
       try {
         const response = await axios.get(`https://ai-interview-bot-backend.onrender.com/api/session/${sessionId}`);
-        introduction = await fetchIntroduction(response.data.roleTitle, response.data.roleDescription);
+        introduction = await fetchIntroduction(response.data.roleTitle, response.data.roleDescription, t);
         setSession({ ...response.data, introduction });
         setResponses(new Array(response.data.questions.length).fill(null));
       } catch (err) {
@@ -236,7 +237,7 @@ const Interview = () => {
       const utterance = new SpeechSynthesisUtterance(session.introduction);
       utterance.rate = 0.85; // slow speech
       utterance.pitch = 1;
-      utterance.lang = i18n.language === 'es' ? 'es-ES' : i18n.language === 'fr' ? 'fr-FR' : 'en-US';
+      utterance.lang = i18n.language === 'es' ? 'es-ES' : i18n.language === 'fr' ? 'fr-FR' : i18n.language === 'hi' ? 'hi-IN' : 'en-US';
       window.speechSynthesis.cancel();
       window.speechSynthesis.speak(utterance);
     }
