@@ -42,7 +42,7 @@ const fetchIntroduction = async (roleTitle, roleDescription) => {
     return response.data.introduction;
   } catch (error) {
     console.error('Error fetching introduction:', error);
-    return 'Thank you for joining us today! We will be asking you 5-7 questions focusing on your communication skills, agile experience, and customer focus. We’re excited to learn more about your qualifications!';
+    return t('default_interview_introduction_fallback');
   }
 };
 
@@ -72,7 +72,7 @@ const Interview = () => {
   // Load session data
   useEffect(() => {
     const loadSession = async () => {
-      let introduction = 'Welcome, and thank you for joining us today. In this session, you will be asked questions designed to assess your communication skills, experience with agile methodologies, and ability to deliver customer-focused solutions. We look forward to learning more about your expertise and professional achievements.';
+      let introduction = t('default_session_introduction');
       try {
         const response = await axios.get(`https://ai-interview-bot-backend.onrender.com/api/session/${sessionId}`);
         introduction = await fetchIntroduction(response.data.roleTitle, response.data.roleDescription);
@@ -236,11 +236,11 @@ const Interview = () => {
       const utterance = new SpeechSynthesisUtterance(session.introduction);
       utterance.rate = 0.85; // slow speech
       utterance.pitch = 1;
-      utterance.lang = 'en-US';
+      utterance.lang = i18n.language === 'es' ? 'es-ES' : i18n.language === 'fr' ? 'fr-FR' : 'en-US';
       window.speechSynthesis.cancel();
       window.speechSynthesis.speak(utterance);
     }
-  }, [session, showIntroduction]);
+  }, [session, showIntroduction, i18n.language]);
 
   if (!session) {
     return (

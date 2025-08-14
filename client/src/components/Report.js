@@ -194,25 +194,25 @@ const Report = () => {
           <TableBody>
             <TableRow hover>
               <TableCell sx={{ fontWeight: 'bold', width: '40%' }}>{t('candidate_name')}</TableCell>
-              <TableCell>{report.candidateInfo?.candidateName || 'N/A'}</TableCell>
+              <TableCell>{report.candidateInfo?.candidateName || t('not_available_abbreviation')}</TableCell>
             </TableRow>
             <TableRow hover>
               <TableCell sx={{ fontWeight: 'bold' }}>{t('role_applied_for')}</TableCell>
-              <TableCell>{report.candidateInfo?.roleTitle || 'N/A'}</TableCell>
+              <TableCell>{report.candidateInfo?.roleTitle || t('not_available_abbreviation')}</TableCell>
             </TableRow>
             <TableRow hover>
               <TableCell sx={{ fontWeight: 'bold' }}>{t('interview_date')}</TableCell>
               <TableCell>
                 {report.candidateInfo?.interviewDate
                   ? new Date(report.candidateInfo.interviewDate).toLocaleString()
-                  : 'N/A'}
+                  : t('not_available_abbreviation')}
               </TableCell>
             </TableRow>
             <TableRow hover>
               <TableCell sx={{ fontWeight: 'bold' }}>{t('total_questions_answered')}</TableCell>
               <TableCell>
-                {report.candidateInfo?.totalResponses || '0'} /{' '}
-                {report.candidateInfo?.totalQuestions || '0'}
+                {report.candidateInfo?.totalResponses || t('zero')} /{' '}
+                {report.candidateInfo?.totalQuestions || t('zero')}
               </TableCell>
             </TableRow>
           </TableBody>

@@ -81,7 +81,7 @@ const RecruiterDashboard = () => {
       const normalized = (response.data || []).map((c) => ({
         ...c,
         date: c.date ? new Date(c.date) : null,
-        name: c.name || 'Unknown Candidate',
+        name: c.name || t('unknown_candidate'),
       }));
 
       setCandidates(normalized);
@@ -202,7 +202,7 @@ const RecruiterDashboard = () => {
                           <Button variant="contained" color="primary" onClick={() => viewDetails(candidate.id)} sx={{ borderRadius: 2, mr: 1 }}>
                             {t('view_details')}
                           </Button>
-                          <IconButton color="error" onClick={() => handleDeleteClick(candidate)} aria-label={t('delete')}>
+                          <IconButton color="error" onClick={() => handleDeleteClick(candidate)} aria-label={t('delete_button_label')}>
                             <DeleteIcon />
                           </IconButton>
                         </TableCell>

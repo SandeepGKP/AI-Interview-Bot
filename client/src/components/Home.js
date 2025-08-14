@@ -17,6 +17,7 @@ import { PlayArrow, Work, Psychology, Assessment } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
+import i18n from '../i18n';
 
 const fetchIntroduction = async (roleTitle, roleDescription) => {
   try {
@@ -27,7 +28,7 @@ const fetchIntroduction = async (roleTitle, roleDescription) => {
     return response.data.introduction;
   } catch (error) {
     console.error('Error fetching introduction:', error);
-    return '- Thank you for joining us.\n- 5-7 questions on communication skills, agile experience, customer focus.\n- Excited to learn about your qualifications.';
+    return i18n.t('default_introduction_fallback');
   }
 };
 
@@ -111,23 +112,23 @@ const Home = () => {
   const features = [
     {
       icon: <Work color="primary" sx={{ fontSize: 48, mb: 1 }} />,
-      title: '1. Define Role',
-      desc: 'Enter candidate name, job title and detailed description'
+      title: 'define_role_title',
+      desc: 'define_role_desc'
     },
     {
       icon: <Psychology color="primary" sx={{ fontSize: 48, mb: 1 }} />,
-      title: '2. AI Questions',
-      desc: 'AI generates personalized interview questions'
+      title: 'ai_questions_title',
+      desc: 'ai_questions_desc'
     },
     {
       icon: <PlayArrow color="primary" sx={{ fontSize: 48, mb: 1 }} />,
-      title: '3. Video Interview',
-      desc: 'Candidates record video responses'
+      title: 'video_interview_title',
+      desc: 'video_interview_desc'
     },
     {
       icon: <Assessment color="primary" sx={{ fontSize: 48, mb: 1 }} />,
-      title: '4. AI Evaluation',
-      desc: 'Get detailed performance analysis'
+      title: 'ai_evaluation_title',
+      desc: 'ai_evaluation_desc'
     }
   ];
 
@@ -313,7 +314,7 @@ const Home = () => {
                 }}
               />
               <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                {t(role.description.substring(0, 100).toLowerCase().replace(/\s/g, ' '))}...
+                {t(`${role.title.toLowerCase().replace(/\s/g, '_')}_description`)}
               </Typography>
               {index < sampleRoles.length - 1 && <Divider sx={{ mt: 2 }} />}
             </Box>

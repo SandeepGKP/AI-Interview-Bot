@@ -130,7 +130,7 @@ const CandidateDetails = () => {
                 return (
                   <Box key={idx} sx={{ mb: 3, p: 2, border: '1px solid #e0e0e0', borderRadius: 2, backgroundColor: '#f9f9f9' }}>
                     <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1 }}>
-                      Q{idx + 1}: {q}
+                      {t('question_prefix')}{idx + 1}: {q}
                     </Typography>
                     {resp ? (
                       <Box sx={{ width: '100%', mt: 1 }}>

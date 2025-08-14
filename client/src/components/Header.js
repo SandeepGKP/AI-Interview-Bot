@@ -46,7 +46,7 @@ const Header = () => {
             {t('recruiter_dashboard')}
           </Button>
           <FormControl variant="outlined" size="small" sx={{ minWidth: 120, ml: 2 }}>
-            <InputLabel id="language-select-label" sx={{ color: 'inherit' }}>{t('language_selector_label')}</InputLabel>
+            <InputLabel id="language-select-label" sx={{ color: 'inherit' }}>Select Language</InputLabel>
             <Select
               labelId="language-select-label"
               value={i18n.language}
@@ -54,9 +54,11 @@ const Header = () => {
               label={t('language_selector_label')}
               sx={{ color: 'inherit', '.MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255, 255, 255, 0.5)' }, '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: 'white' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'white' }, '.MuiSvgIcon-root': { color: 'inherit' } }}
             >
-              <MenuItem value="en">English</MenuItem>
-              <MenuItem value="es">Spanish</MenuItem>
-              <MenuItem value="fr">French</MenuItem>
+              {Object.keys(i18n.options.resources).map((lang) => (
+                <MenuItem key={lang} value={lang}>
+              {t(`${lang=='en' ? 'English' :'' || lang=='es' ? 'Spanish' : '' || lang=='fr' ? 'French' : '' || lang=='hi' ? 'Hindi' : ''}`)}
+                </MenuItem>
+              ))}
             </Select>
           </FormControl>
         </Box>
