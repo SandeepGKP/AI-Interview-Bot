@@ -146,6 +146,30 @@ const Report = () => {
     return summary;
   };
 
+  const removeJsonFromString = (text) => {
+    const lastBraceIndex = text.lastIndexOf('{');
+    const lastBracketIndex = text.lastIndexOf('[');
+
+    let jsonStartIndex = -1;
+    if (lastBraceIndex > lastBracketIndex) {
+      jsonStartIndex = lastBraceIndex;
+    } else {
+      jsonStartIndex = lastBracketIndex;
+    }
+
+    if (jsonStartIndex !== -1) {
+      const potentialJson = text.substring(jsonStartIndex);
+      try {
+        JSON.parse(potentialJson);
+        // If parsing is successful, it's JSON, so return the text before it
+        return text.substring(0, jsonStartIndex).trim();
+      } catch (e) {
+        // Not valid JSON, so keep the text
+      }
+    }
+    return text;
+  };
+
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
       <Typography
@@ -322,7 +346,7 @@ const Report = () => {
             px: 2,
           }}
         >
-          {report.evaluation}
+          {removeJsonFromString(report.evaluation)}
         </Box>
       </Paper>
     </Container>

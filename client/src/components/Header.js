@@ -55,8 +55,8 @@ const Header = () => {
               sx={{ color: 'inherit', '.MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255, 255, 255, 0.5)' }, '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: 'white' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'white' }, '.MuiSvgIcon-root': { color: 'inherit' } }}
             >
               <MenuItem value="en">English</MenuItem>
-              <MenuItem value="es">Español</MenuItem>
-              <MenuItem value="fr">Français</MenuItem>
+              <MenuItem value="es">Spanish</MenuItem>
+              <MenuItem value="fr">French</MenuItem>
             </Select>
           </FormControl>
         </Box>
