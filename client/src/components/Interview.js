@@ -33,6 +33,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import i18n from '../i18n';
+import {ToastContainer, toast} from 'react-toastify';
 
 const fetchIntroduction = async (roleTitle, roleDescription, t) => {
   try {
@@ -177,7 +178,7 @@ const Interview = () => {
           },
         }
       );
-
+      toast.success(t('Response Uploaded Successfully'));
       setTranscription(response.data.transcription);
       
       const newResponses = [...responses];
@@ -342,6 +343,7 @@ const Interview = () => {
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
+      <ToastContainer/>
       {/* Progress Bar */}
       <Box sx={{ mb: 3 }}>
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
