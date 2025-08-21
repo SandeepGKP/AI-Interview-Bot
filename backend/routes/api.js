@@ -366,13 +366,13 @@ router.post('/generate-coding-assessment-question', async (req, res, next) => {
       return res.status(400).json({ error: 'Role title is required' });
     }
 
-    const prompt = `Generate a coding assessment question for a ${roleTitle} role.
+    const prompt = `Generate a coding assessment question for a ${roleTitle} role in detail.
     Difficulty: ${difficulty || 'medium'}.
-    The question should include:
+    Please Return only
     1. A clear problem statement.
     2. Input/Output examples.
     3. Constraints.
-    Return only the clear Problem and input/output, constraint if possible for the problem please please .`;
+    please please .`;
 
     const groqResponse = await groq.chat.completions.create({
       model: "qwen/qwen3-32b",
@@ -401,7 +401,7 @@ router.post('/generate-hr-questions', async (req, res, next) => {
       return res.status(400).json({ error: 'Role title is required' });
     }
 
-    const prompt = `Generate 5-7 HR interview questions for a ${roleTitle} role.
+    const prompt = `Generate 5-7 HR interview questions for a ${roleTitle} role in detail.
     Questions should cover:
     - Communication skills
     - Teamwork
