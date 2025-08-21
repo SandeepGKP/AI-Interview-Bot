@@ -1,11 +1,113 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 
-const TechnicalRound = ({ onComplete, roleTitle }) => {
+const TechnicalRound = ({ onComplete, roleTitle, candidateName }) => {
   const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState({});
   const [feedback, setFeedback] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Video recording states and refs
+  const videoRef = useRef(null);
+  const mediaRecorderRef = useRef(null);
+  const [recordedChunks, setRecordedChunks] = useState([]);
+  const [isRecording, setIsRecording] = useState(false);
+  const [videoBlobUrl, setVideoBlobUrl] = useState(null);
+  const [stream, setStream] = useState(null);
+
+  // Draggable video states
+  const [videoPosition, setVideoPosition] = useState({ x: 20, y: 20 }); // Initial position
+  const [isDragging, setIsDragging] = useState(false);
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
+
+  const handleMouseDown = useCallback((e) => {
+    if (videoRef.current && videoRef.current.contains(e.target)) {
+      setIsDragging(true);
+      setOffset({
+        x: e.clientX - videoPosition.x,
+        y: e.clientY - videoPosition.y,
+      });
+    }
+  }, [videoPosition]);
+
+  const handleMouseMove = useCallback((e) => {
+    if (isDragging) {
+      let newX = e.clientX - offset.x;
+      let newY = e.clientY - offset.y;
+
+      // Keep video within screen bounds (simple boundary check)
+      newX = Math.max(0, Math.min(newX, window.innerWidth - (videoRef.current?.offsetWidth || 320)));
+      newY = Math.max(0, Math.min(newY, window.innerHeight - (videoRef.current?.offsetHeight || 240)));
+
+      setVideoPosition({ x: newX, y: newY });
+    }
+  }, [isDragging, offset]);
+
+  const handleMouseUp = useCallback(() => {
+    setIsDragging(false);
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [handleMouseMove, handleMouseUp]);
+
+  const startRecording = async () => {
+    setRecordedChunks([]);
+    setVideoBlobUrl(null);
+    try {
+      const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      videoRef.current.srcObject = mediaStream;
+      setStream(mediaStream);
+
+      const options = { mimeType: 'video/webm; codecs=vp8,opus' };
+      const mediaRecorder = new MediaRecorder(mediaStream, options);
+      mediaRecorderRef.current = mediaRecorder;
+
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          setRecordedChunks((prev) => [...prev, event.data]);
+        }
+      };
+
+      mediaRecorder.onstop = () => {
+        const blob = new Blob(recordedChunks, { type: 'video/webm' });
+        const url = URL.createObjectURL(blob);
+        setVideoBlobUrl(url);
+        // Stop all tracks in the stream
+        if (stream) {
+          stream.getTracks().forEach(track => track.stop());
+        }
+      };
+
+      mediaRecorder.start();
+      setIsRecording(true);
+    } catch (err) {
+      console.error('Error accessing media devices:', err);
+      setError('Could not access camera and microphone. Please ensure they are connected and permissions are granted.');
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+    }
+  };
+
+  // Cleanup stream on component unmount
+  useEffect(() => {
+    return () => {
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, [stream]);
 
   const fetchTechnicalQuestions = useCallback(async () => {
     const controller = new AbortController();
@@ -60,22 +162,23 @@ const TechnicalRound = ({ onComplete, roleTitle }) => {
   };
 
   const handleSubmit = () => {
-    const allAnswered = questions.every((_, index) => answers[`question${index}`]?.trim() !== '');
-    if (allAnswered) {
-      setFeedback('Technical interview answers submitted successfully! Moving to the next round.');
-      if (onComplete) {
-        onComplete(answers); // Pass answers to parent component
-      }
-    } else {
-      setFeedback('Please answer all questions before submitting.');
+    const allQuestionsAnswered = questions.every((_, index) => answers[`question${index}`]?.trim() !== '');
+    if (!allQuestionsAnswered && !videoBlobUrl) {
+      setFeedback('Please answer all questions or record a video before submitting.');
+      return;
     }
+    setFeedback('Technical interview answers and/or video submitted successfully! Moving to the next round.');
     console.log('Technical answers submitted:', answers);
+    console.log('Video submitted:', videoBlobUrl);
+    if (onComplete) {
+      onComplete({ answers, video: videoBlobUrl }); // Pass answers and video to parent component
+    }
   };
 
   return (
     <div className="p-6 bg-white rounded-lg shadow-md max-w-3xl mx-auto my-8">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-3xl font-bold text-gray-800 text-center">Technical Round Interview</h2>
+        <h2 className="text-3xl font-bold text-gray-800 text-center">Technical Round Interview {candidateName && `for ${candidateName}`}</h2>
         <button
           onClick={() => fetchTechnicalQuestions()}
           className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-md transition duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
@@ -83,8 +186,15 @@ const TechnicalRound = ({ onComplete, roleTitle }) => {
         >
           Refresh
         </button>
+        <button
+          onClick={handleSubmit}
+          className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md transition duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={loading || (questions.length > 0 && !questions.every((_, index) => answers[`question${index}`]?.trim() !== '') && !videoBlobUrl)}
+        >
+          Submit
+        </button>
       </div>
-      
+
       {loading && <p className="text-center text-blue-500">Generating technical questions...</p>}
       {error && <p className="text-center text-red-500">{error}</p>}
 
@@ -106,14 +216,48 @@ const TechnicalRound = ({ onComplete, roleTitle }) => {
       ) : (
         !loading && !error && <p className="text-center text-gray-600">No technical questions available.</p>
       )}
+      <div className="mt-6">
+        <h3 className="text-xl font-semibold text-gray-700 mb-3">Record Your Explanation:</h3>
+        <div
+          className="fixed bg-gray-200 rounded-md overflow-hidden shadow-lg"
+          style={{
+            width: '200px', // Fixed width for draggable video
+            height: '200px', // Fixed height for draggable video
+            top: videoPosition.y,
+            left: videoPosition.x,
+            cursor: isRecording ? 'grabbing' : 'grab',
+            zIndex: 1000, // Ensure it's on top
+            border: '4px solid white', // Make border thicker
+          }}
+          onMouseDown={handleMouseDown}
+        >
+          <video ref={videoRef} autoPlay muted className="w-full h-full object-cover"></video>
+          <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex justify-center gap-2">
+            <button
+              onClick={startRecording}
+              className="bg-red-600 hover:bg-red-700 text-white font-bold py-1 px-3 rounded-md text-sm transition duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={isRecording || loading}
+            >
+              {isRecording ? 'Recording...' : 'Start'}
+            </button>
+            <button
+              onClick={stopRecording}
+              className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-1 px-3 rounded-md text-sm transition duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={!isRecording || loading}
+            >
+              Stop
+            </button>
+          </div>
+        </div>
+        {videoBlobUrl && (
+          <div className="mt-4">
+            <h4 className="text-lg font-semibold text-gray-700 mb-2">Recorded Video:</h4>
+            <video src={videoBlobUrl} controls className="w-full h-64 bg-gray-200 rounded-md"></video>
+          </div>
+        )}
+      </div>
 
-      <button
-        onClick={handleSubmit}
-        className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-4 rounded-md transition duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
-        disabled={loading || questions.length === 0}
-      >
-        Submit Technical Interview
-      </button>
+
 
       {feedback && (
         <div className="mt-6 p-4 bg-purple-100 text-purple-800 rounded-md border border-purple-200">

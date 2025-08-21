@@ -40,16 +40,16 @@ let interviewSessions = {};
  * Accepts candidateName
  */
 router.post('/generate-groq-interview', (req, res) => {
-  const { roleTitle, roleDescription, candidateName } = req.body;
+    const { roleTitle, roleDescription, candidateName } = req.body;
 
-  if (!roleTitle || !roleDescription) {
-    return res.status(400).json({ error: 'Role title and description are required' });
-  }
+    if (!roleTitle || !roleDescription) {
+      return res.status(400).json({ error: 'Role title and description are required' });
+    }
 
   const sessionId = uuidv4();
   interviewSessions[sessionId] = {
     id: sessionId,
-    candidateName: candidateName || 'Unknown Candidate',
+    candidateName: (candidateName || '').trim() || 'Unknown Candidate',
     roleTitle,
     roleDescription,
     introduction: 'This is a placeholder introduction. Replace with AI-generated content.',
@@ -128,7 +128,7 @@ Return as a numbered list.`;
     const sessionId = uuidv4();
     interviewSessions[sessionId] = {
       id: sessionId,
-      candidateName: candidateName || 'Unknown Candidate',
+      candidateName: (candidateName || '').trim() || 'Unknown Candidate',
       roleTitle,
       roleDescription,
       introduction,

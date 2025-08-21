@@ -144,22 +144,32 @@ const Interview = () => {
     setCurrentStage('coding');
   };
 
-  const handleCodingComplete = (answers) => {
-    console.log('Coding Round Completed with answers:', answers);
-    // Here you might save coding answers to the session or backend
+  const [codingVideo, setCodingVideo] = useState(null);
+  const [technicalVideo, setTechnicalVideo] = useState(null);
+  const [hrVideo, setHrVideo] = useState(null);
+
+  const handleCodingComplete = ({ code, video }) => {
+    console.log('Coding Round Completed with answers:', code);
+    console.log('Coding Video:', video);
+    setCodingVideo(video);
+    // Here you might save coding answers and video to the session or backend
     setCurrentStage('technical');
   };
 
-  const handleTechnicalComplete = (answers) => {
+  const handleTechnicalComplete = ({ answers, video }) => {
     console.log('Technical Round Completed with answers:', answers);
-    // Here you might save technical answers to the session or backend
+    console.log('Technical Video:', video);
+    setTechnicalVideo(video);
+    // Here you might save technical answers and video to the session or backend
     setCurrentStage('hr');
   };
 
-  const handleHRComplete = (answers) => {
+  const handleHRComplete = ({ answers, video }) => {
     console.log('HR Round Completed with answers:', answers);
-    // Here you might save HR answers to the session or backend
-    navigate(`/report/${sessionId}`); // Navigate to report after all rounds
+    console.log('HR Video:', video);
+    setHrVideo(video);
+    // Here you might save HR answers and video to the session or backend
+    navigate(`/report/${sessionId}`, { state: { codingVideo, technicalVideo, hrVideo, candidateName: session.candidateName } }); // Navigate to report after all rounds, passing video data and candidate name
   };
 
   const renderStage = () => {
@@ -322,11 +332,11 @@ const Interview = () => {
         );
       case 'technical':
         return (
-          <TechnicalRound onComplete={handleTechnicalComplete} roleTitle={session.roleTitle} />
+          <TechnicalRound onComplete={handleTechnicalComplete} roleTitle={session.roleTitle} candidateName={session.candidateName} />
         );
       case 'hr':
         return (
-          <HRRound onComplete={handleHRComplete} roleTitle={session.roleTitle} />
+          <HRRound onComplete={handleHRComplete} roleTitle={session.roleTitle} candidateName={session.candidateName} />
         );
       default:
         return null;

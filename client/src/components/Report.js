@@ -32,6 +32,9 @@ const Report = () => {
   const [loading, setLoading] = useState(!report);
   const [error, setError] = useState('');
 
+  // Get video URLs from location state
+  const { codingVideo, technicalVideo, hrVideo } = location.state || {};
+
   useEffect(() => {
     if (!report) {
       generateOrFetchReport();
@@ -325,6 +328,51 @@ const Report = () => {
           </Box>
         )}
       </Paper>
+
+      {/* Video Recordings */}
+      {(codingVideo || technicalVideo || hrVideo) && (
+        <Paper elevation={4} sx={{ mb: 5, borderRadius: 3, p: 3 }}>
+          <Typography
+            variant="h5"
+            gutterBottom
+            sx={{ fontWeight: 'bold', color: 'primary.dark', mb: 3, textAlign: 'center' }}
+          >
+            {t('video_recordings')}
+          </Typography>
+          <Grid container spacing={3}>
+            {codingVideo && (
+              <Grid item xs={12} md={4}>
+                <Card>
+                  <CardContent>
+                    <Typography variant="h6" gutterBottom>{t('coding_round_video')}</Typography>
+                    <video src={codingVideo} controls style={{ width: '100%', maxHeight: '200px' }} />
+                  </CardContent>
+                </Card>
+              </Grid>
+            )}
+            {technicalVideo && (
+              <Grid item xs={12} md={4}>
+                <Card>
+                  <CardContent>
+                    <Typography variant="h6" gutterBottom>{t('technical_round_video')}</Typography>
+                    <video src={technicalVideo} controls style={{ width: '100%', maxHeight: '200px' }} />
+                  </CardContent>
+                </Card>
+              </Grid>
+            )}
+            {hrVideo && (
+              <Grid item xs={12} md={4}>
+                <Card>
+                  <CardContent>
+                    <Typography variant="h6" gutterBottom>{t('hr_round_video')}</Typography>
+                    <video src={hrVideo} controls style={{ width: '100%', maxHeight: '200px' }} />
+                  </CardContent>
+                </Card>
+              </Grid>
+            )}
+          </Grid>
+        </Paper>
+      )}
 
       {/* Detailed Evaluation */}
       <Paper elevation={4} sx={{ borderRadius: 3, p: 3 }}>
