@@ -398,6 +398,7 @@ router.post('/generate-coding-assessment-question', async (req, res, next) => {
 
     const question = groqResponse?.choices?.[0]?.message?.content?.trim() || "Failed to generate coding question.";
     res.json({ question });
+    console.log('Generated coding question:', question);
 
   } catch (error) {
     next(error);
