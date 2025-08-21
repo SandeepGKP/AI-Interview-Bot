@@ -1,5 +1,6 @@
 // client/src/components/RecruiterDashboard.js
 import React, { useState, useEffect, useRef } from 'react';
+import {ToastContainer,toast } from 'react-toastify';
 import {
   Container,
   Typography,
@@ -16,7 +17,7 @@ import {
   CircularProgress,
   Box,
   TextField,
-  Chip,
+  Chip, 
   Dialog,
   DialogActions,
   DialogContent,
@@ -121,6 +122,7 @@ const RecruiterDashboard = () => {
         handleCloseDeleteDialog();
         setError('');
       }
+      toast.success(t('Candidate Deleted Successfully'));
     } catch (err) {
       console.error('Error deleting candidate:', err);
       if (mountedRef.current) {
@@ -140,6 +142,7 @@ const RecruiterDashboard = () => {
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
+      <ToastContainer />
       <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
         <Typography variant="h4" sx={{ fontWeight: 'bold' }}>{t('recruiter_dashboard_title')}</Typography>
         <Box>

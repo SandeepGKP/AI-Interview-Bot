@@ -91,7 +91,7 @@ The introduction should:
 2. Briefly explain the interview process
 3. Be encouraging and professional
 4. Be around 2-3 sentences
-Return only the introduction, no additional commentary with bullet point.`;
+Return only the introduction`;
 
     const introResponse = await groq.chat.completions.create({
       model: "qwen/qwen3-32b",  // <-- Updated model here
@@ -103,7 +103,7 @@ Return only the introduction, no additional commentary with bullet point.`;
     const introduction = introResponse?.choices?.[0]?.message?.content?.trim() || "Welcome to the interview!";
 
     // AI questions prompt
-    const questionsPrompt = `Please must generate 6 or more interview questions for the role of ${roleTitle} with question words (what,why ,how ,which,etc) and dont tag question word.
+    const questionsPrompt = `Please always generate 6 or more interview questions for the role of ${roleTitle} with question words (what,why ,how ,which,etc) and dont tag question word.
 Role Description: ${roleDescription}
 Questions should:
 - Be relevant to the role and each question should be unique in one line atleast
@@ -351,6 +351,81 @@ Provide a JSON object at the end of your evaluation containing a 'skills' key. T
     res.json(report);
   } catch (err) {
     next(err);
+  }
+});
+
+/*
+ * POST /api/generate-coding-assessment-question
+ * Generates a coding assessment question using Groq API
+ */
+router.post('/generate-coding-assessment-question', async (req, res, next) => {
+  try {
+    const { roleTitle, difficulty } = req.body;
+
+    if (!roleTitle) {
+      return res.status(400).json({ error: 'Role title is required' });
+    }
+
+    const prompt = `Generate a coding assessment question for a ${roleTitle} role.
+    Difficulty: ${difficulty || 'medium'}.
+    The question should include:
+    1. A clear problem statement.
+    2. Input/Output examples.
+    3. Constraints.
+    Return only the question text.`;
+
+    const groqResponse = await groq.chat.completions.create({
+      model: "qwen/qwen3-32b",
+      messages: [{ role: "user", content: prompt }],
+      max_tokens: 500,
+      temperature: 0.7
+    });
+
+    const question = groqResponse?.choices?.[0]?.message?.content?.trim() || "Failed to generate coding question.";
+    res.json({ question });
+
+  } catch (error) {
+    next(error);
+  }
+});
+
+/*
+ * POST /api/generate-hr-questions
+ * Generates HR interview questions using Groq API
+ */
+router.post('/generate-hr-questions', async (req, res, next) => {
+  try {
+    const { roleTitle } = req.body;
+
+    if (!roleTitle) {
+      return res.status(400).json({ error: 'Role title is required' });
+    }
+
+    const prompt = `Generate 5-7 HR interview questions for a ${roleTitle} role.
+    Questions should cover:
+    - Communication skills
+    - Teamwork
+    - Problem-solving
+    - Strengths and weaknesses
+    - Career aspirations
+    Return as a numbered list.`;
+
+    const groqResponse = await groq.chat.completions.create({
+      model: "qwen/qwen3-32b",
+      messages: [{ role: "user", content: prompt }],
+      max_tokens: 500,
+      temperature: 0.7
+    });
+
+    const questionsText = groqResponse?.choices?.[0]?.message?.content?.trim() || "";
+    const questions = questionsText.split('\n')
+      .filter(line => line.trim() && /^\d+\./.test(line.trim()))
+      .map(line => line.replace(/^\d+\.\s*/, '').trim());
+
+    res.json({ questions });
+
+  } catch (error) {
+    next(error);
   }
 });
 

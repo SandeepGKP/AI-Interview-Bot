@@ -1,36 +1,8 @@
 import React, { useState } from 'react';
-import {
-  Container,
-  Typography,
-  Card,
-  CardContent,
-  TextField,
-  Button,
-  Box,
-  Alert,
-  CircularProgress,
-  Chip,
-  Divider,
-  Paper
-} from '@mui/material';
-import { PlayArrow, Work, Psychology, Assessment } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import i18n from '../i18n';
-
-const fetchIntroduction = async (roleTitle, roleDescription) => {
-  try {
-    const response = await axios.post('https://ai-interview-bot-backend.onrender.com/api/generate-groq-introduction', {
-      roleTitle,
-      roleDescription,
-    }, { timeout: 30000 }); // Increased timeout to 30 seconds
-    return response.data.introduction;
-  } catch (error) {
-    console.error('Error fetching introduction:', error);
-    return i18n.t('default_introduction_fallback');
-  }
-};
 
 const Home = () => {
   const { t } = useTranslation();
@@ -46,288 +18,102 @@ const Home = () => {
 
   const navigate = useNavigate();
 
-  const handleStartInterview = async () => {
-    if (!candidateName.trim() || !roleTitle.trim() || !roleDescription.trim()) {
-      setError('Please fill in candidate name, role title, and description');
-      return;
-    }
-
-    setLoading(true);
-    setError('');
-    setIntroduction('');
-    setTotalQuestions(0);
-    setShowIntro(false);
-    setSessionId(null);
-
-    try {
-      const response = await axios.post('https://ai-interview-bot-backend.onrender.com/api/generate-interview', {
-        candidateName: candidateName.trim(),
-        roleTitle: roleTitle.trim(),
-        roleDescription: roleDescription.trim()
-      }, { timeout: 30000 }); // Increased timeout to 30 seconds
-
-      const { sessionId, introduction, questions } = response.data;
-
-      setIntroduction(introduction);
-      setTotalQuestions(questions.length);
-      setSessionId(sessionId);
-      setShowIntro(true);
-    } catch (err) {
-      console.error('Error creating interview:', err);
-      setError(err.response?.data?.error || 'Failed to create interview. Please try again.');
-    } finally {
-      setLoading(false);
-    }
+  const handleStartInterview = () => {
+    navigate('/interview'); // Navigate to the interview page
   };
-
-  const proceedToInterview = () => {
-    if (sessionId) {
-      navigate(`/interview/${sessionId}`);
-    }
-  };
-
-  const sampleRoles = [
-    {
-      title: 'Frontend Developer',
-      description:
-        'We are looking for a skilled Frontend Developer with experience in React, JavaScript, and modern web technologies. The candidate should have strong problem-solving skills and experience with responsive design.'
-    },
-    {
-      title: 'Data Scientist',
-      description:
-        'Seeking a Data Scientist with expertise in Python, machine learning, and statistical analysis. Experience with TensorFlow, pandas, and data visualization tools is preferred.'
-    },
-    {
-      title: 'Product Manager',
-      description:
-        'Looking for an experienced Product Manager to lead product strategy and development. Strong communication skills, experience with agile methodologies, and customer-focused mindset required.'
-    }
-  ];
-
-  const fillSampleRole = (role) => {
-    setRoleTitle(role.title);
-    setRoleDescription(role.description);
-  };
-
-  const features = [
-    {
-      icon: <Work color="primary" sx={{ fontSize: 48, mb: 1 }} />,
-      title: 'define_role_title',
-      desc: 'define_role_desc'
-    },
-    {
-      icon: <Psychology color="primary" sx={{ fontSize: 48, mb: 1 }} />,
-      title: 'ai_questions_title',
-      desc: 'ai_questions_desc'
-    },
-    {
-      icon: <PlayArrow color="primary" sx={{ fontSize: 48, mb: 1 }} />,
-      title: 'video_interview_title',
-      desc: 'video_interview_desc'
-    },
-    {
-      icon: <Assessment color="primary" sx={{ fontSize: 48, mb: 1 }} />,
-      title: 'ai_evaluation_title',
-      desc: 'ai_evaluation_desc'
-    }
-  ];
 
   return (
-    <Container maxWidth="lg" sx={{ py: 5 }}>
-      <Box textAlign="center" mb={6}>
-        <Typography variant="h3" component="h1" gutterBottom color="primary.dark" sx={{ fontWeight: 'bold' }}>
-          {t('welcome')}
-        </Typography>
-        <Typography variant="h6" color="text.secondary" paragraph sx={{ maxWidth: 700, mx: 'auto' }}>
-          {t('home_description')}
-        </Typography>
-      </Box>
+    <div className="min-h-screen bg-black text-white">
+      {/* Navbar
+      <nav className="flex items-center justify-between p-4">
+        <div className="flex items-center space-x-4">
+          <img src="/images/dsatrek-logo.png" alt="DSATrek Logo" className="h-8" />
+          <a href="#" className="text-gray-400 hover:text-white">Problems</a>
+          <a href="#" className="text-white border-b-2 border-yellow-500 pb-1">Interview</a>
+          <a href="#" className="text-gray-400 hover:text-white">Community</a>
+          <a href="#" className="text-gray-400 hover:text-white">Contest</a>
+          <a href="#" className="text-gray-400 hover:text-white">Visualizer</a>
+        </div>
+        <div className="flex items-center space-x-4">
+          <button className="bg-yellow-500 text-black px-4 py-2 rounded-md font-bold">PREMIUM</button>
+          <span className="text-gray-400">🔥 0</span>
+          <span className="text-gray-400">⏰</span>
+          <img src="/images/user-avatar.png" alt="User Avatar" className="h-8 w-8 rounded-full" />
+        </div>
+      </nav> */}
 
-      {/* Features Overview */}
-      <Card sx={{ mb: 5, width: '100%', backgroundColor: '#f5f5f5', p: 3 }}>
-        <CardContent>
-          <Typography variant="h5" gutterBottom color="primary" sx={{ textAlign: 'center', fontWeight: 'bold' }}>
-            {t('how_it_works')}
-          </Typography>
-          <Box
-            sx={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              gap: 3,
-              justifyContent: 'center',
-              mt: 2
-            }}
-          >
-            {features.map((item, idx) => (
-              <Box
-                key={idx}
-                sx={{
-                  flex: '1 1 220px',
-                  minWidth: 220,
-                  maxWidth: 250,
-                  px: 2,
-                  py: 4,
-                  borderRadius: 3,
-                  bgcolor: 'white',
-                  boxShadow: 3,
-                  transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-                  '&:hover': {
-                    transform: 'scale(1.05)',
-                    boxShadow: 6
-                  },
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'center',
-                  textAlign: 'center'
-                }}
-              >
-                {item.icon}
-                <Typography variant="h6" sx={{ fontWeight: 700, mb: 1, color: 'primary.main' }}>
-                  {t(item.title)}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {t(item.desc)}
-                </Typography>
-              </Box>
-            ))}
-          </Box>
-        </CardContent>
-      </Card>
+      {/* Main Content */}
+      <main className="container mx-auto px-4 py-8">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold"></h1>
+          <button className="bg-gray-800 text-white px-4 py-2 rounded-md flex items-center space-x-2 " onClick={handleStartInterview}>
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+            <span>Create Interview</span>
+          </button>
+        </div>
 
-      {/* Create New Interview */}
-      <Card sx={{ width: '100%', mb: 5, bgcolor: '#f5f5f5', p: 3 }}>
-        <CardContent>
-          <Typography variant="h5" gutterBottom color="primary" sx={{ textAlign: 'center', fontWeight: 'bold' }}>
-            {t('create_new_interview')}
-          </Typography>
+        <div className="relative flex flex-col lg:flex-row items-center justify-between bg-black p-8 rounded-lg overflow-hidden">
+          <div className="lg:w-1/2 z-10">
+            <h2 className="text-5xl font-bold mb-4">Master Your Next Interview</h2>
+            <p className="text-gray-400 text-lg mb-8">
+              Practice with AI-powered mock interviews tailored to your role. Get real-time feedback and boost your confidence
+              with our advanced interview system.
+            </p>
+            <div className="flex gap-4 mb-8">
+              <div className="bg-blue-700 p-4 rounded-lg flex items-center space-x-3 w-64">
+                <div className="w-4 h-4 rounded-full bg-blue-400"></div>
+                <div>
+                  <h3 className="font-bold">AI-Powered</h3>
+                  <p className="text-sm text-gray-300">Personalized questions based on job description</p>
+                </div>
+              </div>
+              <div className="bg-green-700 p-4 rounded-lg flex items-center space-x-3 w-64">
+                <div className="w-4 h-4 rounded-full bg-green-400"></div>
+                <div>
+                  <h3 className="font-bold">Voice Interview</h3>
+                  <p className="text-sm text-gray-300">Real-time voice interact on with AI interviewer</p>
+                </div>
+              </div>
+              <div className="bg-purple-700 p-4 rounded-lg flex items-center space-x-3 w-64">
+                <div className="w-4 h-4 rounded-full bg-purple-400"></div>
+                <div>
+                  <h3 className="font-bold">Smart Feedback</h3>
+                  <p className="text-sm text-gray-300">Detailed analysis and improvement suggestions</p>
+                </div>
+              </div>
+            </div>
+            {/* <button className="bg-gray-800 text-white px-6 py-3 rounded-md flex items-center space-x-2" onClick={handleStartInterview}>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14.752 11.122a1 1 0 010 1.756l-4.695 2.683A1 1 0 019 14.683V9.317a1 1 0 011.057-.879l4.695 2.683z"></path></svg>
+              <span>Start Your First Interview</span>
+            </button> */}
+          </div>
 
-          {error && (
-            <Alert severity="error" sx={{ mb: 3 }}>
-              {t(error)}
-            </Alert>
-          )}
-
-          <Box component="form" sx={{ mt: 2 ,display: 'flex' ,justifyContent: "center", alignItems: "center", flexDirection: "column" }}>
-            <TextField
-              fullWidth
-              label={t('candidate_name_label')}
-              value={candidateName}
-              onChange={(e) => setCandidateName(e.target.value)}
-              placeholder={t('candidate_name_placeholder')}
-              sx={{ mb: 3, bgcolor: 'white', borderRadius: 1 }}
-              disabled={loading || showIntro}
-            />
-
-            <TextField
-              fullWidth
-              label={t('job_title_label')}
-              value={roleTitle}
-              onChange={(e) => setRoleTitle(e.target.value)}
-              placeholder={t('job_title_placeholder')}
-              sx={{ mb: 3, bgcolor: 'white', borderRadius: 1 }}
-              disabled={loading || showIntro}
-            />
-
-            <TextField
-              fullWidth
-              multiline
-              rows={6}
-              label={t('role_description_label')}
-              value={roleDescription}
-              onChange={(e) => setRoleDescription(e.target.value)}
-              placeholder={t('role_description_placeholder')}
-              sx={{ mb: 3, bgcolor: 'white', borderRadius: 1 }}
-              disabled={loading || showIntro}
-            />
-
-            <Button
-              variant="contained"
-              size="large"
-              onClick={handleStartInterview}
-              disabled={
-                loading ||
-                !candidateName.trim() ||
-                !roleTitle.trim() ||
-                !roleDescription.trim() ||
-                showIntro
-              }
-              startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <PlayArrow />}
-              // fullWidth
-
-              sx={{ py: 1.5, fontWeight: 'bold' }}
-            >
-              {loading ? t('generating_interview') : t('start_ai_interview')}
-            </Button>
-          </Box>
-
-          {showIntro && (
-            <Paper
-              elevation={5}
-              sx={{
-                mt: 4,
-                p: 3,
-                bgcolor: '#bbdefb',
-                borderRadius: 2,
-                border: 1,
-                borderColor: 'primary.main',
-                textAlign: 'center'
+          {/* Robot Image */}
+          <div className="lg:w-1/2 flex justify-center lg:justify-end mt-8 lg:mt-0 height-full ">
+            <img
+              src="/images/image.png"
+              alt="Robot"
+              className="object-contain"
+              style={{
+                position: 'absolute',
+                right: '20px',        // flush with right edge
+                bottom: '0',       // sits on bottom
+                width: '600px',    // big, like in your screenshot
+                height: '400px',    // keep aspect ratio
+                background: 'transparent',
+                filter: 'drop-shadow(0px 0px 30px rgba(0,0,0,0.6))'
               }}
-            >
-              <Typography variant="h6" gutterBottom fontWeight="bold">
-                {t('welcome_ai_interview')}
-              </Typography>
-              <Typography variant="body2" color="text.primary" gutterBottom>
-                {t('best_of_luck', { candidateName: candidateName })}
-              </Typography>
-              <Button variant="contained" size="small" onClick={proceedToInterview} sx={{ mt: 2, fontWeight: 'bold' }}>
-                {t('proceed_to_interview')}
-              </Button>
-            </Paper>
-          )}
-        </CardContent>
-      </Card>
+            />
+          </div>
 
-      {/* Quick Start Examples */}
-      <Card sx={{ width: '100%', mb: 5, bgcolor: 'white', p: 3 }}>
-        <CardContent>
-          <Typography variant="h6" gutterBottom fontWeight="bold">
-            {t('quick_start')}
-          </Typography>
-          <Typography variant="body2" color="text.secondary" paragraph>
-            {t('try_sample_roles')}
-          </Typography>
 
-          {sampleRoles.map((role, index) => (
-            <Box key={index} sx={{ mb: 2 }}>
-              <Chip
-                label={t(role.title.toLowerCase().replace(/\s/g, '_'))}
-                onClick={() => fillSampleRole(role)}
-                color="primary"
-                variant="outlined"
-                sx={{
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                  '&:hover': {
-                    backgroundColor: 'primary.main',
-                    color: 'blue'
-                  }
-                }}
-              />
-              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                {t(`${role.title.toLowerCase().replace(/\s/g, '_')}_description`)}
-              </Typography>
-              {index < sampleRoles.length - 1 && <Divider sx={{ mt: 2 }} />}
-            </Box>
-          ))}
-        </CardContent>
-      </Card>
+        </div>
 
-      <Box sx={{ mt: 4, textAlign: 'center' }}>
-        <Typography variant="body2" color="text.secondary">
+        <div className="mt-8 text-center text-gray-500 text-sm">
           {t('ai_questions_note')}
-        </Typography>
-      </Box>
-    </Container>
+        </div>
+      </main>
+    </div>
   );
 };
 

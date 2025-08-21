@@ -1,39 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
-import {
-  Container,
-  Typography,
-  Card,
-  CardContent,
-  Button,
-  Box,
-  LinearProgress,
-  Alert,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Chip,
-  Grid,
-  Paper,
-  CircularProgress
-} from '@mui/material';
-import {
-  PlayArrow,
-  Stop,
-  Refresh,
-  Send,
-  CheckCircle,
-  Videocam,
-  Mic,
-  NavigateNext,
-  NavigateBefore,
-  Replay
-} from '@mui/icons-material';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import i18n from '../i18n';
-import {ToastContainer, toast} from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'; // Import toastify CSS
+
+// Import the new components
+import CodingAssessmentRound from './CodingAssessmentRound';
+import TechnicalRound from './TechnicalRound';
+import HRRound from './HRRound';
 
 const fetchIntroduction = async (roleTitle, roleDescription, t) => {
   try {
@@ -50,191 +26,110 @@ const fetchIntroduction = async (roleTitle, roleDescription, t) => {
 
 const Interview = () => {
   const { t } = useTranslation();
-  const { sessionId } = useParams();
+  const { sessionId: paramSessionId } = useParams();
   const navigate = useNavigate();
-  
-  // State management
-  const [session, setSession] = useState(null);
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [isRecording, setIsRecording] = useState(false);
-  const [recordedBlob, setRecordedBlob] = useState(null);
-  const [isUploading, setIsUploading] = useState(false);
-  const [transcription, setTranscription] = useState('');
-  const [responses, setResponses] = useState([]);
-  const [error, setError] = useState('');
-  const [showIntroduction, setShowIntroduction] = useState(true);
-  const [permissionsGranted, setPermissionsGranted] = useState(false);
-  const [showCompletionDialog, setShowCompletionDialog] = useState(false);
-  
-  // Refs
-  const videoRef = useRef(null);
-  const mediaRecorderRef = useRef(null);
-  const streamRef = useRef(null);
 
-  // Load session data
+  // State for interview setup form
+  const [candidateName, setCandidateName] = useState('');
+  const [roleTitle, setRoleTitle] = useState('');
+  const [roleDescription, setRoleDescription] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [showInterviewSetup, setShowInterviewSetup] = useState(true);
+
+  // State for interview session
+  const [session, setSession] = useState(null);
+  const [currentStage, setCurrentStage] = useState('setup'); // 'setup', 'introduction', 'coding', 'technical', 'hr', 'report'
+  const [error, setError] = useState('');
+  const [sessionId, setSessionId] = useState(paramSessionId); // Use local state for sessionId
+
+  // Sample roles for quick start
+  const sampleRoles = [
+    {
+      title: 'Frontend Developer',
+      description:
+        'We are looking for a skilled Frontend Developer with experience in React, JavaScript, and modern web technologies. The candidate should have strong problem-solving skills and experience with responsive design.'
+    },
+    {
+      title: 'Data Scientist',
+      description:
+        'Seeking a Data Scientist with expertise in Python, machine learning, and statistical analysis. Experience with TensorFlow, pandas, and data visualization tools is preferred.'
+    },
+    {
+      title: 'Product Manager',
+      description:
+        'Looking for an experienced Product Manager to lead product strategy and development. Strong communication skills, experience with agile methodologies, and customer-focused mindset required.'
+    }
+  ];
+
+  const fillSampleRole = (role) => {
+    setRoleTitle(role.title);
+    setRoleDescription(role.description);
+  };
+
+  // Handle starting a new interview session from the form
+  const handleStartInterviewSession = async () => {
+    if (!candidateName.trim() || !roleTitle.trim() || !roleDescription.trim()) {
+      setError('Please fill in candidate name, role title, and description');
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+    setSessionId(null); // Clear previous session ID if any
+
+    try {
+      // This initial call can just generate the session ID and basic info
+      // The actual questions for each round will be fetched by their respective components
+      const response = await axios.post('https://ai-interview-bot-backend.onrender.com/api/generate-interview', {
+        candidateName: candidateName.trim(),
+        roleTitle: roleTitle.trim(),
+        roleDescription: roleDescription.trim()
+      }, { timeout: 30000 });
+
+      const { sessionId: newSessionId, introduction } = response.data;
+
+      setSession({
+        id: newSessionId,
+        candidateName: candidateName.trim(),
+        roleTitle: roleTitle.trim(),
+        roleDescription: roleDescription.trim(),
+        introduction: introduction,
+        // We don't need to store questions here, as each round fetches its own
+      });
+      setSessionId(newSessionId);
+      setCurrentStage('introduction'); // Move to introduction stage
+      navigate(`/interview/${newSessionId}`); // Update URL
+    } catch (err) {
+      console.error('Error creating interview:', err);
+      setError(err.response?.data?.error || 'Failed to create interview. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Load session data if sessionId is present in URL (for direct access or refresh)
   useEffect(() => {
     const loadSession = async () => {
-      let introduction = t('default_session_introduction');
+      if (!sessionId) return;
+
       try {
         const response = await axios.get(`https://ai-interview-bot-backend.onrender.com/api/session/${sessionId}`);
-        introduction = await fetchIntroduction(response.data.roleTitle, response.data.roleDescription, t);
+        const introduction = await fetchIntroduction(response.data.roleTitle, response.data.roleDescription, t);
         setSession({ ...response.data, introduction });
-        setResponses(new Array(response.data.questions.length).fill(null));
+        setCurrentStage('introduction'); // If session loaded, go to introduction or first stage
       } catch (err) {
         console.error('Error loading session:', err);
         setError('Interview session not found. Please check your link.');
+        setCurrentStage('setup'); // Show setup form if session not found
       }
     };
 
-    if (sessionId) {
-      loadSession();
-    }
-  }, [sessionId]);
-
-  // Request camera and microphone permissions
-  const requestPermissions = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: true
-      });
-      
-      streamRef.current = stream;
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-      }
-      
-      setPermissionsGranted(true);
-      setError('');
-    } catch (err) {
-      console.error('Error accessing media devices:', err);
-      setError('Camera and microphone access is required for the interview. Please grant permissions and try again.');
-    }
-  };
-
-  // Start recording
-  const startRecording = () => {
-    if (!streamRef.current) {
-      setError('Please grant camera and microphone permissions first.');
-      return;
-    }
-
-    try {
-      const mediaRecorder = new MediaRecorder(streamRef.current, {
-        mimeType: 'video/webm;codecs=vp9'
-      });
-      
-      const chunks = [];
-      
-      mediaRecorder.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          chunks.push(event.data);
-        }
-      };
-      
-      mediaRecorder.onstop = () => {
-        const blob = new Blob(chunks, { type: 'video/webm' });
-        setRecordedBlob(blob);
-      };
-      
-      mediaRecorderRef.current = mediaRecorder;
-      mediaRecorder.start();
-      setIsRecording(true);
-      setError('');
-    } catch (err) {
-      console.error('Error starting recording:', err);
-      setError('Failed to start recording. Please try again.');
-    }
-  };
-
-  // Stop recording
-  const stopRecording = () => {
-    if (mediaRecorderRef.current && isRecording) {
-      mediaRecorderRef.current.stop();
-      setIsRecording(false);
-    }
-  };
-
-  // Upload response
-  const uploadResponse = async () => {
-    if (!recordedBlob) {
-      setError('No recording found. Please record your response first.');
-      return;
-    }
-
-    setIsUploading(true);
-    setError('');
-
-    try {
-      const formData = new FormData();
-      formData.append('video', recordedBlob, `response-${currentQuestionIndex}.webm`);
-
-      const response = await axios.post(
-        `https://ai-interview-bot-backend.onrender.com/api/upload-response/${sessionId}/${currentQuestionIndex}`,
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        }
-      );
-      toast.success(t('Response Uploaded Successfully'));
-      setTranscription(response.data.transcription);
-      
-      const newResponses = [...responses];
-      newResponses[currentQuestionIndex] = {
-        transcription: response.data.transcription,
-        recorded: true
-      };
-      setResponses(newResponses);
-      setRecordedBlob(null);
-      
-    } catch (err) {
-      console.error('Error uploading response:', err);
-      setError(err.response?.data?.error || 'Failed to upload response. Please try again.');
-    } finally {
-      setIsUploading(false);
-    }
-  };
-
-  // Navigate to next question
-  const nextQuestion = () => {
-    if (currentQuestionIndex < session.questions.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
-      setTranscription('');
-      setRecordedBlob(null);
-    } else {
-      setShowCompletionDialog(true);
-    }
-  };
-
-  // Navigate to previous question
-  const previousQuestion = () => {
-    if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex(currentQuestionIndex - 1);
-      setTranscription('');
-      setRecordedBlob(null);
-    }
-  };
-
-  // Complete interview
-  const completeInterview = () => {
-    navigate(`/report/${sessionId}`);
-  };
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach(track => track.stop());
-      }
-      window.speechSynthesis.cancel(); // Stop speech on unmount
-    };
-  }, []);
+    loadSession();
+  }, [sessionId, t]);
 
   // Speak introduction slowly
   useEffect(() => {
-    if (session?.introduction && showIntroduction) {
+    if (session?.introduction && currentStage === 'introduction') {
       const utterance = new SpeechSynthesisUtterance(session.introduction);
       utterance.rate = 0.85; // slow speech
       utterance.pitch = 1;
@@ -242,216 +137,207 @@ const Interview = () => {
       window.speechSynthesis.cancel();
       window.speechSynthesis.speak(utterance);
     }
-  }, [session, showIntroduction, i18n.language]);
+  }, [session, currentStage, i18n.language]);
 
-  if (!session) {
-    return (
-      <Container maxWidth="md" sx={{ py: 4 }}>
-        <Box textAlign="center">
-          <Typography variant="h5">{t('loading_interview')}</Typography>
+  // Handlers for stage completion
+  const handleIntroductionComplete = () => {
+    setCurrentStage('coding');
+  };
+
+  const handleCodingComplete = (answers) => {
+    console.log('Coding Round Completed with answers:', answers);
+    // Here you might save coding answers to the session or backend
+    setCurrentStage('technical');
+  };
+
+  const handleTechnicalComplete = (answers) => {
+    console.log('Technical Round Completed with answers:', answers);
+    // Here you might save technical answers to the session or backend
+    setCurrentStage('hr');
+  };
+
+  const handleHRComplete = (answers) => {
+    console.log('HR Round Completed with answers:', answers);
+    // Here you might save HR answers to the session or backend
+    navigate(`/report/${sessionId}`); // Navigate to report after all rounds
+  };
+
+  const renderStage = () => {
+    if (!session && currentStage !== 'setup') {
+      return (
+        <div className="min-h-screen bg-black text-white flex items-center justify-center">
+          <h2 className="text-2xl">{t('loading_interview')}</h2>
           {error && (
-            <Alert severity="error" sx={{ mt: 2 }}>
+            <div className="bg-red-700 text-white p-3 rounded-md mt-4">
               {t(error)}
-            </Alert>
+            </div>
           )}
-        </Box>
-      </Container>
-    );
-  }
+        </div>
+      );
+    }
 
-  // Introduction screen
-  if (showIntroduction) {
-    return (
-      <Container maxWidth="md" sx={{ py: 4 }}>
-        <Card sx={{ borderRadius: 2, boxShadow: 3 }}>
-          <CardContent sx={{ p: 4 }}>
-            <Typography variant="h4" gutterBottom color="primary" textAlign="center" sx={{ fontWeight: 'bold' }}>
-              {t('welcome_to_your_interview')}
-            </Typography>
-            
-            <Typography variant="h6" gutterBottom textAlign="center" sx={{ mb: 2 }}>
-              {t('position')}: {session.roleTitle}
-            </Typography>
-            
-            <Paper sx={{ p: 3, mb: 3, backgroundColor: '#f5f5f5', borderRadius: 2 }}>
-              <Typography variant="body1" paragraph sx={{ fontStyle: 'italic' }}>
-                {session.introduction}
-              </Typography>
-            </Paper>
-
-            <Box sx={{ mb: 3 }}>
-              <Grid container spacing={2} justifyContent="center">
-                <Grid item>
-                  <Chip label={t('num_questions', { count: session.questions.length })} color="primary" variant="outlined" />
-                </Grid>
-                <Grid item>
-                  <Chip label={t('ai_powered_evaluation')} color="secondary" variant="outlined" />
-                </Grid>
-              </Grid>
-            </Box>
-
-            <Alert severity="info" sx={{ mb: 3, borderRadius: 2 }}>
-              <Typography variant="body2">
-                <strong>{t('before_we_begin')}:</strong>
-                <br />• {t('ensure_quiet_environment')}
-                <br />• {t('check_camera_microphone')}
-                <br />• {t('take_time_responses')}
-                <br />• {t('re_record_any_answer')}
-              </Typography>
-            </Alert>
-
-            {error && (
-              <Alert severity="error" sx={{ mb: 2, borderRadius: 2 }}>
-                {t(error)}
-              </Alert>
-            )}
-
-            <Box textAlign="center">
-              {!permissionsGranted ? (
-                <Button
-                  variant="contained"
-                  size="large"
-                  onClick={requestPermissions}
-                  startIcon={<Videocam />}
-                  sx={{ mr: 2, borderRadius: 2 }}
+    switch (currentStage) {
+      case 'setup':
+        return (
+          <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-4">
+            <ToastContainer />
+            <div className="bg-gray-900 p-8 rounded-lg shadow-lg max-w-2xl w-full">
+              <h2 className="text-3xl font-bold text-center mb-6">Create New Interview</h2>
+              {error && (
+                <div className="bg-red-700 text-white p-3 rounded-md mb-4">
+                  {t(error)}
+                </div>
+              )}
+              <div className="flex flex-col items-center">
+                <input
+                  type="text"
+                  className="w-full p-3 mb-4 bg-gray-800 border border-gray-700 rounded-md text-white placeholder-gray-500"
+                  placeholder={t('candidate_name_label')}
+                  value={candidateName}
+                  onChange={(e) => setCandidateName(e.target.value)}
+                  disabled={loading}
+                />
+                <input
+                  type="text"
+                  className="w-full p-3 mb-4 bg-gray-800 border border-gray-700 rounded-md text-white placeholder-gray-500"
+                  placeholder={t('job_title_label')}
+                  value={roleTitle}
+                  onChange={(e) => setRoleTitle(e.target.value)}
+                  disabled={loading}
+                />
+                <textarea
+                  className="w-full p-3 mb-4 bg-gray-800 border border-gray-700 rounded-md text-white placeholder-gray-500 h-32 resize-none"
+                  placeholder={t('role_description_label')}
+                  value={roleDescription}
+                  onChange={(e) => setRoleDescription(e.target.value)}
+                  disabled={loading}
+                ></textarea>
+                <button
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md font-bold flex items-center justify-center space-x-2 w-full"
+                  onClick={handleStartInterviewSession}
+                  disabled={
+                    loading ||
+                    !candidateName.trim() ||
+                    !roleTitle.trim() ||
+                    !roleDescription.trim()
+                  }
                 >
-                  {t('grant_camera_microphone_access')}
-                </Button>
-              ) : (
-                <Button
-                  variant="contained"
-                  size="large"
+                  {loading ? (
+                    <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                  ) : (
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14.752 11.122a1 1 0 010 1.756l-4.695 2.683A1 1 0 019 14.683V9.317a1 1 0 011.057-.879l4.695 2.683z"></path></svg>
+                  )}
+                  <span>{loading ? t('generating_interview') : t('start_ai_interview')}</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Quick Start Examples */}
+            <div className="mt-8 p-8 bg-gray-900 rounded-lg shadow-lg max-w-2xl w-full">
+              <h3 className="text-2xl font-bold mb-4">Quick Start</h3>
+              <p className="text-gray-400 mb-6">
+                {t('try_sample_roles')}
+              </p>
+
+              {sampleRoles.map((role, index) => (
+                <div key={index} className="mb-4">
+                  <button
+                    className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-full font-bold cursor-pointer"
+                    onClick={() => fillSampleRole(role)}
+                  >
+                    {t(role.title.toLowerCase().replace(/\s/g, '_'))}
+                  </button>
+                  <p className="text-gray-400 mt-2">
+                    {t(`${role.title.toLowerCase().replace(/\s/g, '_')}_description`)}
+                  </p>
+                  {index < sampleRoles.length - 1 && <hr className="my-4 border-gray-700" />}
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      case 'introduction':
+        return (
+          <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-4">
+            <div className="bg-gray-900 p-8 rounded-lg shadow-lg max-w-3xl w-full text-center">
+              <h2 className="text-4xl font-bold text-yellow-500 mb-4">
+                {t('welcome_to_your_interview')}
+              </h2>
+              <h3 className="text-2xl text-gray-300 mb-6">
+                {t('position')}: {session.roleTitle}
+              </h3>
+
+              <div className="bg-gray-800 p-6 rounded-md mb-6 text-left">
+                <p className="text-gray-200 italic">
+                  {session.introduction}
+                </p>
+              </div>
+
+              <div className="flex flex-wrap justify-center gap-4 mb-6">
+                <span className="bg-blue-700 text-white px-4 py-2 rounded-full text-sm font-semibold">
+                  {t('multi_stage_interview')}
+                </span>
+                <span className="bg-green-700 text-white px-4 py-2 rounded-full text-sm font-semibold">
+                  {t('ai_powered_evaluation')}
+                </span>
+              </div>
+
+              <div className="bg-blue-800 text-white p-4 rounded-md mb-6 text-left">
+                <p className="font-bold mb-2">{t('before_we_begin')}:</p>
+                <ul className="list-disc list-inside text-sm">
+                  <li>{t('ensure_quiet_environment')}</li>
+                  <li>{t('check_camera_microphone')}</li>
+                  <li>{t('take_time_responses')}</li>
+                  <li>{t('re_record_any_answer')}</li>
+                </ul>
+              </div>
+
+              {error && (
+                <div className="bg-red-700 text-white p-3 rounded-md mb-4">
+                  {t(error)}
+                </div>
+              )}
+
+              <div className="text-center">
+                <button
+                  className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-md font-bold flex items-center justify-center space-x-2 mx-auto"
                   onClick={() => {
                     window.speechSynthesis.cancel();
-                    setShowIntroduction(false);
+                    handleIntroductionComplete();
                   }}
-                  startIcon={<PlayArrow />}
-                  sx={{ borderRadius: 2 }}
                 >
-                  {t('start_interview')}
-                </Button>
-              )}
-            </Box>
-          </CardContent>
-        </Card>
-      </Container>
-    );
-  }
-
-  const progress = ((currentQuestionIndex + 1) / session.questions.length) * 100;
-  const currentResponse = responses[currentQuestionIndex];
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14.752 11.122a1 1 0 010 1.756l-4.695 2.683A1 1 0 019 14.683V9.317a1 1 0 011.057-.879l4.695 2.683z"></path></svg>
+                  <span>{t('start_coding_round')}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      case 'coding':
+        return (
+          <CodingAssessmentRound onComplete={handleCodingComplete} roleTitle={session.roleTitle} />
+        );
+      case 'technical':
+        return (
+          <TechnicalRound onComplete={handleTechnicalComplete} roleTitle={session.roleTitle} />
+        );
+      case 'hr':
+        return (
+          <HRRound onComplete={handleHRComplete} roleTitle={session.roleTitle} />
+        );
+      default:
+        return null;
+    }
+  };
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      <ToastContainer/>
-      {/* Progress Bar */}
-      <Box sx={{ mb: 3 }}>
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
-          <Typography variant="body2" color="text.secondary">
-            {t('question_of', { current: currentQuestionIndex + 1, total: session.questions.length })}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            {Math.round(progress)}% {t('complete')}
-          </Typography>
-        </Box>
-        <LinearProgress variant="determinate" value={progress} sx={{ height: 8, borderRadius: 4 }} />
-      </Box>
-
-      <Card sx={{ mb: 4, borderRadius: 2, boxShadow: 3 }}>
-        <CardContent sx={{ p: 4 }}>
-          <Typography variant="h5" gutterBottom sx={{ fontWeight: 'bold', color: 'primary.dark' }}>
-            {t('interview_session_title')}
-          </Typography>
-          <Typography variant="h6" sx={{ mb: 2 }}>
-            {t('question')}: {session.questions[currentQuestionIndex]}
-          </Typography>
-
-          <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
-            <video ref={videoRef} autoPlay muted style={{ width: '100%', maxWidth: '640px', borderRadius: '8px', backgroundColor: 'black' }} />
-          </Box>
-
-          <Box display="flex" justifyContent="center" gap={2} mb={3}>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={isRecording ? stopRecording : startRecording}
-              startIcon={isRecording ? <Stop /> : <Mic />}
-              disabled={isUploading}
-              sx={{ borderRadius: 2, py: 1.5, px: 3 }}
-            >
-              {isRecording ? t('stop_recording') : t('start_recording')}
-            </Button>
-            <Button
-              variant="outlined"
-              color="secondary"
-              onClick={() => {
-                setRecordedBlob(null);
-                setTranscription('');
-              }}
-              startIcon={<Replay />}
-              disabled={isRecording || isUploading}
-              sx={{ borderRadius: 2, py: 1.5, px: 3 }}
-            >
-              {t('clear_recording')}
-            </Button>
-            <Button
-              variant="contained"
-              color="success"
-              onClick={uploadResponse}
-              startIcon={isUploading ? <CircularProgress size={20} color="inherit" /> : <Send />}
-              disabled={!recordedBlob || isRecording || isUploading}
-              sx={{ borderRadius: 2, py: 1.5, px: 3 }}
-            >
-              {isUploading ? t('uploading') : t('submit_response')}
-            </Button>
-          </Box>
-
-          {transcription && (
-            <Paper elevation={2} sx={{ p: 2, mt: 2, backgroundColor: '#e8f5e9', borderRadius: 2 }}>
-              <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>{t('your_transcription')}:</Typography>
-              <Typography variant="body2" sx={{ fontStyle: 'italic' }}>"{transcription}"</Typography>
-            </Paper>
-          )}
-
-          {error && (
-            <Alert severity="error" sx={{ mt: 2, borderRadius: 2 }}>
-              {t(error)}
-            </Alert>
-          )}
-        </CardContent>
-      </Card>
-
-      <Box display="flex" justifyContent="space-between" sx={{ mt: 4 }}>
-        <Button
-          variant="outlined"
-          onClick={previousQuestion}
-          disabled={currentQuestionIndex === 0}
-          startIcon={<NavigateBefore />}
-          sx={{ borderRadius: 2, py: 1.5, px: 3 }}
-        >
-          {t('previous_question')}
-        </Button>
-        <Button
-          variant="contained"
-          onClick={nextQuestion}
-          endIcon={<NavigateNext />}
-          sx={{ borderRadius: 2, py: 1.5, px: 3 }}
-        >
-          {currentQuestionIndex === session.questions.length - 1 ? t('finish_interview') : t('next_question')}
-        </Button>
-      </Box>
-
-      <Dialog open={showCompletionDialog} onClose={() => setShowCompletionDialog(false)}>
-        <DialogTitle>{t('interview_complete')}</DialogTitle>
-        <DialogContent>
-          <Typography>{t('interview_complete_message')}</Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setShowCompletionDialog(false)}>{t('cancel')}</Button>
-          <Button onClick={completeInterview} variant="contained" color="primary">{t('view_report')}</Button>
-        </DialogActions>
-      </Dialog>
-    </Container>
+    <div className="min-h-screen bg-black text-white">
+      <ToastContainer />
+      {renderStage()}
+    </div>
   );
 };
 
