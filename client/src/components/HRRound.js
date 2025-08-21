@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 
-const HRRound = () => {
+const HRRound = (props) => {
+  const { onComplete = () => {}, roleTitle } = props; // Destructure props inside the component - Fix attempt for linter issue
   const [answers, setAnswers] = useState({});
   const [questions, setQuestions] = useState([]);
   const [feedback, setFeedback] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [roleTitle, setRoleTitle] = useState('Software Engineer'); // Example role, could be passed as prop
+  const currentRoleTitle = roleTitle || 'Software Engineer';
 
   useEffect(() => {
     const fetchHRQuestions = async () => {
@@ -18,7 +19,7 @@ const HRRound = () => {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ roleTitle }),
+          body: JSON.stringify({ roleTitle: currentRoleTitle }),
         });
 
         if (!response.ok) {
@@ -27,7 +28,6 @@ const HRRound = () => {
 
         const data = await response.json();
         setQuestions(data.questions);
-        // Initialize answers state based on fetched questions
         const initialAnswers = data.questions.reduce((acc, q, index) => {
           acc[`question${index}`] = '';
           return acc;
@@ -43,25 +43,25 @@ const HRRound = () => {
     };
 
     fetchHRQuestions();
-  }, [roleTitle]);
+  }, [currentRoleTitle]);
 
   const handleChange = (e, index) => {
     const { value } = e.target;
     setAnswers({ ...answers, [`question${index}`]: value });
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = useCallback(() => {
     const allAnswered = questions.every((_, index) => answers[`question${index}`]?.trim() !== '');
     if (allAnswered) {
       setFeedback('HR interview answers submitted successfully! Moving to the final report.');
       console.log('HR answers submitted:', answers);
       if (onComplete) {
-        onComplete(answers); // Pass answers to parent component
+        onComplete(answers);
       }
     } else {
       setFeedback('Please answer all questions before submitting.');
     }
-  };
+  }, [questions, answers, onComplete]);
 
   return (
     <div className="p-6 bg-white rounded-lg shadow-md max-w-3xl mx-auto my-8">
