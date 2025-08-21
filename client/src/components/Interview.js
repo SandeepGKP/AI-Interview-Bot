@@ -84,7 +84,7 @@ const Interview = () => {
         candidateName: candidateName.trim(),
         roleTitle: roleTitle.trim(),
         roleDescription: roleDescription.trim()
-      }, { timeout: 30000 });
+      });
 
       const { sessionId: newSessionId, introduction } = response.data;
 

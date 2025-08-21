@@ -230,8 +230,8 @@ router.get('/candidates', (req, res) => {
     id: session.id,
     name: session.candidateName || 'Unknown Candidate',
     role: session.roleTitle,
-    date: session.createdAt,
     status: session.status,
+    date: session.createdAt,
     responseCount: session.responses.length
   }));
   res.json(candidates);

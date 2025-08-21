@@ -30,7 +30,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 
-const POLL_INTERVAL_MS = 6000; // 6 seconds
+const POLL_INTERVAL_MS = 30000; // 30 seconds
 
 const RecruiterDashboard = () => {
   const { t } = useTranslation();
@@ -76,7 +76,7 @@ const RecruiterDashboard = () => {
     }
 
     try {
-      const response = await axios.get('https://ai-interview-bot-backend.onrender.com/api/candidates', { timeout: 30000 }); // Increased timeout to 30 seconds
+      const response = await axios.get('https://ai-interview-bot-backend.onrender.com/api/candidates');
       if (!mountedRef.current) return;
 
       const normalized = (response.data || []).map((c) => ({
