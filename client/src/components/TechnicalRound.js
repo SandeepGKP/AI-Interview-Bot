@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 const TechnicalRound = ({ onComplete, roleTitle }) => {
   const [questions, setQuestions] = useState([]);
@@ -7,41 +7,52 @@ const TechnicalRound = ({ onComplete, roleTitle }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchTechnicalQuestions = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const response = await fetch('/api/generate-interview', { // Reusing existing interview question generation
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ roleTitle: roleTitle || 'Software Engineer', roleDescription: 'Technical interview questions' }),
-        });
+  const fetchTechnicalQuestions = useCallback(async () => {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 120000); // 120 seconds timeout
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await fetch('https://ai-interview-bot-backend.onrender.com/api/generate-interview', { // Reusing existing interview question generation
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ roleTitle: roleTitle || 'Software Engineer', roleDescription: 'Technical interview questions' }),
+        signal: controller.signal, // Attach the abort signal
+      });
 
-        const data = await response.json();
-        setQuestions(data.questions);
-        const initialAnswers = data.questions.reduce((acc, q, index) => {
-          acc[`question${index}`] = '';
-          return acc;
-        }, {});
-        setAnswers(initialAnswers);
-      } catch (err) {
-        console.error("Failed to fetch technical questions:", err);
-        setError('Failed to load technical questions. Please try again later.');
-        setQuestions([]);
-      } finally {
-        setLoading(false);
+      clearTimeout(timeoutId); // Clear the timeout if the request completes
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
-    };
 
-    fetchTechnicalQuestions();
+      const data = await response.json();
+      setQuestions(data.questions);
+      const initialAnswers = data.questions.reduce((acc, q, index) => {
+        acc[`question${index}`] = '';
+        return acc;
+      }, {});
+      setAnswers(initialAnswers);
+    } catch (err) {
+      console.error("Failed to fetch technical questions:", err);
+      if (err.name === 'AbortError') {
+        setError('Request timed out. Please try again.');
+      } else {
+        setError('Failed to load technical questions. Please try again later.');
+      }
+      setQuestions([]);
+    } finally {
+      clearTimeout(timeoutId); // Ensure timeout is cleared even on error
+      setLoading(false);
+    }
   }, [roleTitle]);
+
+  useEffect(() => {
+    fetchTechnicalQuestions();
+  }, [fetchTechnicalQuestions]);
 
   const handleChange = (e, index) => {
     const { value } = e.target;
@@ -63,7 +74,16 @@ const TechnicalRound = ({ onComplete, roleTitle }) => {
 
   return (
     <div className="p-6 bg-white rounded-lg shadow-md max-w-3xl mx-auto my-8">
-      <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">Technical Round Interview</h2>
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-3xl font-bold text-gray-800 text-center">Technical Round Interview</h2>
+        <button
+          onClick={() => fetchTechnicalQuestions()}
+          className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-md transition duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={loading}
+        >
+          Refresh
+        </button>
+      </div>
       
       {loading && <p className="text-center text-blue-500">Generating technical questions...</p>}
       {error && <p className="text-center text-red-500">{error}</p>}
@@ -74,7 +94,7 @@ const TechnicalRound = ({ onComplete, roleTitle }) => {
             <h3 className="text-xl font-semibold text-gray-700 mb-3">Question {index + 1}:</h3>
             <p className="text-gray-600 bg-gray-50 p-4 rounded-md border border-gray-200 whitespace-pre-wrap">{q}</p>
             <textarea
-              className="w-full p-4 mt-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 text-base"
+              className="w-full p-4 mt-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 text-base text-gray-800"
               rows="5"
               name={`question${index}`}
               value={answers[`question${index}`] || ''}

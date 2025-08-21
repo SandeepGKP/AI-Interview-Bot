@@ -372,7 +372,7 @@ router.post('/generate-coding-assessment-question', async (req, res, next) => {
     1. A clear problem statement.
     2. Input/Output examples.
     3. Constraints.
-    Return only the question text.`;
+    Return only the clear Problem and input/output, constraint if possible for the problem please please .`;
 
     const groqResponse = await groq.chat.completions.create({
       model: "qwen/qwen3-32b",

@@ -278,7 +278,7 @@ const Interview = () => {
 
               <div className="flex flex-wrap justify-center gap-4 mb-6">
                 <span className="bg-blue-700 text-white px-4 py-2 rounded-full text-sm font-semibold">
-                  {t('multi_stage_interview')}
+                  {t('Multi Stage Interview')}
                 </span>
                 <span className="bg-green-700 text-white px-4 py-2 rounded-full text-sm font-semibold">
                   {t('ai_powered_evaluation')}
@@ -310,7 +310,7 @@ const Interview = () => {
                   }}
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14.752 11.122a1 1 0 010 1.756l-4.695 2.683A1 1 0 019 14.683V9.317a1 1 0 011.057-.879l4.695 2.683z"></path></svg>
-                  <span>{t('start_coding_round')}</span>
+                  <span>{t('Start Coding Round')}</span>
                 </button>
               </div>
             </div>
