@@ -82,7 +82,7 @@ const RecruiterDashboard = () => {
       const normalized = (response.data || []).map((c) => ({
         ...c,
         date: c.date ? new Date(c.date) : null,
-        name: c.name || t('unknown_candidate'),
+        name: c.name,
       }));
 
       setCandidates(normalized);
@@ -195,7 +195,7 @@ const RecruiterDashboard = () => {
                   ) : (
                     filteredCandidates.map((candidate) => (
                       <TableRow key={candidate.id} sx={{ '&:hover': { backgroundColor: '#f5f5f5' } }}>
-                        <TableCell>{candidate.name}</TableCell>
+                        <TableCell>{candidate.name === 'Unknown Candidate' ? '' : candidate.name}</TableCell>
                         <TableCell>{candidate.role}</TableCell>
                         <TableCell>{candidate.date ? candidate.date.toLocaleString() : '—'}</TableCell>
                         <TableCell>
