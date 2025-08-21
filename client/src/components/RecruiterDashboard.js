@@ -144,7 +144,7 @@ const RecruiterDashboard = () => {
     <Container maxWidth="lg" sx={{ py: 4 }}>
       <ToastContainer />
       <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
-        <Typography variant="h4" sx={{ fontWeight: 'bold' }}>{t('recruiter_dashboard_title')}</Typography>
+        <Typography variant="h4" sx={{ fontWeight: 'bold' }}>{t('Dashboard')}</Typography>
         <Box>
           <Button variant="outlined" size="small" sx={{ mr: 1, borderRadius: 2 }} onClick={() => fetchCandidates(true)} disabled={loading}>
             {t('refresh')}

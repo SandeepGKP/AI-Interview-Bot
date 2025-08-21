@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const CodingAssessmentRound = ({ onComplete, roleTitle }) => {
+  const { t } = useTranslation();
   const [code, setCode] = useState('');
   const [question, setQuestion] = useState({
     problem: '',
@@ -201,7 +203,7 @@ const CodingAssessmentRound = ({ onComplete, roleTitle }) => {
       <div className="lg:w-1/2 p-6 bg-gray-900 border-r border-gray-700 flex flex-col">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-3xl font-bold text-yellow-500 text-center lg:text-left">
-            Coding Assessment Round
+            {t('coding_assessment_round')}
           </h2>
           <div className="flex gap-2">
             <button
@@ -209,26 +211,26 @@ const CodingAssessmentRound = ({ onComplete, roleTitle }) => {
               className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md transition duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={loading}
             >
-              Refresh
+              {t('refresh')}
             </button>
             <button
               onClick={handleSubmit}
               className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md transition duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={loading || (!code.trim() && !videoBlobUrl)}
             >
-              ⬆️Submit
+              {t('submit')}
             </button>
           </div>
         </div>
 
-        {loading && <p className="text-center text-blue-400">Generating question...</p>}
-        {error && <p className="text-center text-red-500">{error}</p>}
+        {loading && <p className="text-center text-blue-400">{t('generating_question')}</p>}
+        {error && <p className="text-center text-red-500">{t(error)}</p>}
 
         {!loading && !error && (
           <div className="flex-grow overflow-y-auto pr-4">
-            <h3 className="text-xl font-semibold text-gray-200 mb-3">Problem:</h3>
+            <h3 className="text-xl font-semibold text-gray-200 mb-3">{t('problem_statement')}:</h3>
             <div className="bg-gray-700 p-4 rounded-md border border-gray-600 whitespace-pre-wrap text-gray-100">
-              {question.problem || 'N/A'}
+              {question.problem || t('not_available_abbreviation')}
             </div>
 
             {question.input && (
@@ -255,19 +257,19 @@ const CodingAssessmentRound = ({ onComplete, roleTitle }) => {
       {/* Right Panel: Code Editor and Video */}
       <div className="lg:w-1/2 p-6 bg-gray-800 flex flex-col">
         <div className="flex justify-between items-center mb-6">
-          <h3 className="text-lg font-semibold text-gray-200">Your Code:</h3>
+          <h3 className="text-lg font-semibold text-gray-200">{t('your_code')}:</h3>
         </div>
 
         <textarea
           className="flex-grow w-full p-4 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm bg-gray-700 text-white resize-none"
           value={code}
           onChange={(e) => setCode(e.target.value)}
-          placeholder="Write your code here..."
+          placeholder={t('write_your_code_here')}
           disabled={loading}
         ></textarea>
 
         <div className="mt-6">
-          <h3 className="text-xl font-semibold text-gray-200 mb-3">Record Your Explanation:</h3>
+          <h3 className="text-xl font-semibold text-gray-200 mb-3">{t('record_your_explanation')}:</h3>
           <div
             className="fixed bg-gray-700 rounded-md overflow-hidden shadow-lg"
             style={{
@@ -288,20 +290,20 @@ const CodingAssessmentRound = ({ onComplete, roleTitle }) => {
                 className="bg-red-600 hover:bg-red-700 text-white font-bold py-1 px-3 rounded-md text-sm transition duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={isRecording || loading}
               >
-                {isRecording ? 'Recording...' : 'Start'}
+                {isRecording ? t('recording') : t('start')}
               </button>
               <button
                 onClick={stopRecording}
                 className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-1 px-3 rounded-md text-sm transition duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={!isRecording || loading}
               >
-                Stop
+                {t('stop')}
               </button>
             </div>
           </div>
           {videoBlobUrl && (
             <div className="mt-4">
-              <h4 className="text-lg font-semibold text-gray-200 mb-2">Recorded Video:</h4>
+              <h4 className="text-lg font-semibold text-gray-200 mb-2">{t('recorded_video')}:</h4>
               <video src={videoBlobUrl} controls className="w-full h-64 bg-gray-700 rounded-md"></video>
             </div>
           )}

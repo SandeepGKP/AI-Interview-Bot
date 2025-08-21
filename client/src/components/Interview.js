@@ -69,7 +69,7 @@ const Interview = () => {
   // Handle starting a new interview session from the form
   const handleStartInterviewSession = async () => {
     if (!candidateName.trim() || !roleTitle.trim() || !roleDescription.trim()) {
-      setError('Please fill in candidate name, role title, and description');
+      setError(t('please_fill_in_candidate_name,_role_title,_and_description'));
       return;
     }
 
@@ -101,7 +101,7 @@ const Interview = () => {
       navigate(`/interview/${newSessionId}`); // Update URL
     } catch (err) {
       console.error('Error creating interview:', err);
-      setError(err.response?.data?.error || 'Failed to create interview. Please try again.');
+      setError(err.response?.data?.error || t('failed_to_create_interview'));
     } finally {
       setLoading(false);
     }
@@ -119,7 +119,7 @@ const Interview = () => {
         setCurrentStage('introduction'); // If session loaded, go to introduction or first stage
       } catch (err) {
         console.error('Error loading session:', err);
-        setError('Interview session not found. Please check your link.');
+        setError(t('interview_session_not_found'));
         setCurrentStage('setup'); // Show setup form if session not found
       }
     };
@@ -192,7 +192,7 @@ const Interview = () => {
           <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-4">
             <ToastContainer />
             <div className="bg-gray-900 p-8 rounded-lg shadow-lg max-w-2xl w-full">
-              <h2 className="text-3xl font-bold text-center mb-6">Create New Interview</h2>
+              <h2 className="text-3xl font-bold text-center mb-6">{t('create_new_interview')}</h2>
               {error && (
                 <div className="bg-red-700 text-white p-3 rounded-md mb-4">
                   {t(error)}
@@ -247,7 +247,7 @@ const Interview = () => {
 
             {/* Quick Start Examples */}
             <div className="mt-8 p-8 bg-gray-900 rounded-lg shadow-lg max-w-2xl w-full">
-              <h3 className="text-2xl font-bold mb-4">Quick Start</h3>
+              <h3 className="text-2xl font-bold mb-4">{t('quick_start')}</h3>
               <p className="text-gray-400 mb-6">
                 {t('try_sample_roles')}
               </p>
@@ -288,7 +288,7 @@ const Interview = () => {
 
               <div className="flex flex-wrap justify-center gap-4 mb-6">
                 <span className="bg-blue-700 text-white px-4 py-2 rounded-full text-sm font-semibold">
-                  {t('Multi Stage Interview')}
+                  {t('multi_stage_interview')}
                 </span>
                 <span className="bg-green-700 text-white px-4 py-2 rounded-full text-sm font-semibold">
                   {t('ai_powered_evaluation')}
@@ -320,7 +320,7 @@ const Interview = () => {
                   }}
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14.752 11.122a1 1 0 010 1.756l-4.695 2.683A1 1 0 019 14.683V9.317a1 1 0 011.057-.879l4.695 2.683z"></path></svg>
-                  <span>{t('Start Coding Round')}</span>
+                  <span>{t('start_coding_round')}</span>
                 </button>
               </div>
             </div>
@@ -328,7 +328,7 @@ const Interview = () => {
         );
       case 'coding':
         return (
-          <CodingAssessmentRound onComplete={handleCodingComplete} roleTitle={session.roleTitle} />
+          <CodingAssessmentRound onComplete={handleCodingComplete} roleTitle={session.roleTitle} candidateName={session.candidateName} />
         );
       case 'technical':
         return (

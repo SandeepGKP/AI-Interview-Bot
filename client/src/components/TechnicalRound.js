@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const TechnicalRound = ({ onComplete, roleTitle, candidateName }) => {
+  const { t } = useTranslation();
   const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState({});
   const [feedback, setFeedback] = useState('');
@@ -178,30 +180,30 @@ const TechnicalRound = ({ onComplete, roleTitle, candidateName }) => {
   return (
     <div className="p-6 bg-white rounded-lg shadow-md max-w-3xl mx-auto my-8">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-3xl font-bold text-gray-800 text-center">Technical Round Interview {candidateName && `for ${candidateName}`}</h2>
+        <h2 className="text-3xl font-bold text-gray-800 text-center">{t('technical_round_interview')} {candidateName && `for ${candidateName}`}</h2>
         <button
           onClick={() => fetchTechnicalQuestions()}
           className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-md transition duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={loading}
         >
-          Refresh
+          {t('refresh')}
         </button>
         <button
           onClick={handleSubmit}
           className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md transition duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={loading || (questions.length > 0 && !questions.every((_, index) => answers[`question${index}`]?.trim() !== '') && !videoBlobUrl)}
         >
-          Submit
+          {t('submit')}
         </button>
       </div>
 
-      {loading && <p className="text-center text-blue-500">Generating technical questions...</p>}
-      {error && <p className="text-center text-red-500">{error}</p>}
+      {loading && <p className="text-center text-blue-500">{t('generating_technical_questions')}</p>}
+      {error && <p className="text-center text-red-500">{t(error)}</p>}
 
       {!loading && !error && questions.length > 0 ? (
         questions.map((q, index) => (
           <div key={index} className="mb-6">
-            <h3 className="text-xl font-semibold text-gray-700 mb-3">Question {index + 1}:</h3>
+            <h3 className="text-xl font-semibold text-gray-700 mb-3">{t('question')} {index + 1}:</h3>
             <p className="text-gray-600 bg-gray-50 p-4 rounded-md border border-gray-200 whitespace-pre-wrap">{q}</p>
             <textarea
               className="w-full p-4 mt-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 text-base text-gray-800"
@@ -209,15 +211,15 @@ const TechnicalRound = ({ onComplete, roleTitle, candidateName }) => {
               name={`question${index}`}
               value={answers[`question${index}`] || ''}
               onChange={(e) => handleChange(e, index)}
-              placeholder={`Your answer for question ${index + 1} here...`}
+              placeholder={t('your_answer_for_question', { index: index + 1 })}
             ></textarea>
           </div>
         ))
       ) : (
-        !loading && !error && <p className="text-center text-gray-600">No technical questions available.</p>
+        !loading && !error && <p className="text-center text-gray-600">{t('no_technical_questions_available')}</p>
       )}
       <div className="mt-6">
-        <h3 className="text-xl font-semibold text-gray-700 mb-3">Record Your Explanation:</h3>
+        <h3 className="text-xl font-semibold text-gray-700 mb-3">{t('record_your_explanation')}:</h3>
         <div
           className="fixed bg-gray-200 rounded-md overflow-hidden shadow-lg"
           style={{
@@ -238,20 +240,20 @@ const TechnicalRound = ({ onComplete, roleTitle, candidateName }) => {
               className="bg-red-600 hover:bg-red-700 text-white font-bold py-1 px-3 rounded-md text-sm transition duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={isRecording || loading}
             >
-              {isRecording ? 'Recording...' : 'Start'}
+              {isRecording ? t('recording') : t('start')}
             </button>
             <button
               onClick={stopRecording}
               className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-1 px-3 rounded-md text-sm transition duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={!isRecording || loading}
             >
-              Stop
+              {t('stop')}
             </button>
           </div>
         </div>
         {videoBlobUrl && (
           <div className="mt-4">
-            <h4 className="text-lg font-semibold text-gray-700 mb-2">Recorded Video:</h4>
+            <h4 className="text-lg font-semibold text-gray-700 mb-2">{t('recorded_video')}:</h4>
             <video src={videoBlobUrl} controls className="w-full h-64 bg-gray-200 rounded-md"></video>
           </div>
         )}

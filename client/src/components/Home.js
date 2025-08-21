@@ -48,37 +48,36 @@ const Home = () => {
           <h1 className="text-3xl font-bold"></h1>
           <button className="bg-gray-800 text-white px-4 py-2 rounded-md flex items-center space-x-2 " onClick={handleStartInterview}>
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-            <span>Create Interview</span>
+            <span>{t('create_interview')}</span>
           </button>
         </div>
 
         <div className="relative flex flex-col lg:flex-row items-center justify-between bg-black p-8 rounded-lg overflow-hidden">
           <div className="lg:w-1/2 z-10">
-            <h2 className="text-5xl font-bold mb-4">Master Your Next Interview</h2>
+            <h2 className="text-5xl font-bold mb-4">{t('master_your_next_interview')}</h2>
             <p className="text-gray-400 text-lg mb-8">
-              Practice with AI-powered mock interviews tailored to your role. Get real-time feedback and boost your confidence
-              with our advanced interview system.
+              {t('home_tagline')}
             </p>
             <div className="flex gap-4 mb-8">
               <div className="bg-blue-700 p-4 rounded-lg flex items-center space-x-3 w-64">
                 <div className="w-4 h-4 rounded-full bg-blue-400"></div>
                 <div>
-                  <h3 className="font-bold">AI-Powered</h3>
-                  <p className="text-sm text-gray-300">Personalized questions based on job description</p>
+                  <h3 className="font-bold">{t('ai_powered_feature')}</h3>
+                  <p className="text-sm text-gray-300">{t('ai_powered_description')}</p>
                 </div>
               </div>
               <div className="bg-green-700 p-4 rounded-lg flex items-center space-x-3 w-64">
                 <div className="w-4 h-4 rounded-full bg-green-400"></div>
                 <div>
-                  <h3 className="font-bold">Voice Interview</h3>
-                  <p className="text-sm text-gray-300">Real-time voice interact on with AI interviewer</p>
+                  <h3 className="font-bold">{t('voice_interview_feature')}</h3>
+                  <p className="text-sm text-gray-300">{t('voice_interview_description')}</p>
                 </div>
               </div>
               <div className="bg-purple-700 p-4 rounded-lg flex items-center space-x-3 w-64">
                 <div className="w-4 h-4 rounded-full bg-purple-400"></div>
                 <div>
-                  <h3 className="font-bold">Smart Feedback</h3>
-                  <p className="text-sm text-gray-300">Detailed analysis and improvement suggestions</p>
+                  <h3 className="font-bold">{t('smart_feedback_feature')}</h3>
+                  <p className="text-sm text-gray-300">{t('smart_feedback_description')}</p>
                 </div>
               </div>
             </div>
@@ -95,11 +94,12 @@ const Home = () => {
               alt="Robot"
               className="object-contain"
               style={{
+                margin: '-50px', // adjust to align with text
                 position: 'absolute',
                 right: '20px',        // flush with right edge
                 bottom: '0',       // sits on bottom
                 width: '600px',    // big, like in your screenshot
-                height: '400px',    // keep aspect ratio
+                height: '500px',    // keep aspect ratio
                 background: 'transparent',
                 filter: 'drop-shadow(0px 0px 30px rgba(0,0,0,0.6))'
               }}
