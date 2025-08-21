@@ -408,7 +408,7 @@ router.post('/generate-hr-questions', async (req, res, next) => {
     - Problem-solving
     - Strengths and weaknesses
     - Career aspirations
-    Return as a numbered list.`;
+    Return as a numbered list please `;
 
     const groqResponse = await groq.chat.completions.create({
       model: "qwen/qwen3-32b",
