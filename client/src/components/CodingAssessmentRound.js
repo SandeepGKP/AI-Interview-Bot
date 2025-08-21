@@ -10,6 +10,9 @@ const CodingAssessmentRound = ({ onComplete, roleTitle }) => {
 
   useEffect(() => {
     const fetchCodingQuestion = async () => {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 120000); // 120 seconds timeout
+
       try {
         setLoading(true);
         setError(null);
@@ -18,8 +21,11 @@ const CodingAssessmentRound = ({ onComplete, roleTitle }) => {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ roleTitle: currentRoleTitle, difficulty: 'medium' }), // You can make difficulty dynamic
+          body: JSON.stringify({ roleTitle: currentRoleTitle, difficulty: 'medium' }),
+          signal: controller.signal, // Attach the abort signal
         });
+
+        clearTimeout(timeoutId); // Clear the timeout if the request completes
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -29,9 +35,14 @@ const CodingAssessmentRound = ({ onComplete, roleTitle }) => {
         setQuestion(data.question);
       } catch (err) {
         console.error("Failed to fetch coding question:", err);
-        setError('Failed to load coding question. Please try again later.');
+        if (err.name === 'AbortError') {
+          setError('Request timed out. Please try again.');
+        } else {
+          setError('Failed to load coding question. Please try again later.');
+        }
         setQuestion('Could not load question.');
       } finally {
+        clearTimeout(timeoutId); // Ensure timeout is cleared even on error
         setLoading(false);
       }
     };
