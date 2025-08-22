@@ -367,60 +367,84 @@ router.post('/generate-coding-assessment-question', async (req, res, next) => {
     }
 
     const prompt = `Generate a coding assessment question for a ${roleTitle} role.
-
   Difficulty: ${difficulty || 'medium'}.
 
-  Please Please Please return the problem/Question ONLY in the following strict format (no extra text, no explanations):
+  Please return the problem/question ONLY in the following strict JSON format (no extra text, no explanations outside the JSON):
 
   {
-    "problem_statement": "A clear and detailed problem statement here.",
-    "input_output_examples": [
-      {
-        "input": "example input",
-        "output": "expected output"
-      }
-    ],
+    "title": "A concise title for the problem.",
+    "description": "A clear and detailed problem statement here.",
+    "input": "Description of the input format.",
+    "output": "Description of the expected output format.",
     "constraints": [
       "Constraint 1",
-      "Constraint 2",
-      "Constraint 3"
-    ]
+      "Constraint 2"
+    ],
+    "examples": [
+      {
+        "input": "example input string",
+        "output": "expected output string",
+        "explanation": "Optional explanation for the example."
+      }
+    ],
+    "function_signature": {
+      "language": "JavaScript",
+      "signature": "function exampleFunction(input) { /* ... */ }"
+    },
+    "test_cases": [
+      {
+        "input": "test input 1",
+        "expected_output": "expected output 1"
+      }
+    ],
+    "hints": [
+      "Hint 1",
+      "Hint 2"
+    ],
+    "evaluation_criteria": {
+      "correctness": "Criteria for correctness.",
+      "efficiency": "Criteria for efficiency."
+    }
   }
   `;
-
 
     const groqResponse = await groq.chat.completions.create({
       model: "qwen/qwen3-32b",
       messages: [{ role: "user", content: prompt }],
-      max_tokens: 500,
+      max_tokens: 1000, // Increased max_tokens to accommodate full JSON
       temperature: 0.7
     });
 
-    let rawGroqContent = groqResponse?.choices?.[0]?.message?.content?.trim() || "Failed to generate coding question.";
-    let problemStatement = "Failed to extract problem statement.";
+    let rawGroqContent = groqResponse?.choices?.[0]?.message?.content?.trim() || "{}";
+    let parsedQuestion = {};
 
-    // Attempt to extract JSON from the raw Groq content
+    // Attempt to extract and parse JSON from the raw Groq content
     const jsonMatch = rawGroqContent.match(/\{[\s\S]*\}/);
     if (jsonMatch) {
       try {
-        const parsedJson = JSON.parse(jsonMatch[0]);
-        if (parsedJson.problem_statement) {
-          problemStatement = parsedJson.problem_statement;
-        } else {
-          console.warn("Parsed JSON did not contain 'problem_statement' key.");
-        }
+        parsedQuestion = JSON.parse(jsonMatch[0]);
       } catch (e) {
         console.error("Error parsing Groq response JSON:", e);
-        // Fallback if JSON parsing fails, maybe Groq returned plain text despite prompt
-        problemStatement = rawGroqContent;
+        // Fallback to a basic structure if JSON parsing fails
+        parsedQuestion = {
+          title: "Failed to generate question.",
+          description: rawGroqContent,
+          input: "", output: "", constraints: [], examples: [],
+          function_signature: {}, test_cases: [], hints: [], evaluation_criteria: {}
+        };
       }
     } else {
-      // If no JSON found, treat the whole response as the problem statement (fallback)
-      problemStatement = rawGroqContent;
+      // If no JSON found, treat the whole response as the description
+      parsedQuestion = {
+        title: "Failed to generate question.",
+        description: rawGroqContent,
+        input: "", output: "", constraints: [], examples: [],
+        function_signature: {}, test_cases: [], hints: [], evaluation_criteria: {}
+      };
     }
 
-    res.json({ question: problemStatement }); // Send only the extracted problem statement
-    console.log('Generated coding question (extracted):', problemStatement);
+    res.json({ question: parsedQuestion }); // Send the full parsed object
+    console.log('Generated coding question (parsed):', parsedQuestion);
 
   } catch (error) {
     next(error);

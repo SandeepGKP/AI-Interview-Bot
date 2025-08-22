@@ -5,9 +5,16 @@ const CodingAssessmentRound = ({ onComplete, roleTitle }) => {
   const { t } = useTranslation();
   const [code, setCode] = useState('');
   const [question, setQuestion] = useState({
-    problem: '',
+    title: '',
+    description: '',
     input: '',
-    output: ''
+    output: '',
+    constraints: [],
+    examples: [],
+    function_signature: { language: '', signature: '' },
+    test_cases: [],
+    hints: [],
+    evaluation_criteria: {}
   });
   const [feedback, setFeedback] = useState('');
   const [loading, setLoading] = useState(true);
@@ -123,7 +130,10 @@ const CodingAssessmentRound = ({ onComplete, roleTitle }) => {
     try {
       setLoading(true);
       setError(null);
-      setQuestion({ problem: '', input: '', output: '' });
+      setQuestion({
+        title: '', description: '', input: '', output: '',
+        constraints: [], examples: [], function_signature: {}, test_cases: [], hints: [], evaluation_criteria: {}
+      });
 
       const response = await fetch(
         'https://ai-interview-bot-backend.onrender.com/api/generate-coding-assessment-question',
@@ -144,11 +154,22 @@ const CodingAssessmentRound = ({ onComplete, roleTitle }) => {
       }
 
       const data = await response.json();
-      let problemStatement = data.question || '';
+      const fetchedQuestion = data.question || {};
 
-      setQuestion({ problem: problemStatement, input: '', output: '' });
+      setQuestion({
+        title: fetchedQuestion.title || t('could_not_load_question'),
+        description: fetchedQuestion.description || '',
+        input: fetchedQuestion.input || '',
+        output: fetchedQuestion.output || '',
+        constraints: fetchedQuestion.constraints || [],
+        examples: fetchedQuestion.examples || [],
+        function_signature: fetchedQuestion.function_signature || { language: '', signature: '' },
+        test_cases: fetchedQuestion.test_cases || [],
+        hints: fetchedQuestion.hints || [],
+        evaluation_criteria: fetchedQuestion.evaluation_criteria || {}
+      });
 
-      console.log('Fetched coding question:', problemStatement);
+      console.log('Fetched coding question:', fetchedQuestion);
 
     } catch (err) {
       console.error('Failed to fetch coding question:', err);
@@ -157,7 +178,10 @@ const CodingAssessmentRound = ({ onComplete, roleTitle }) => {
       } else {
         setError(t('failed_to_load_coding_question'));
       }
-      setQuestion({ problem: t('could_not_load_question'), input: '', output: '' });
+      setQuestion({
+        title: t('could_not_load_question'), description: '', input: '', output: '',
+        constraints: [], examples: [], function_signature: {}, test_cases: [], hints: [], evaluation_criteria: {}
+      });
     } finally {
       clearTimeout(timeoutId);
       setLoading(false);
@@ -212,17 +236,87 @@ const CodingAssessmentRound = ({ onComplete, roleTitle }) => {
 
         {!loading && !error && (
           <div className="flex-grow overflow-y-auto pr-4">
-            <h3 className="text-xl font-semibold text-gray-200 mb-3">{t('problem_statement')}:</h3>
+            <h3 className="text-2xl font-bold text-yellow-500 mb-4">{question.title || t('problem_statement')}</h3>
             <div
-              className="bg-gray-700 p-4 rounded-md border border-gray-600 text-gray-100"
+              className="bg-gray-700 p-4 rounded-md border border-gray-600 text-gray-100 mb-4"
               dangerouslySetInnerHTML={{
-                __html: (question.problem || t('not_available_abbreviation'))
-                  .split(/\n\s*\n/) // Split by one or more newlines with optional whitespace in between
+                __html: (question.description || t('not_available_abbreviation'))
+                  .split(/\n\s*\n/)
                   .map(paragraph => `<p>${paragraph.replace(/\n/g, '<br />')}</p>`)
                   .join('')
               }}
             ></div>
 
+            {question.input && (
+              <>
+                <h4 className="text-xl font-semibold text-gray-200 mt-4 mb-2">Input:</h4>
+                <div className="bg-gray-700 p-4 rounded-md border border-gray-600 whitespace-pre-wrap text-gray-100">
+                  {question.input}
+                </div>
+              </>
+            )}
+
+            {question.output && (
+              <>
+                <h4 className="text-xl font-semibold text-gray-200 mt-4 mb-2">Output:</h4>
+                <div className="bg-gray-700 p-4 rounded-md border border-gray-600 whitespace-pre-wrap text-gray-100">
+                  {question.output}
+                </div>
+              </>
+            )}
+
+            {question.constraints && question.constraints.length > 0 && (
+              <>
+                <h4 className="text-xl font-semibold text-gray-200 mt-4 mb-2">Constraints:</h4>
+                <ul className="list-disc list-inside bg-gray-700 p-4 rounded-md border border-gray-600 text-gray-100">
+                  {question.constraints.map((constraint, idx) => (
+                    <li key={idx}>{constraint}</li>
+                  ))}
+                </ul>
+              </>
+            )}
+
+            {question.examples && question.examples.length > 0 && (
+              <>
+                <h4 className="text-xl font-semibold text-gray-200 mt-4 mb-2">Examples:</h4>
+                {question.examples.map((example, idx) => (
+                  <div key={idx} className="bg-gray-700 p-4 rounded-md border border-gray-600 text-gray-100 mb-2">
+                    <p><strong>Input:</strong> <span className="whitespace-pre-wrap">{example.input}</span></p>
+                    <p><strong>Output:</strong> <span className="whitespace-pre-wrap">{example.output}</span></p>
+                    {example.explanation && <p><strong>Explanation:</strong> <span className="whitespace-pre-wrap">{example.explanation}</span></p>}
+                  </div>
+                ))}
+              </>
+            )}
+
+            {question.function_signature?.signature && (
+              <>
+                <h4 className="text-xl font-semibold text-gray-200 mt-4 mb-2">Function Signature ({question.function_signature.language}):</h4>
+                <pre className="bg-gray-700 p-4 rounded-md border border-gray-600 whitespace-pre-wrap text-gray-100"><code>{question.function_signature.signature}</code></pre>
+              </>
+            )}
+
+            {question.hints && question.hints.length > 0 && (
+              <>
+                <h4 className="text-xl font-semibold text-gray-200 mt-4 mb-2">Hints:</h4>
+                <ul className="list-disc list-inside bg-gray-700 p-4 rounded-md border border-gray-600 text-gray-100">
+                  {question.hints.map((hint, idx) => (
+                    <li key={idx}>{hint}</li>
+                  ))}
+                </ul>
+              </>
+            )}
+
+            {question.evaluation_criteria && Object.keys(question.evaluation_criteria).length > 0 && (
+              <>
+                <h4 className="text-xl font-semibold text-gray-200 mt-4 mb-2">Evaluation Criteria:</h4>
+                <ul className="list-disc list-inside bg-gray-700 p-4 rounded-md border border-gray-600 text-gray-100">
+                  {Object.entries(question.evaluation_criteria).map(([key, value], idx) => (
+                    <li key={idx}><strong>{key}:</strong> {value}</li>
+                  ))}
+                </ul>
+              </>
+            )}
           </div>
         )}
       </div>
