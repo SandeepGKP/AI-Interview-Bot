@@ -40,7 +40,7 @@ const Report = () => {
       generateOrFetchReport();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sessionId]);
+  }, [sessionId]); 
 
   const generateOrFetchReport = async () => {
     setLoading(true);
@@ -48,6 +48,8 @@ const Report = () => {
     try {
       const res = await axios.post(`https://ai-interview-bot-backend.onrender.com/api/generate-report/${sessionId}`, {});
       setReport(res.data);
+      console.log('Report fetched/generated successfully:', report.evaluation);
+
     } catch (err) {
       console.error('Error fetching/generating report:', err);
       setError(err.response?.data?.error || 'Failed to get report.');
@@ -394,7 +396,7 @@ const Report = () => {
             px: 2,
           }}
         >
-          {removeJsonFromString(report.evaluation)}
+          {(report.evaluation)}
         </Box>
       </Paper>
     </Container>
