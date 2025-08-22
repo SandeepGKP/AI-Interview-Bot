@@ -396,7 +396,7 @@ const Report = () => {
             px: 2,
           }}
         >
-          {(report.evaluation)}
+          {removeJsonFromString(report.evaluation)}
         </Box>
       </Paper>
     </Container>
