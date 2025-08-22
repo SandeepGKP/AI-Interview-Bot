@@ -364,7 +364,7 @@ Provide a JSON object at the end of your evaluation containing a 'skills' key. T
  */
 /*
  * POST /api/generate-coding-assessment
- * Generates a coding assessment problem in strict JSON (LeetCode-style)
+ * Generates a coding assessment problem in strict JSON format
  */
 router.post('/generate-coding-assessment', async (req, res, next) => {
   try {
@@ -374,46 +374,26 @@ router.post('/generate-coding-assessment', async (req, res, next) => {
       return res.status(400).json({ error: 'Role title is required' });
     }
 
-    const prompt = `Generate a coding assessment problem for a ${roleTitle} role in strict JSON format.
-The style should mimic a LeetCode problem and include all required fields.
-Difficulty: ${difficulty || 'medium'}.
-
+    const prompt = `Generate a coding assessment problem for a ${roleTitle} role.
+The style must mimic a LeetCode problem. 
 Return ONLY valid JSON (no explanations outside).
-Structure must include:
 
+Required JSON structure:
 {
-  "title": "Concise problem title",
-  "description": "Detailed statement with markdown support. Explain input, output, and what to implement.",
-  "input": "Description of input format with ranges and types.",
-  "output": "Description of expected output format and type.",
-  "constraints": [
-    "Constraint 1",
-    "Constraint 2",
-    "Constraint 3"
-  ],
+  "title": "...",
+  "description": "...",
+  "input": "...",
+  "output": "...",
+  "constraints": ["..."],
   "examples": [
-    {
-      "input": "Example input",
-      "output": "Example output",
-      "explanation": "Why this is the result"
-    }
+    { "input": "...", "output": "...", "explanation": "..." }
   ],
-  "function_signature": {
-    "language": "JavaScript",
-    "signature": "function functionName(params) { /* ... */ }"
-  },
+  "function_signature": { "language": "JavaScript", "signature": "function fn(params) { }" },
   "test_cases": [
-    { "input": "Test input 1", "expected_output": "Output 1" }
+    { "input": "...", "expected_output": "..." }
   ],
-  "hints": [
-    "Hint 1",
-    "Hint 2"
-  ],
-  "evaluation_criteria": {
-    "Correctness": "Must pass all test cases and edge cases.",
-    "Time Complexity": "Aim for optimal complexity.",
-    "Space Complexity": "Keep memory usage efficient."
-  }
+  "hints": ["..."],
+  "evaluation_criteria": { "Correctness": "...", "Time Complexity": "...", "Space Complexity": "..." }
 }`;
 
     const groqResponse = await groq.chat.completions.create({
@@ -425,21 +405,19 @@ Structure must include:
 
     let rawContent = groqResponse?.choices?.[0]?.message?.content?.trim() || "{}";
 
-    // 🔹 Clean up Groq response: remove ```json ... ``` wrappers
-    rawContent = rawContent.replace(/```json/g, "").replace(/```/g, "").trim();
-
-    // 🔹 Extract first JSON object block
-    const jsonMatch = rawContent.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) {
-      return res.status(500).json({ error: "No JSON object found in AI response", raw: rawContent });
+    // 🛠 Extract first {...} JSON block
+    const match = rawContent.match(/\{[\s\S]*\}/);
+    if (!match) {
+      console.error("No JSON found in Groq response:", rawContent);
+      return res.status(500).json({ error: "No valid JSON found", raw: rawContent });
     }
 
     let parsedProblem = {};
     try {
-      parsedProblem = JSON.parse(jsonMatch[0]);
+      parsedProblem = JSON.parse(match[0]);
     } catch (e) {
-      console.error("Error parsing Groq JSON:", e, "\nRaw:", jsonMatch[0]);
-      return res.status(500).json({ error: "Invalid JSON from AI", raw: jsonMatch[0] });
+      console.error("JSON.parse failed:", e, "Raw:", match[0]);
+      return res.status(500).json({ error: "Invalid JSON format", raw: rawContent });
     }
 
     res.json({ problem: parsedProblem });
@@ -449,7 +427,6 @@ Structure must include:
     next(error);
   }
 });
-
 
 
 /*
