@@ -71,6 +71,13 @@ const CodingAssessmentRound = ({ onComplete, roleTitle }) => {
     };
   }, [handleMouseMove, handleMouseUp]);
 
+  
+useEffect(() => {
+  if (question.function_signature) {
+    setCode(question.function_signature.signature + "\n    "); // signature + indent
+  }
+}, [question]);
+
   const startRecording = async () => {
     setRecordedChunks([]);
     setVideoBlobUrl(null);
@@ -235,7 +242,7 @@ const CodingAssessmentRound = ({ onComplete, roleTitle }) => {
         {error && <p className="text-center text-red-500">{t(error)}</p>}
 
         {!loading && !error && (
-          <div className="flex-grow overflow-y-auto pr-4">
+          <div className="flex-grow overflow-y-auto pr-4 flex-wrap">
             <h3 className="text-2xl font-bold text-yellow-500 mb-4">{t('Question')}</h3>
             <pre className="bg-gray-700 p-4 rounded-md border border-gray-600 whitespace-pre-wrap text-gray-100 overflow-auto">
               {/* <code>{JSON.stringify(question, null, 2)}</code> */}
@@ -244,45 +251,46 @@ const CodingAssessmentRound = ({ onComplete, roleTitle }) => {
                 <div key={index} className="mb-4">
                   <h4 className="text-lg font-semibold text-yellow-400">{item.title}</h4>
                   <p className="text-gray-300">{item.description}</p>
+                  <br></br>
 
                   {item.input && (
                     <p className="text-gray-300">
                       <strong>{t('input')}:</strong> {String(item.input)}
                     </p>
                   )}
-
                   {item.output && (
                     <p className="text-gray-300">
                       <strong>{t('output')}:</strong> {String(item.output)}
                     </p>
                   )}
-
+                  <br></br>
                   {item.constraints && item.constraints.length > 0 && (
                     <div>
                       <strong>{t('constraints')}:</strong>
                       <ul className="list-disc list-inside text-gray-300">
                         {item.constraints.map((constraint, idx) => (
-                          <li key={idx}>{String(constraint)}</li>
+                          <li key={idx}><span>{String(constraint)}</span></li>
                         ))}
                       </ul>
                     </div>
                   )}
-
+                  <br></br>
                   {item.examples && item.examples.length > 0 && (
                     <div>
-                      <strong>{t('examples')}:</strong>
+                      {/* <strong>{t('Examples')}:</strong> */}
                       <ul className="list-disc list-inside text-gray-300">
                         {item.examples.map((example, idx) => (
-                          <li key={idx}>
-                            {typeof example === 'object'
-                              ? JSON.stringify(example)
-                              : String(example)}
-                          </li>
+                          <div key={idx} className="mb-2">
+                            Example {idx + 1}:
+                            <li><strong>Input:</strong> {JSON.stringify(example.input)}</li>
+                            <li><strong>Output:</strong> {JSON.stringify(example.output)}</li>
+                            <li><strong>Explanation:</strong> {String(example.explanation)}</li>
+                          </div>
                         ))}
                       </ul>
                     </div>
                   )}
-
+                  <br></br>
                   {item.hints && item.hints.length > 0 && (
                     <div>
                       <strong>{t('hints')}:</strong>
@@ -293,8 +301,8 @@ const CodingAssessmentRound = ({ onComplete, roleTitle }) => {
                       </ul>
                     </div>
                   )}
-
-                  {/* ✅ Function signature */}
+                  <br></br>
+                  {/* ✅ Function signature
                   {item.function_signature && (
                     <div>
                       <strong>{t('function_signature')}:</strong>
@@ -302,19 +310,19 @@ const CodingAssessmentRound = ({ onComplete, roleTitle }) => {
                         {JSON.stringify(item.function_signature, null, 2)}
                       </pre>
                     </div>
-                  )}
+                  )} */}
 
                   {/* ✅ Test cases */}
                   {item.test_cases && item.test_cases.length > 0 && (
                     <div>
-                      <strong>{t('test_cases')}:</strong>
+                      <strong>{t('TestCases')}:</strong>
                       <ul className="list-disc list-inside text-gray-300">
                         {item.test_cases.map((tc, idx) => (
-                          <li key={idx}>
-                            <pre className="bg-gray-800 p-2 rounded mt-1 text-gray-200">
-                              {JSON.stringify(tc, null, 2)}
-                            </pre>
-                          </li>
+                          <div key={idx} className="mb-2">
+                            TestCase {idx + 1}:
+                            <li><strong>Input:</strong> {JSON.stringify(tc.input)}</li>
+                            <li><strong>Output:</strong> {JSON.stringify(tc.expected_output)}</li>
+                          </div>
                         ))}
                       </ul>
                     </div>
