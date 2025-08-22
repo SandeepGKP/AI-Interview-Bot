@@ -397,7 +397,7 @@ Required JSON structure:
 }`;
 
     const groqResponse = await groq.chat.completions.create({
-      model: "qwen/qwen3-32b",
+      model: "meta-llama/llama-4-scout-17b-16e-instruct",
       messages: [{ role: "user", content: prompt }],
       max_tokens: 1500,
       temperature: 0.7
