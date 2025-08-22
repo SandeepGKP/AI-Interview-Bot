@@ -154,7 +154,7 @@ const CodingAssessmentRound = ({ onComplete, roleTitle }) => {
       }
 
       const data = await response.json();
-      const fetchedQuestion = data.question || {};
+      const fetchedQuestion = data.problem || {}; // ✅ FIXED (was data.question)
 
       setQuestion({
         title: fetchedQuestion.title || t('could_not_load_question'),
