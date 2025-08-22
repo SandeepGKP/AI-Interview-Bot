@@ -396,9 +396,31 @@ router.post('/generate-coding-assessment-question', async (req, res, next) => {
       temperature: 0.7
     });
 
-    const question = groqResponse?.choices?.[0]?.message?.content?.trim() || "Failed to generate coding question.";
-    res.json({ question });
-    console.log('Generated coding question:', question);
+    let rawGroqContent = groqResponse?.choices?.[0]?.message?.content?.trim() || "Failed to generate coding question.";
+    let problemStatement = "Failed to extract problem statement.";
+
+    // Attempt to extract JSON from the raw Groq content
+    const jsonMatch = rawGroqContent.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      try {
+        const parsedJson = JSON.parse(jsonMatch[0]);
+        if (parsedJson.problem_statement) {
+          problemStatement = parsedJson.problem_statement;
+        } else {
+          console.warn("Parsed JSON did not contain 'problem_statement' key.");
+        }
+      } catch (e) {
+        console.error("Error parsing Groq response JSON:", e);
+        // Fallback if JSON parsing fails, maybe Groq returned plain text despite prompt
+        problemStatement = rawGroqContent;
+      }
+    } else {
+      // If no JSON found, treat the whole response as the problem statement (fallback)
+      problemStatement = rawGroqContent;
+    }
+
+    res.json({ question: problemStatement }); // Send only the extracted problem statement
+    console.log('Generated coding question (extracted):', problemStatement);
 
   } catch (error) {
     next(error);

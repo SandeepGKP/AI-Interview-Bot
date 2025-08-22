@@ -96,7 +96,7 @@ const CodingAssessmentRound = ({ onComplete, roleTitle }) => {
       setIsRecording(true);
     } catch (err) {
       console.error('Error accessing media devices:', err);
-      setError('Could not access camera and microphone. Please ensure they are connected and permissions are granted.');
+      setError(t('could_not_access_camera_microphone'));
     }
   };
 
@@ -144,41 +144,25 @@ const CodingAssessmentRound = ({ onComplete, roleTitle }) => {
       }
 
       const data = await response.json();
-      let rawQuestion = data.question || '';
+      let problemStatement = data.question || '';
 
-      // --- Improved Extraction with safe fallbacks ---
-      const problemRegex = /Problem\s*Statement:([\s\S]*?)(?=Input:|Output:|Constraints:|Examples:|$)/i;
-      const inputRegex = /Input:([\s\S]*?)(?=Output:|Constraints:|Examples:|$)/i;
-      const outputRegex = /Output:([\s\S]*?)(?=Constraints:|Examples:|$)/i;
+      setQuestion({ problem: problemStatement, input: '', output: '' });
 
-      const extracted = {
-        problem: (rawQuestion.match(problemRegex)?.[1] || '').trim(),
-        input: (rawQuestion.match(inputRegex)?.[1] || '').trim(),
-        output: (rawQuestion.match(outputRegex)?.[1] || '').trim(),
-      };
-
-      // ✅ If regex fails, fallback to raw text completely
-      if (!extracted.problem && !extracted.input && !extracted.output) {
-        setQuestion({ problem: rawQuestion.trim(), input: '', output: '' });
-      } else {
-        setQuestion(extracted);
-      }
-
-      console.log('Fetched coding question:', extracted);
+      console.log('Fetched coding question:', problemStatement);
 
     } catch (err) {
       console.error('Failed to fetch coding question:', err);
       if (err.name === 'AbortError') {
-        setError('Request timed out. Please try again.');
+        setError(t('request_timed_out_please_try_again'));
       } else {
-        setError('Failed to load coding question. Please try again later.');
+        setError(t('failed_to_load_coding_question'));
       }
-      setQuestion({ problem: 'Could not load question.', input: '', output: '' });
+      setQuestion({ problem: t('could_not_load_question'), input: '', output: '' });
     } finally {
       clearTimeout(timeoutId);
       setLoading(false);
     }
-  }, [currentRoleTitle]);
+  }, [currentRoleTitle, t]);
 
   useEffect(() => {
     fetchCodingQuestion();
@@ -186,10 +170,10 @@ const CodingAssessmentRound = ({ onComplete, roleTitle }) => {
 
   const handleSubmit = () => {
     if (code.trim() === '' && !videoBlobUrl) {
-      setFeedback('Please write some code or record a video before submitting.');
+      setFeedback(t('please_write_some_code_or_record_a_video_before_submitting'));
       return;
     }
-    setFeedback('Code and/or video submitted successfully! Moving to the next round.');
+    setFeedback(t('code_and_or_video_submitted_successfully_moving_to_the_next_round'));
     console.log('Code submitted:', code);
     console.log('Video submitted:', videoBlobUrl);
     if (onComplete) {
@@ -229,27 +213,16 @@ const CodingAssessmentRound = ({ onComplete, roleTitle }) => {
         {!loading && !error && (
           <div className="flex-grow overflow-y-auto pr-4">
             <h3 className="text-xl font-semibold text-gray-200 mb-3">{t('problem_statement')}:</h3>
-            <div className="bg-gray-700 p-4 rounded-md border border-gray-600 whitespace-pre-wrap text-gray-100">
-              {question.problem || t('not_available_abbreviation')}
-            </div>
+            <div
+              className="bg-gray-700 p-4 rounded-md border border-gray-600 text-gray-100"
+              dangerouslySetInnerHTML={{
+                __html: (question.problem || t('not_available_abbreviation'))
+                  .split(/\n\s*\n/) // Split by one or more newlines with optional whitespace in between
+                  .map(paragraph => `<p>${paragraph.replace(/\n/g, '<br />')}</p>`)
+                  .join('')
+              }}
+            ></div>
 
-            {question.input && (
-              <>
-                <h3 className="text-xl font-semibold text-gray-200 mt-4 mb-2">Input:</h3>
-                <div className="bg-gray-700 p-4 rounded-md border border-gray-600 whitespace-pre-wrap text-gray-100">
-                  {question.input}
-                </div>
-              </>
-            )}
-
-            {question.output && (
-              <>
-                <h3 className="text-xl font-semibold text-gray-200 mt-4 mb-2">Output:</h3>
-                <div className="bg-gray-700 p-4 rounded-md border border-gray-600 whitespace-pre-wrap text-gray-100">
-                  {question.output}
-                </div>
-              </>
-            )}
           </div>
         )}
       </div>

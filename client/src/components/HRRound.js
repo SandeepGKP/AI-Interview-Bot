@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const HRRound = (props) => {
+  const { t } = useTranslation();
   const { onComplete = () => { }, roleTitle, candidateName } = props; // Destructure props inside the component - Fix attempt for linter issue
   const [answers, setAnswers] = useState({});
   const [questions, setQuestions] = useState([]);
@@ -91,7 +93,7 @@ const HRRound = (props) => {
       setIsRecording(true);
     } catch (err) {
       console.error('Error accessing media devices:', err);
-      setError('Could not access camera and microphone. Please ensure they are connected and permissions are granted.');
+      setError(t('could_not_access_camera_microphone_hr'));
     }
   };
 
@@ -143,16 +145,16 @@ const HRRound = (props) => {
     } catch (err) {
       console.error("Failed to fetch HR questions:", err);
       if (err.name === 'AbortError') {
-        setError('Request timed out. Please try again.');
+        setError(t('request_timed_out_please_try_again_hr'));
       } else {
-        setError('Failed to load HR questions. Please try again later.');
+        setError(t('failed_to_load_hr_questions'));
       }
       setQuestions([]);
     } finally {
       clearTimeout(timeoutId); // Ensure timeout is cleared even on error
       setLoading(false);
     }
-  }, [currentRoleTitle]);
+  }, [currentRoleTitle, t]);
 
   useEffect(() => {
     fetchHRQuestions();
@@ -166,10 +168,10 @@ const HRRound = (props) => {
   const handleSubmit = useCallback(() => {
     const allQuestionsAnswered = questions.every((_, index) => answers[`question${index}`]?.trim() !== '');
     if (!allQuestionsAnswered && !videoBlobUrl) {
-      setFeedback('Please answer all questions or record a video before submitting.');
+      setFeedback(t('please_answer_all_questions_or_record_a_video_before_submitting_hr'));
       return;
     }
-    setFeedback('HR interview answers and/or video submitted successfully! Moving to the final report.');
+    setFeedback(t('hr_interview_answers_and_or_video_submitted_successfully_moving_to_the_final_report'));
     console.log('HR answers submitted:', answers);
     console.log('Video submitted:', videoBlobUrl);
     if (onComplete) {
@@ -180,30 +182,30 @@ const HRRound = (props) => {
   return (
     <div className="p-6 bg-white rounded-lg shadow-md max-w-3xl mx-auto my-8">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-3xl font-bold text-gray-800 text-center">HR Round Interview {candidateName && `for ${candidateName}`}</h2>
+        <h2 className="text-3xl font-bold text-gray-800 text-center">{t('hr_round_interview')} {candidateName && t('for_candidate', { candidateName })}</h2>
         <button
           onClick={() => fetchHRQuestions()}
           className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-md transition duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={loading}
         >
-          Refresh
+          {t('refresh')}
         </button>
         <button
           onClick={handleSubmit}
           className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md transition duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={loading || (questions.length > 0 && !questions.every((_, index) => answers[`question${index}`]?.trim() !== '') && !videoBlobUrl)}
         >
-          Submit
+          {t('submit')}
         </button>
       </div>
 
-      {loading && <p className="text-center text-blue-500">Generating questions...</p>}
-      {error && <p className="text-center text-red-500">{error}</p>}
+      {loading && <p className="text-center text-blue-500">{t('generating_questions')}</p>}
+      {error && <p className="text-center text-red-500">{t(error)}</p>}
 
       {!loading && !error && questions.length > 0 ? (
         questions.map((q, index) => (
           <div key={index} className="mb-6">
-            <h3 className="text-xl font-semibold text-gray-700 mb-3">Question {index + 1}:</h3>
+            <h3 className="text-xl font-semibold text-gray-700 mb-3">{t('question')} {index + 1}:</h3>
             <p className="text-gray-600 bg-gray-50 p-4 rounded-md border border-gray-200 whitespace-pre-wrap">{q}</p>
             <textarea
               className="w-full p-4 mt-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-800"
@@ -211,16 +213,16 @@ const HRRound = (props) => {
               name={`question${index}`}
               value={answers[`question${index}`] || ''}
               onChange={(e) => handleChange(e, index)}
-              placeholder={`Your answer for question ${index + 1} here...`}
+              placeholder={t('your_answer_for_question', { index: index + 1 })}
             ></textarea>
           </div>
         ))
       ) : (
-        !loading && !error && <p className="text-center text-gray-600">No HR questions available.</p>
+        !loading && !error && <p className="text-center text-gray-600">{t('no_hr_questions_available')}</p>
       )}
 
       <div className="mt-6">
-        <h3 className="text-xl font-semibold text-gray-700 mb-3">Record Your Explanation:</h3>
+        <h3 className="text-xl font-semibold text-gray-700 mb-3">{t('record_your_explanation')}:</h3>
         <div
           className="fixed bg-gray-200 rounded-md overflow-hidden shadow-lg"
           style={{
@@ -241,20 +243,20 @@ const HRRound = (props) => {
               className="bg-red-600 hover:bg-red-700 text-white font-bold py-1 px-3 rounded-md text-sm transition duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={isRecording || loading}
             >
-              {isRecording ? 'Recording...' : 'Start'}
+              {isRecording ? t('recording') : t('start')}
             </button>
             <button
               onClick={stopRecording}
               className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-1 px-3 rounded-md text-sm transition duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={!isRecording || loading}
             >
-              Stop
+              {t('stop')}
             </button>
           </div>
         </div>
         {videoBlobUrl && (
           <div className="mt-4">
-            <h4 className="text-lg font-semibold text-gray-700 mb-2">Recorded Video:</h4>
+            <h4 className="text-lg font-semibold text-gray-700 mb-2">{t('recorded_video')}:</h4>
             <video src={videoBlobUrl} controls className="w-full h-64 bg-gray-200 rounded-md"></video>
           </div>
         )}

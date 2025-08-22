@@ -137,7 +137,7 @@ const Interview = () => {
       window.speechSynthesis.cancel();
       window.speechSynthesis.speak(utterance);
     }
-  }, [session, currentStage, i18n.language]);
+  }, [session, currentStage, i18n.language, t]);
 
   // Handlers for stage completion
   const handleIntroductionComplete = () => {
@@ -282,7 +282,7 @@ const Interview = () => {
 
               <div className="bg-gray-800 p-6 rounded-md mb-6 text-left">
                 <p className="text-gray-200 italic">
-                Hi, I am an AI interviewer, and I’m delighted to welcome you to today’s interview.I’m excited to learn more about your background and qualifications. We’ve allocated time today to discuss your experience, focusing on your communication skills, expertise in agile methodologies.I’m looking forward to a productive conversation. Let’s begin!</p>
+                {t('default_session_introduction')}</p>
               </div>
 
               <div className="flex flex-wrap justify-center gap-4 mb-6">

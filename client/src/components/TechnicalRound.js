@@ -91,7 +91,7 @@ const TechnicalRound = ({ onComplete, roleTitle, candidateName }) => {
       setIsRecording(true);
     } catch (err) {
       console.error('Error accessing media devices:', err);
-      setError('Could not access camera and microphone. Please ensure they are connected and permissions are granted.');
+      setError(t('could_not_access_camera_microphone_technical'));
     }
   };
 
@@ -143,16 +143,16 @@ const TechnicalRound = ({ onComplete, roleTitle, candidateName }) => {
     } catch (err) {
       console.error("Failed to fetch technical questions:", err);
       if (err.name === 'AbortError') {
-        setError('Request timed out. Please try again.');
+        setError(t('request_timed_out_please_try_again_technical'));
       } else {
-        setError('Failed to load technical questions. Please try again later.');
+        setError(t('failed_to_load_technical_questions'));
       }
       setQuestions([]);
     } finally {
       clearTimeout(timeoutId); // Ensure timeout is cleared even on error
       setLoading(false);
     }
-  }, [roleTitle]);
+  }, [roleTitle, t]);
 
   useEffect(() => {
     fetchTechnicalQuestions();
@@ -166,10 +166,10 @@ const TechnicalRound = ({ onComplete, roleTitle, candidateName }) => {
   const handleSubmit = () => {
     const allQuestionsAnswered = questions.every((_, index) => answers[`question${index}`]?.trim() !== '');
     if (!allQuestionsAnswered && !videoBlobUrl) {
-      setFeedback('Please answer all questions or record a video before submitting.');
+      setFeedback(t('please_answer_all_questions_or_record_a_video_before_submitting_technical'));
       return;
     }
-    setFeedback('Technical interview answers and/or video submitted successfully! Moving to the next round.');
+    setFeedback(t('technical_interview_answers_and_or_video_submitted_successfully_moving_to_the_next_round_technical'));
     console.log('Technical answers submitted:', answers);
     console.log('Video submitted:', videoBlobUrl);
     if (onComplete) {
