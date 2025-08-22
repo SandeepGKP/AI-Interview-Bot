@@ -400,19 +400,24 @@ router.post('/generate-coding-assessment-question', async (req, res, next) => {
     "hints": [
       "Hint 1",
       "Hint 2"
-    ],
-
+    ]
   }
+
+  I said to return the question in this JSON format only, no extra text that u are explaining to give in the JSON.
   `;
+
+    console.log('Sending prompt to Groq:', prompt); // Log the prompt
 
     const groqResponse = await groq.chat.completions.create({
       model: "qwen/qwen3-32b",
       messages: [{ role: "user", content: prompt }],
-      max_tokens: 1000, // Increased max_tokens to accommodate full JSON
+      max_tokens: 1500, // Increased max_tokens further
       temperature: 0.7
     });
 
     let rawGroqContent = groqResponse?.choices?.[0]?.message?.content?.trim() || "{}";
+    console.log('Raw Groq response:', rawGroqContent); // Log raw Groq response
+
     let parsedQuestion = {};
 
     // Attempt to extract and parse JSON from the raw Groq content
@@ -420,6 +425,7 @@ router.post('/generate-coding-assessment-question', async (req, res, next) => {
     if (jsonMatch) {
       try {
         parsedQuestion = JSON.parse(jsonMatch[0]);
+        console.log('Successfully parsed JSON from Groq response.');
       } catch (e) {
         console.error("Error parsing Groq response JSON:", e);
         // Fallback to a basic structure if JSON parsing fails
@@ -431,6 +437,7 @@ router.post('/generate-coding-assessment-question', async (req, res, next) => {
         };
       }
     } else {
+      console.warn("No JSON found in Groq response. Falling back to raw content.");
       // If no JSON found, treat the whole response as the description
       parsedQuestion = {
         title: "Failed to generate question.",
@@ -444,6 +451,7 @@ router.post('/generate-coding-assessment-question', async (req, res, next) => {
     console.log('Generated coding question (parsed):', parsedQuestion);
 
   } catch (error) {
+    console.error('Error in generate-coding-assessment-question endpoint:', error); // Log endpoint errors
     next(error);
   }
 });
