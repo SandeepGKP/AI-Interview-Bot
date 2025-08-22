@@ -185,5 +185,8 @@
   "hr_round_interview": "HR Round Interview",
   "for_candidate": "for {{candidateName}}",
   "generating_questions": "Generating questions...",
-  "no_hr_questions_available": "No HR questions available."
+  "no_hr_questions_available": "No HR questions available." ,
+  "Dashboard": "Dashboard",
+  "Report": "Report"
+
 }

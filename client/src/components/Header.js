@@ -43,7 +43,7 @@ const Header = () => {
               color: location.pathname === '/recruiter' ? '#1976d2' : 'inherit'
             }}
           >
-            {t('dashboard')}
+            {t('Dashboard')}
           </Button>
           <FormControl variant="outlined" size="small" sx={{ minWidth: 120, ml: 2 }}>
             <InputLabel id="language-select-label" sx={{ color: 'inherit' }}>Select Language</InputLabel>

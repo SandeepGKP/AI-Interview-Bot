@@ -179,5 +179,7 @@
   "hr_round_interview": "एचआर राउंड साक्षात्कार",
   "for_candidate": "के लिए {{candidateName}}",
   "generating_questions": "प्रश्न तैयार किए जा रहे हैं...",
-  "no_hr_questions_available": "कोई एचआर प्रश्न उपलब्ध नहीं है।"
+  "no_hr_questions_available": "कोई एचआर प्रश्न उपलब्ध नहीं है।",
+  "Dashboard": "डैशबोर्ड",
+  "Report": "रिपोर्ट"
 }

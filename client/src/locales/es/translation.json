@@ -180,5 +180,7 @@
   "hr_round_interview": "Entrevista de Ronda de RRHH",
   "for_candidate": "para {{candidateName}}",
   "generating_questions": "Generando preguntas...",
-  "no_hr_questions_available": "No hay preguntas de RRHH disponibles."
+  "no_hr_questions_available": "No hay preguntas de RRHH disponibles.",
+  "Dashboard": "Tablero",
+  "Report": "Informe"
 }

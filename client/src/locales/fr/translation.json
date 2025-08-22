@@ -182,5 +182,7 @@
   "hr_round_interview": "Entretien RH",
   "for_candidate": "pour {{candidateName}}",
   "generating_questions": "Génération des questions...",
-  "no_hr_questions_available": "Aucune question RH disponible."
+  "no_hr_questions_available": "Aucune question RH disponible.",
+  "Dashboard": "Tableau de bord",
+  "Report": "Rapport"
 }
