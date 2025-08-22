@@ -40,11 +40,11 @@ let interviewSessions = {};
  * Accepts candidateName
  */
 router.post('/generate-groq-interview', (req, res) => {
-    const { roleTitle, roleDescription, candidateName } = req.body;
+  const { roleTitle, roleDescription, candidateName } = req.body;
 
-    if (!roleTitle || !roleDescription) {
-      return res.status(400).json({ error: 'Role title and description are required' });
-    }
+  if (!roleTitle || !roleDescription) {
+    return res.status(400).json({ error: 'Role title and description are required' });
+  }
 
   const sessionId = uuidv4();
   interviewSessions[sessionId] = {
@@ -358,7 +358,11 @@ Provide a JSON object at the end of your evaluation containing a 'skills' key. T
  * POST /api/generate-coding-assessment-question
  * Generates a coding assessment question using Groq API
  */
-router.post('/generate-coding-assessment-question', async (req, res, next) => {
+/*
+ * POST /api/generate-coding-assessment
+ * Generates a coding assessment problem in full JSON (LeetCode-style, strict)
+ */
+router.post('/generate-coding-assessment', async (req, res, next) => {
   try {
     const { roleTitle, difficulty } = req.body;
 
@@ -366,95 +370,85 @@ router.post('/generate-coding-assessment-question', async (req, res, next) => {
       return res.status(400).json({ error: 'Role title is required' });
     }
 
-    const prompt = `Generate a coding assessment question for a ${roleTitle} role.
-  Difficulty: ${difficulty || 'medium'}.
+    const prompt = `Generate a coding assessment problem for a ${roleTitle} role.
+The style should mimic a LeetCode problem and MUST return ONLY valid JSON (no explanations, no text outside JSON).
+Difficulty: ${difficulty || 'medium'}.
 
-  Please return the well structured problem/question ONLY in the following strict JSON format (no extra text, no explanations outside the JSON):
-
-  {
-    "title": "A concise title for the problem.",
-    "description": "A clear and detailed problem statement here.",
-    "input": "Description of the input format in well structured.",
-    "output": "Description of the expected output format in well structured.",
-    "constraints": [
-      "Constraint 1 in well structured",
-      "Constraint 2 in well structured"
-    ],
-    "examples": [
-      {
-        "input": "example input string in well structured",
-        "output": "expected output string in well structured",
-        "explanation": "Optional explanation for the example in well structured."
-      }
-    ],
-    "function_signature": {
-      "language": "JavaScript",
-      "signature": "function exampleFunction(input) { /* ... */ }"
+JSON Structure:
+{
+  "title": "Concise problem title",
+  "description": "Detailed problem statement with markdown support if needed.",
+  "input": "Description of input format with ranges and types.",
+  "output": "Description of expected output format and type.",
+  "constraints": [
+    "Constraint 1",
+    "Constraint 2",
+    "Constraint 3"
+  ],
+  "examples": [
+    {
+      "input": "Example input",
+      "output": "Example output",
+      "explanation": "Why this is the result"
     },
-    "test_cases": [
-      {
-        "input": "test input 1 in well structured",
-        "expected_output": "expected output 1 in well structured"
-      }
-    ],
-    "hints": [
-      "Hint 1",
-      "Hint 2"
-    ]
+    {
+      "input": "Another example input",
+      "output": "Another output",
+      "explanation": "Explanation here"
+    }
+  ],
+  "function_signature": {
+    "language": "JavaScript",
+    "signature": "function functionName(params) { /* ... */ }"
+  },
+  "test_cases": [
+    { "input": "Test input 1", "expected_output": "Output 1" },
+    { "input": "Test input 2", "expected_output": "Output 2" }
+  ],
+  "hints": [
+    "Hint 1",
+    "Hint 2"
+  ],
+  "evaluation_criteria": {
+    "Correctness": "Must pass all test cases and edge cases.",
+    "Time Complexity": "Aim for optimal complexity.",
+    "Space Complexity": "Keep memory usage efficient."
   }
-
-  I said to return the question in this JSON format only, no extra text that u are explaining to give in the JSON.
-  `;
-
-    console.log('Sending prompt to Groq:', prompt); // Log the prompt
+}`;
 
     const groqResponse = await groq.chat.completions.create({
       model: "qwen/qwen3-32b",
       messages: [{ role: "user", content: prompt }],
-      max_tokens: 1500, // Increased max_tokens further
+      max_tokens: 1500,
       temperature: 0.7
     });
 
-    let rawGroqContent = groqResponse?.choices?.[0]?.message?.content?.trim() || "{}";
-    console.log('Raw Groq response:', rawGroqContent); // Log raw Groq response
+    let rawContent = groqResponse?.choices?.[0]?.message?.content?.trim() || "{}";
 
-    let parsedQuestion = {};
-
-    // Attempt to extract and parse JSON from the raw Groq content
-    const jsonMatch = rawGroqContent.match(/\{[\s\S]*\}/);
-    if (jsonMatch) {
-      try {
-        parsedQuestion = JSON.parse(jsonMatch[0]);
-        console.log('Successfully parsed JSON from Groq response.');
-      } catch (e) {
-        console.error("Error parsing Groq response JSON:", e);
-        // Fallback to a basic structure if JSON parsing fails
-        parsedQuestion = {
-          title: "Failed to generate question.",
-          description: rawGroqContent,
-          input: "", output: "", constraints: [], examples: [],
-          function_signature: {}, test_cases: [], hints: [], evaluation_criteria: {}
-        };
-      }
-    } else {
-      console.warn("No JSON found in Groq response. Falling back to raw content.");
-      // If no JSON found, treat the whole response as the description
-      parsedQuestion = {
-        title: "Failed to generate question.",
-        description: rawGroqContent,
-        input: "", output: "", constraints: [], examples: [],
-        function_signature: {}, test_cases: [], hints: [], evaluation_criteria: {}
-      };
+    // Strict check: response must start with { and end with }
+    if (!rawContent.startsWith("{") || !rawContent.endsWith("}")) {
+      return res.status(500).json({
+        error: "Groq did not return valid JSON",
+        raw: rawContent
+      });
     }
 
-    res.json({ question: parsedQuestion }); // Send the full parsed object
-    console.log('Generated coding question (parsed):', parsedQuestion);
+    let parsedProblem;
+    try {
+      parsedProblem = JSON.parse(rawContent);
+    } catch (e) {
+      console.error("Error parsing Groq JSON:", e);
+      return res.status(500).json({ error: "Invalid JSON response from AI", raw: rawContent });
+    }
+
+    res.json({ problem: parsedProblem });
 
   } catch (error) {
-    console.error('Error in generate-coding-assessment-question endpoint:', error); // Log endpoint errors
+    console.error("Error in /generate-coding-assessment:", error);
     next(error);
   }
 });
+
 
 /*
  * POST /api/generate-hr-questions
