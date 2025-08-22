@@ -136,7 +136,7 @@ const CodingAssessmentRound = ({ onComplete, roleTitle }) => {
       });
 
       const response = await fetch(
-        'https://ai-interview-bot-backend.onrender.com/api/generate-coding-assessment-question',
+        'https://ai-interview-bot-backend.onrender.com/api/generate-coding-assessment',
         {
           method: 'POST',
           headers: {
