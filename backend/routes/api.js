@@ -370,7 +370,7 @@ router.post('/generate-coding-assessment-question', async (req, res, next) => {
 
   Difficulty: ${difficulty || 'medium'}.
 
-  Return the result ONLY in the following strict format (no extra text, no explanations):
+  Please Please Please return the problem/Question ONLY in the following strict format (no extra text, no explanations):
 
   {
     "problem_statement": "A clear and detailed problem statement here.",
@@ -417,7 +417,7 @@ router.post('/generate-hr-questions', async (req, res, next) => {
       return res.status(400).json({ error: 'Role title is required' });
     }
 
-    const prompt = `Generate 5-7 HR interview questions for a ${roleTitle} role in detail.
+    const prompt = `Generate 5-7 HR interview questions for a ${roleTitle} role in detail with Question words and dont tag question words.
     Questions should cover:
     - Communication skills
     - Teamwork

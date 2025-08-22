@@ -282,7 +282,7 @@ const Interview = () => {
 
               <div className="bg-gray-800 p-6 rounded-md mb-6 text-left">
                 <p className="text-gray-200 italic">
-                  {session.introduction}
+                  {"Most welcome and " + toLowerCase(session.introduction)}
                 </p>
               </div>
 
