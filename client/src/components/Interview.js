@@ -130,7 +130,7 @@ const Interview = () => {
   // Speak introduction slowly
   useEffect(() => {
     if (session?.introduction && currentStage === 'introduction') {
-      const utterance = new SpeechSynthesisUtterance(`Hi, I am an AI interviewer, and I’m delighted to welcome you to today’s interview.I’m excited to learn more about your background and qualifications. We’ve allocated time today to discuss your experience, focusing on your communication skills, expertise in agile methodologies.I’m looking forward to a productive conversation. Let’s begin!`);
+      const utterance = new SpeechSynthesisUtterance(session.introduction);
       utterance.rate = 0.85; // slow speech
       utterance.pitch = 1;
       utterance.lang = i18n.language === 'es' ? 'es-ES' : i18n.language === 'fr' ? 'fr-FR' : i18n.language === 'hi' ? 'hi-IN' : 'en-US';

@@ -236,11 +236,105 @@ const CodingAssessmentRound = ({ onComplete, roleTitle }) => {
 
         {!loading && !error && (
           <div className="flex-grow overflow-y-auto pr-4">
-            <h3 className="text-2xl font-bold text-yellow-500 mb-4">{t('coding_problem_json')}</h3>
+            <h3 className="text-2xl font-bold text-yellow-500 mb-4">{t('Question')}</h3>
             <pre className="bg-gray-700 p-4 rounded-md border border-gray-600 whitespace-pre-wrap text-gray-100 overflow-auto">
-              <code>{JSON.stringify(question, null, 2)}</code>
+              {/* <code>{JSON.stringify(question, null, 2)}</code> */}
+
+              {(Array.isArray(question) ? question : [question]).map((item, index) => (
+                <div key={index} className="mb-4">
+                  <h4 className="text-lg font-semibold text-yellow-400">{item.title}</h4>
+                  <p className="text-gray-300">{item.description}</p>
+
+                  {item.input && (
+                    <p className="text-gray-300">
+                      <strong>{t('input')}:</strong> {String(item.input)}
+                    </p>
+                  )}
+
+                  {item.output && (
+                    <p className="text-gray-300">
+                      <strong>{t('output')}:</strong> {String(item.output)}
+                    </p>
+                  )}
+
+                  {item.constraints && item.constraints.length > 0 && (
+                    <div>
+                      <strong>{t('constraints')}:</strong>
+                      <ul className="list-disc list-inside text-gray-300">
+                        {item.constraints.map((constraint, idx) => (
+                          <li key={idx}>{String(constraint)}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {item.examples && item.examples.length > 0 && (
+                    <div>
+                      <strong>{t('examples')}:</strong>
+                      <ul className="list-disc list-inside text-gray-300">
+                        {item.examples.map((example, idx) => (
+                          <li key={idx}>
+                            {typeof example === 'object'
+                              ? JSON.stringify(example)
+                              : String(example)}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {item.hints && item.hints.length > 0 && (
+                    <div>
+                      <strong>{t('hints')}:</strong>
+                      <ul className="list-disc list-inside text-gray-300">
+                        {item.hints.map((hint, idx) => (
+                          <li key={idx}>{String(hint)}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* ✅ Function signature */}
+                  {item.function_signature && (
+                    <div>
+                      <strong>{t('function_signature')}:</strong>
+                      <pre className="bg-gray-800 p-2 rounded mt-1 text-gray-200">
+                        {JSON.stringify(item.function_signature, null, 2)}
+                      </pre>
+                    </div>
+                  )}
+
+                  {/* ✅ Test cases */}
+                  {item.test_cases && item.test_cases.length > 0 && (
+                    <div>
+                      <strong>{t('test_cases')}:</strong>
+                      <ul className="list-disc list-inside text-gray-300">
+                        {item.test_cases.map((tc, idx) => (
+                          <li key={idx}>
+                            <pre className="bg-gray-800 p-2 rounded mt-1 text-gray-200">
+                              {JSON.stringify(tc, null, 2)}
+                            </pre>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* ✅ Evaluation Criteria
+                  {item.evaluation_criteria && Object.keys(item.evaluation_criteria).length > 0 && (
+                    <div>
+                      <strong>{t('evaluation_criteria')}:</strong>
+                      <pre className="bg-gray-800 p-2 rounded mt-1 text-gray-200">
+                        {JSON.stringify(item.evaluation_criteria, null, 2)}
+                      </pre>
+                    </div>
+                  )} */}
+                </div>
+              ))}
             </pre>
           </div>
+
+
         )}
       </div>
 
