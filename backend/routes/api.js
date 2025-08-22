@@ -369,22 +369,22 @@ router.post('/generate-coding-assessment-question', async (req, res, next) => {
     const prompt = `Generate a coding assessment question for a ${roleTitle} role.
   Difficulty: ${difficulty || 'medium'}.
 
-  Please return the problem/question ONLY in the following strict JSON format (no extra text, no explanations outside the JSON):
+  Please return the well structured problem/question ONLY in the following strict JSON format (no extra text, no explanations outside the JSON):
 
   {
     "title": "A concise title for the problem.",
     "description": "A clear and detailed problem statement here.",
-    "input": "Description of the input format.",
-    "output": "Description of the expected output format.",
+    "input": "Description of the input format in well structured.",
+    "output": "Description of the expected output format in well structured.",
     "constraints": [
-      "Constraint 1",
-      "Constraint 2"
+      "Constraint 1 in well structured",
+      "Constraint 2 in well structured"
     ],
     "examples": [
       {
-        "input": "example input string",
-        "output": "expected output string",
-        "explanation": "Optional explanation for the example."
+        "input": "example input string in well structured",
+        "output": "expected output string in well structured",
+        "explanation": "Optional explanation for the example in well structured."
       }
     ],
     "function_signature": {
@@ -393,18 +393,15 @@ router.post('/generate-coding-assessment-question', async (req, res, next) => {
     },
     "test_cases": [
       {
-        "input": "test input 1",
-        "expected_output": "expected output 1"
+        "input": "test input 1 in well structured",
+        "expected_output": "expected output 1 in well structured"
       }
     ],
     "hints": [
       "Hint 1",
       "Hint 2"
     ],
-    "evaluation_criteria": {
-      "correctness": "Criteria for correctness.",
-      "efficiency": "Criteria for efficiency."
-    }
+
   }
   `;
 
