@@ -244,5 +244,6 @@
   "clear_filters": "Borrar Filtros",
   "pending_reviews": "Revisiones Pendientes",
   "hired_candidates": "Candidatos Contratados",
-  "upload_photo": "Subir Foto"
+  "upload_photo": "Subir Foto",
+  "photo_upload_help_text": "Tamaño máximo del archivo: 5MB. Tipos permitidos: jpg, jpeg, png."
 }
