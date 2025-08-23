@@ -245,5 +245,18 @@
   "pending_reviews": "Revisiones Pendientes",
   "hired_candidates": "Candidatos Contratados",
   "upload_photo": "Subir Foto",
-  "photo_upload_help_text": "Tamaño máximo del archivo: 5MB. Tipos permitidos: jpg, jpeg, png."
+  "photo_upload_help_text": "Tamaño máximo del archivo: 5MB. Tipos permitidos: jpg, jpeg, png.",
+  "failed_to_upload_photo": "Error al subir la foto. Por favor, intente de nuevo.",
+  "photo_uploaded_successfully": "Foto subida con éxito.",
+  "remove_photo": "Eliminar Foto",
+  "confirm_remove_photo": "¿Está seguro de que desea eliminar la foto del candidato?",
+  "yes": "Sí",
+  "no": "No",
+  "photo_removed_successfully": "Foto eliminada con éxito.",
+  "failed_to_remove_photo": "Error al eliminar la foto. Por favor, intente de nuevo.",
+  "edit_candidate_details": "Editar Detalles del Candidato",
+  "candidate_details_updated_successfully": "Detalles del candidato actualizados con éxito.",
+  "failed_to_update_candidate_details": "Error al actualizar los detalles del candidato. Por favor, intente de nuevo.",
+  "view_candidate_photo": "Ver Foto del Candidato",
+  "no_photo_available": "No hay foto disponible."
 }
