@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
-const HRRound = ({ onComplete, roleTitle, candidateName }) => {
+const HRRound = ({ onComplete, roleTitle, candidateName, sessionId }) => {
   const { t } = useTranslation();
   const [answers, setAnswers] = useState({});
   const [questions, setQuestions] = useState([]);
@@ -124,7 +124,7 @@ const HRRound = ({ onComplete, roleTitle, candidateName }) => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ roleTitle: currentRoleTitle }),
+        body: JSON.stringify({ roleTitle: currentRoleTitle, existingSessionId: sessionId }),
         signal: controller.signal, // Attach the abort signal
       });
 

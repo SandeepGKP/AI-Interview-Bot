@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
-const CodingAssessmentRound = ({ onComplete, roleTitle, candidateName }) => {
+const CodingAssessmentRound = ({ onComplete, roleTitle, candidateName, sessionId }) => {
   const { t } = useTranslation();
   const [code, setCode] = useState('');
   const [question, setQuestion] = useState({
@@ -149,7 +149,7 @@ useEffect(() => {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ roleTitle: currentRoleTitle, difficulty: 'medium' }),
+          body: JSON.stringify({ roleTitle: currentRoleTitle, difficulty: 'medium', sessionId }),
           signal: controller.signal,
         }
       );

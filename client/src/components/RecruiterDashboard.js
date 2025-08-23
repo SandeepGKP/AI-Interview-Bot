@@ -1,6 +1,6 @@
 // client/src/components/RecruiterDashboard.js
 import React, { useState, useEffect, useRef } from 'react';
-import {ToastContainer,toast } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import {
   Container,
   Typography,
@@ -17,15 +17,18 @@ import {
   CircularProgress,
   Box,
   TextField,
-  Chip, 
+  Chip,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
   IconButton,
+  Collapse,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
@@ -96,8 +99,8 @@ const RecruiterDashboard = () => {
     }
   };
 
-  const viewDetails = (candidateId) => {
-    navigate(`/candidate/${candidateId}`);
+  const viewDetails = (candidateId, round) => {
+    navigate(`/report/${candidateId}?round=${round}`);
   };
 
   const handleDeleteClick = (candidate) => {
@@ -134,6 +137,7 @@ const RecruiterDashboard = () => {
   };
 
   const [searchTerm, setSearchTerm] = useState('');
+  const [openRow, setOpenRow] = useState(null);
 
   const filteredCandidates = candidates.filter(candidate =>
     candidate.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -178,6 +182,7 @@ const RecruiterDashboard = () => {
               <Table>
                 <TableHead>
                   <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+                    <TableCell />
                     <TableCell sx={{ fontWeight: 'bold' }}>{t('candidate_name')}</TableCell>
                     <TableCell sx={{ fontWeight: 'bold' }}>{t('role')}</TableCell>
                     <TableCell sx={{ fontWeight: 'bold' }}>{t('interview_date')}</TableCell>
@@ -188,28 +193,83 @@ const RecruiterDashboard = () => {
                 <TableBody>
                   {filteredCandidates.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={5} align="center">
+                      <TableCell colSpan={6} align="center">
                         {t('no_interviews_found')}
                       </TableCell>
                     </TableRow>
                   ) : (
                     filteredCandidates.map((candidate) => (
-                      <TableRow key={candidate.id} sx={{ '&:hover': { backgroundColor: '#f5f5f5' } }}>
-                        <TableCell>{candidate.name === 'Unknown Candidate' ? '' : candidate.name}</TableCell>
-                        <TableCell>{candidate.role}</TableCell>
-                        <TableCell>{candidate.date ? candidate.date.toLocaleString() : '—'}</TableCell>
-                        <TableCell>
-                          <Chip label={t(candidate.status)} color={candidate.status === 'active' ? 'primary' : 'default'} size="small" />
-                        </TableCell>
-                        <TableCell align="center">
-                          <Button variant="contained" color="primary" onClick={() => viewDetails(candidate.id)} sx={{ borderRadius: 2, mr: 1 }}>
-                            {t('view_details')}
-                          </Button>
-                          <IconButton color="error" onClick={() => handleDeleteClick(candidate)} aria-label={t('delete_button_label')}>
-                            <DeleteIcon />
-                          </IconButton>
-                        </TableCell>
-                      </TableRow>
+                      <React.Fragment key={candidate.id}>
+                        <TableRow sx={{ '&:hover': { backgroundColor: '#f5f5f5' } }}>
+                          <TableCell>
+                            <IconButton size="small" onClick={() => setOpenRow(openRow === candidate.id ? null : candidate.id)}>
+                              {openRow === candidate.id ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+                            </IconButton>
+                          </TableCell>
+                          <TableCell>{candidate.name === 'Unknown Candidate' ? '' : candidate.name}</TableCell>
+                          <TableCell>{candidate.role}</TableCell>
+                          <TableCell>{candidate.date ? candidate.date.toLocaleString() : '—'}</TableCell>
+                          <TableCell>
+                            <Chip label={t(candidate.status)} color={candidate.status === 'active' ? 'primary' : 'default'} size="small" />
+                          </TableCell>
+                          <TableCell align="center">
+                            <IconButton color="error" onClick={() => handleDeleteClick(candidate)} aria-label={t('delete_button_label')}>
+                              <DeleteIcon />
+                            </IconButton>
+                          </TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+                            <Collapse in={openRow === candidate.id} timeout="auto" unmountOnExit>
+                              <Box margin={2}>
+                                <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1 }}>
+                                  {t('Interview Rounds')}
+                                </Typography>
+                                <Table size="small">
+                                  <TableBody>
+                                    <TableRow>
+                                      <TableCell>{t('Coding Assessment')}</TableCell>
+                                      <TableCell align="right">
+                                        <Button
+                                          variant="contained"
+                                          size="small"
+                                          onClick={() => viewDetails(candidate.id, 'coding')}
+                                        >
+                                          {t('view_details')}
+                                        </Button>
+                                      </TableCell>
+                                    </TableRow>
+                                    <TableRow>
+                                      <TableCell>{t('Technical Round')}</TableCell>
+                                      <TableCell align="right">
+                                        <Button
+                                          variant="contained"
+                                          size="small"
+                                          onClick={() => viewDetails(candidate.id, 'technical')}
+                                        >
+                                          {t('view_details')}
+                                        </Button>
+                                      </TableCell>
+                                    </TableRow>
+                                    <TableRow>
+                                      <TableCell>{t('HR Round')}</TableCell>
+                                      <TableCell align="right">
+                                        <Button
+                                          variant="contained"
+                                          size="small"
+                                          onClick={() => viewDetails(candidate.id, 'hr')}
+                                        >
+                                          {t('view_details')}
+                                        </Button>
+                                      </TableCell>
+                                    </TableRow>
+                                  </TableBody>
+                                </Table>
+                              </Box>
+                            </Collapse>
+                          </TableCell>
+                        </TableRow>
+                      </React.Fragment>
                     ))
                   )}
                 </TableBody>

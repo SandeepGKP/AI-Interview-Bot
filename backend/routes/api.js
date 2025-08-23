@@ -66,58 +66,104 @@ loadSessions();
 
 /*
  * POST /api/generate-groq-interview
- * Accepts candidateName
+ * Accepts candidateName, roleTitle, roleDescription, and optionally existingSessionId
  */
 router.post('/generate-groq-interview', (req, res) => {
-  const { roleTitle, roleDescription, candidateName } = req.body;
+  const { roleTitle, roleDescription, candidateName, existingSessionId } = req.body;
 
   if (!roleTitle || !roleDescription) {
     return res.status(400).json({ error: 'Role title and description are required' });
   }
 
-  const sessionId = uuidv4();
-  interviewSessions[sessionId] = {
-    id: sessionId,
-    candidateName: (candidateName || '').trim() || 'Unknown Candidate',
-    roleTitle,
-    roleDescription,
-    introduction: 'This is a placeholder introduction. Replace with AI-generated content.',
-    questions: [
-      'Placeholder Question 1',
-      'Placeholder Question 2',
-      'Placeholder Question 3'
-    ],
-    responses: [],
-    createdAt: new Date().toISOString(),
-    status: 'active',
-    codingCompleted: false,
-    technicalCompleted: false,
-    hrCompleted: false
-  };
-  saveSessions(); // Save sessions after creating a new one
+  let sessionId;
+  let session;
+
+  if (existingSessionId && interviewSessions[existingSessionId]) {
+    // Update existing session
+    sessionId = existingSessionId;
+    session = interviewSessions[sessionId];
+    session.roleTitle = roleTitle;
+    session.roleDescription = roleDescription;
+    session.candidateName = (candidateName || '').trim() || session.candidateName; // Update name if provided, else keep existing
+  } else {
+    // Create new session
+    sessionId = uuidv4();
+    session = {
+      id: sessionId,
+      candidateName: (candidateName || '').trim() || 'Unknown Candidate',
+      roleTitle,
+      roleDescription,
+      introduction: 'This is a placeholder introduction. Replace with AI-generated content.',
+      questions: [
+        'Placeholder Question 1',
+        'Placeholder Question 2',
+        'Placeholder Question 3'
+      ],
+      responses: [],
+      createdAt: new Date().toISOString(),
+      status: 'active',
+      codingCompleted: false,
+      technicalCompleted: false,
+      hrCompleted: false
+    };
+    interviewSessions[sessionId] = session;
+  }
+
+  saveSessions(); // Save sessions after creating/updating one
 
   res.json({
     sessionId,
-    introduction: interviewSessions[sessionId].introduction,
-    questions: interviewSessions[sessionId].questions,
-    totalQuestions: interviewSessions[sessionId].questions.length
+    introduction: session.introduction,
+    questions: session.questions,
+    totalQuestions: session.questions.length
   });
 });
 
 /*
  * POST /api/generate-interview
- * Accepts candidateName
+ * Accepts candidateName, roleTitle, roleDescription, and optionally existingSessionId
  */
 router.post('/generate-interview', async (req, res, next) => {
   try {
-    const { roleTitle, roleDescription, candidateName } = req.body;
+    const { roleTitle, roleDescription, candidateName, existingSessionId } = req.body;
 
     if (!roleTitle || !roleDescription) {
       return res.status(400).json({ error: 'Role title and description are required' });
     }
 
+    let sessionId;
+    let session;
+
+    if (existingSessionId && interviewSessions[existingSessionId]) {
+      // Update existing session
+      sessionId = existingSessionId;
+      session = interviewSessions[sessionId];
+      session.roleTitle = roleTitle;
+      session.roleDescription = roleDescription;
+      session.candidateName = (candidateName || '').trim() || session.candidateName; // Update name if provided, else keep existing
+    } else {
+      // Create new session
+      sessionId = uuidv4();
+      session = {
+        id: sessionId,
+        candidateName: (candidateName || '').trim() || 'Unknown Candidate',
+        roleTitle,
+        roleDescription,
+        introduction: '', // Will be filled by AI
+        questions: [],   // Will be filled by AI
+        responses: [],
+        createdAt: new Date().toISOString(),
+        status: 'active',
+        codingCompleted: false,
+        technicalCompleted: false,
+        hrCompleted: false,
+        codingAssessment: null // New field to store coding assessment problem
+      };
+      interviewSessions[sessionId] = session;
+    }
+
     // AI intro prompt
-    const introPrompt = `Generate a warm, professional introduction for a video interview for the role of ${roleTitle}. 
+    const introPrompt = `Generate a warm, professional introduction for a video interview for the role of ${roleTitle}.
 Role Description: ${roleDescription}  for self introduction.
 The introduction should:
 1. Welcome the candidate
@@ -127,13 +173,13 @@ The introduction should:
 Return only the introduction`;
 
     const introResponse = await groq.chat.completions.create({
-      model: "qwen/qwen3-32b",  // <-- Updated model here
+      model: "qwen/qwen3-32b",
       messages: [{ role: "user", content: introPrompt }],
       max_tokens: 200,
       temperature: 0.7
     });
 
-    const introduction = introResponse?.choices?.[0]?.message?.content?.trim() || "Welcome to the interview!";
+    session.introduction = introResponse?.choices?.[0]?.message?.content?.trim() || "Welcome to the interview!";
 
     // AI questions prompt
     const questionsPrompt = `Please always generate 6 or more interview questions for the role of ${roleTitle} with question words (what,why ,how ,which,etc) and dont tag question word.
@@ -147,39 +193,24 @@ Questions should:
 Return as a numbered list.`;
 
     const questionsResponse = await groq.chat.completions.create({
-      model: "qwen/qwen3-32b",  // <-- Updated model here
+      model: "qwen/qwen3-32b",
       messages: [{ role: "user", content: questionsPrompt }],
       max_tokens: 500,
       temperature: 0.8
     });
 
     const questionsText = questionsResponse?.choices?.[0]?.message?.content?.trim() || "";
-    const questions = questionsText.split('\n')
+    session.questions = questionsText.split('\n')
       .filter(line => line.trim() && /^\d+\./.test(line.trim()))
       .map(line => line.replace(/^\d+\.\s*/, '').trim());
 
-    const sessionId = uuidv4();
-    interviewSessions[sessionId] = {
-      id: sessionId,
-      candidateName: (candidateName || '').trim() || 'Unknown Candidate',
-      roleTitle,
-      roleDescription,
-      introduction,
-      questions,
-    responses: [],
-    createdAt: new Date().toISOString(),
-    status: 'active',
-    codingCompleted: false,
-    technicalCompleted: false,
-    hrCompleted: false
-    };
-    saveSessions(); // Save sessions after creating a new one
+    saveSessions(); // Save sessions after creating/updating one
 
     res.json({
       sessionId,
-      introduction,
-      questions,
-      totalQuestions: questions.length
+      introduction: session.introduction,
+      questions: session.questions,
+      totalQuestions: session.questions.length
     });
 
   } catch (error) {
@@ -491,6 +522,12 @@ Required JSON structure:
     } catch (e) {
       console.error("JSON.parse failed:", e, "Raw:", match[0]);
       return res.status(500).json({ error: "Invalid JSON format", raw: rawContent });
+    }
+
+    const { sessionId } = req.body;
+    if (sessionId && interviewSessions[sessionId]) {
+      interviewSessions[sessionId].codingAssessment = parsedProblem;
+      saveSessions();
     }
 
     res.json({ problem: parsedProblem });

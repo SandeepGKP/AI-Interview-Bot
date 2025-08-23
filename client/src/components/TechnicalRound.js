@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
-const TechnicalRound = ({ onComplete, roleTitle, candidateName }) => {
+const TechnicalRound = ({ onComplete, roleTitle, candidateName, sessionId }) => {
   const { t } = useTranslation();
   const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState({});
@@ -123,7 +123,7 @@ const TechnicalRound = ({ onComplete, roleTitle, candidateName }) => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ roleTitle: roleTitle || 'Software Engineer', roleDescription: 'Technical interview questions' }),
+        body: JSON.stringify({ roleTitle: roleTitle || 'Software Engineer', roleDescription: 'Technical interview questions', existingSessionId: sessionId }),
         signal: controller.signal, // Attach the abort signal
       });
 

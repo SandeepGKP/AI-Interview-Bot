@@ -115,7 +115,7 @@ const Interview = () => {
       try {
         const response = await axios.get(`https://ai-interview-bot-backend.onrender.com/api/session/${sessionId}`);
         const introduction = await fetchIntroduction(response.data.roleTitle, response.data.roleDescription, t);
-        setSession({ ...response.data, introduction });
+        setSession({ ...response.data, introduction, candidateName: response.data.candidateName || 'Candidate' }); // Ensure candidateName is set
         setCurrentStage('introduction'); // If session loaded, go to introduction or first stage
       } catch (err) {
         console.error('Error loading session:', err);
@@ -148,28 +148,46 @@ const Interview = () => {
   const [technicalVideo, setTechnicalVideo] = useState(null);
   const [hrVideo, setHrVideo] = useState(null);
 
-  const handleCodingComplete = ({ code, video }) => {
+  const handleCodingComplete = async ({ code, video }) => {
     console.log('Coding Round Completed with answers:', code);
     console.log('Coding Video:', video);
     setCodingVideo(video);
-    // Here you might save coding answers and video to the session or backend
+    try {
+      await axios.post(`https://ai-interview-bot-backend.onrender.com/api/session/${sessionId}/complete-round`, { roundType: 'coding' });
+      console.log('Coding round marked as completed on backend.');
+    } catch (error) {
+      console.error('Error marking coding round complete:', error);
+      toast.error(t('failed_to_mark_coding_round_complete'));
+    }
     setCurrentStage('technical');
   };
 
-  const handleTechnicalComplete = ({ answers, video }) => {
+  const handleTechnicalComplete = async ({ answers, video }) => {
     console.log('Technical Round Completed with answers:', answers);
     console.log('Technical Video:', video);
     setTechnicalVideo(video);
-    // Here you might save technical answers and video to the session or backend
+    try {
+      await axios.post(`https://ai-interview-bot-backend.onrender.com/api/session/${sessionId}/complete-round`, { roundType: 'technical' });
+      console.log('Technical round marked as completed on backend.');
+    } catch (error) {
+      console.error('Error marking technical round complete:', error);
+      toast.error(t('failed_to_mark_technical_round_complete'));
+    }
     setCurrentStage('hr');
   };
 
-  const handleHRComplete = ({ answers, video }) => {
+  const handleHRComplete = async ({ answers, video }) => {
     console.log('HR Round Completed with answers:', answers);
     console.log('HR Video:', video);
     setHrVideo(video);
-    // Here you might save HR answers and video to the session or backend
-    navigate(`/report/${sessionId}`, { state: { codingVideo, technicalVideo, hrVideo, candidateName: session.candidateName } }); // Navigate to report after all rounds, passing video data and candidate name
+    try {
+      await axios.post(`https://ai-interview-bot-backend.onrender.com/api/session/${sessionId}/complete-round`, { roundType: 'hr' });
+      console.log('HR round marked as completed on backend.');
+    } catch (error) {
+      console.error('Error marking HR round complete:', error);
+      toast.error(t('failed_to_mark_hr_round_complete'));
+    }
+    navigate("/"); // Navigate to report after all rounds, passing video data and candidate name
   };
 
   const renderStage = () => {
@@ -327,15 +345,15 @@ const Interview = () => {
         );
       case 'coding':
         return (
-          <CodingAssessmentRound onComplete={handleCodingComplete} roleTitle={session.roleTitle} candidateName={session.candidateName} />
+          <CodingAssessmentRound onComplete={handleCodingComplete} roleTitle={session.roleTitle} candidateName={session.candidateName} sessionId={sessionId} />
         );
       case 'technical':
         return (
-          <TechnicalRound onComplete={handleTechnicalComplete} roleTitle={session.roleTitle} candidateName={session.candidateName} />
+          <TechnicalRound onComplete={handleTechnicalComplete} roleTitle={session.roleTitle} candidateName={session.candidateName} sessionId={sessionId} />
         );
       case 'hr':
         return (
-          <HRRound onComplete={handleHRComplete} roleTitle={session.roleTitle} candidateName={session.candidateName} />
+          <HRRound onComplete={handleHRComplete} roleTitle={session.roleTitle} candidateName={session.candidateName} sessionId={sessionId} />
         );
       default:
         return null;
