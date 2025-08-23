@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
-const HRRound = (props) => {
+const HRRound = ({ onComplete, roleTitle, candidateName }) => {
   const { t } = useTranslation();
-  const { onComplete = () => { }, roleTitle, candidateName } = props; // Destructure props inside the component - Fix attempt for linter issue
   const [answers, setAnswers] = useState({});
   const [questions, setQuestions] = useState([]);
   const [feedback, setFeedback] = useState('');

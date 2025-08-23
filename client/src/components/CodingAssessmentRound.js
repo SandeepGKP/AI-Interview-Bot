@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
-const CodingAssessmentRound = ({ onComplete, roleTitle }) => {
+const CodingAssessmentRound = ({ onComplete, roleTitle, candidateName }) => {
   const { t } = useTranslation();
   const [code, setCode] = useState('');
   const [question, setQuestion] = useState({
@@ -218,7 +218,7 @@ useEffect(() => {
       <div className="lg:w-1/2 p-6 bg-gray-900 border-r border-gray-700 flex flex-col">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-3xl font-bold text-yellow-500 text-center lg:text-left">
-            {t('coding_assessment_round')}
+            {t('coding_assessment_round')} {candidateName && `for ${candidateName}`}
           </h2>
           <div className="flex gap-2">
             <button

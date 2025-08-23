@@ -32,8 +32,37 @@ const upload = multer({
   limits: { fileSize: 50 * 1024 * 1024 } // 50MB limit
 });
 
+// File path for persistent storage
+const sessionsFilePath = path.join(__dirname, '../sessions.json');
+
 // In-memory storage for interview sessions
 let interviewSessions = {};
+
+// Function to load sessions from file
+const loadSessions = () => {
+  try {
+    if (fs.existsSync(sessionsFilePath)) {
+      const data = fs.readFileSync(sessionsFilePath, 'utf8');
+      interviewSessions = JSON.parse(data);
+      console.log('Interview sessions loaded from file.');
+    }
+  } catch (error) {
+    console.error('Error loading interview sessions:', error);
+  }
+};
+
+// Function to save sessions to file
+const saveSessions = () => {
+  try {
+    fs.writeFileSync(sessionsFilePath, JSON.stringify(interviewSessions, null, 2), 'utf8');
+    console.log('Interview sessions saved to file.');
+  } catch (error) {
+    console.error('Error saving interview sessions:', error);
+  }
+};
+
+// Load sessions when the server starts
+loadSessions();
 
 /*
  * POST /api/generate-groq-interview
@@ -62,6 +91,7 @@ router.post('/generate-groq-interview', (req, res) => {
     createdAt: new Date().toISOString(),
     status: 'active'
   };
+  saveSessions(); // Save sessions after creating a new one
 
   res.json({
     sessionId,
@@ -137,6 +167,7 @@ Return as a numbered list.`;
       createdAt: new Date().toISOString(),
       status: 'active'
     };
+    saveSessions(); // Save sessions after creating a new one
 
     res.json({
       sessionId,
@@ -185,6 +216,7 @@ router.post('/upload-response/:sessionId/:questionIndex', upload.single('video')
     };
 
     interviewSessions[sessionId].responses.push(response);
+    saveSessions(); // Save sessions after adding a response
 
     res.json({
       success: true,
@@ -253,6 +285,7 @@ router.delete('/candidates/:sessionId', (req, res) => {
       }
     });
     delete interviewSessions[sessionId];
+    saveSessions(); // Save sessions after deleting one
     return res.status(200).json({ message: 'Candidate session deleted successfully' });
   }
   res.status(404).json({ error: 'Candidate session not found' });
