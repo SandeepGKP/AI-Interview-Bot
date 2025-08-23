@@ -336,11 +336,11 @@ router.post('/generate-report/:sessionId', async (req, res, next) => {
     if (!session) {
       return res.status(404).json({ error: 'Session not found' });
     }
-    console.log('Generating report for candidate:', session.candidateName); // Add this line for debugging
+    console.log('Session data for report generation:', JSON.stringify(session, null, 2)); // More detailed session logging
 
     const prompt = `
-Candidate Name: ${session.candidateName}
-Role: ${session.roleTitle}
+Candidate Name: ${session.candidateName || 'Unknown Candidate'}
+Role: ${session.roleTitle || 'Unknown Role'}
 Interview Questions and Answers:
 ${session.questions.map((q, i) =>
       `Q${i + 1}: ${q}\nA: ${session.responses?.[i]?.transcription || 'No response'}`
@@ -380,6 +380,7 @@ Provide a JSON object at the end of your evaluation containing a 'skills' key. T
     });
 
     const evaluationContent = aiResponse?.choices?.[0]?.message?.content || "No evaluation generated.";
+    console.log('Raw AI evaluation content:', evaluationContent); // Log raw AI response
     let evaluation = evaluationContent;
     let skillsBreakdown = { technical_skills: {}, soft_skills: {} };
 
