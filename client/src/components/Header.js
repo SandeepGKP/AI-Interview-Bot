@@ -1,7 +1,7 @@
-import React from 'react';
-import { AppBar, Toolbar, Typography, Button, Box, IconButton } from '@mui/material';
+import React, { useState, useEffect, useRef } from 'react';
+import { AppBar, Toolbar, Typography, Button, Box, IconButton, Avatar, Menu } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { VideoCall, Dashboard, Home, Assessment } from '@mui/icons-material';
+import { VideoCall, Dashboard, Home, Assessment, AccountCircle, Notifications, PhotoCamera, Delete } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { MenuItem, Select, FormControl, InputLabel } from '@mui/material';
 import i18n from '../i18n';
@@ -10,6 +10,46 @@ const Header = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
+  const [profilePhoto, setProfilePhoto] = useState(localStorage.getItem('profilePhoto') || null);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const fileInputRef = useRef(null);
+
+  useEffect(() => {
+    if (profilePhoto) {
+      localStorage.setItem('profilePhoto', profilePhoto);
+    } else {
+      localStorage.removeItem('profilePhoto');
+    }
+  }, [profilePhoto]);
+
+  const handleMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handlePhotoUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setProfilePhoto(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+    handleMenuClose();
+  };
+
+  const handlePhotoRemove = () => {
+    setProfilePhoto(null);
+    handleMenuClose();
+  };
+
+  const triggerFileInput = () => {
+    fileInputRef.current.click();
+  };
 
   return (
     <AppBar position="sticky" elevation={2} sx={{ backgroundColor: '#ffffff', color: '#333' }}>
@@ -45,6 +85,39 @@ const Header = () => {
           >
             {t('Dashboard')}
           </Button>
+          <IconButton color="inherit" aria-label="notifications">
+            <Notifications />
+          </IconButton>
+          
+          <IconButton color="inherit" aria-label="account" onClick={handleMenuOpen}>
+            {profilePhoto ? (
+              <Avatar src={profilePhoto} alt="Profile" sx={{ width: 32, height: 32 }} />
+            ) : (
+              <AccountCircle />
+            )}
+          </IconButton>
+          <Menu
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={handleMenuClose}
+          >
+            <MenuItem onClick={triggerFileInput}>
+              <PhotoCamera sx={{ mr: 1 }} /> {t('upload_photo')}
+              <input
+                type="file"
+                accept="image/*"
+                ref={fileInputRef}
+                onChange={handlePhotoUpload}
+                style={{ display: 'none' }}
+              />
+            </MenuItem>
+            {profilePhoto && (
+              <MenuItem onClick={handlePhotoRemove}>
+                <Delete sx={{ mr: 1 }} /> {t('remove_photo')}
+              </MenuItem>
+            )}
+          </Menu>
+
           <FormControl variant="outlined" size="small" sx={{ minWidth: 120, ml: 2 }}>
             <InputLabel id="language-select-label" sx={{ color: 'inherit' }}>Select Language</InputLabel>
             <Select

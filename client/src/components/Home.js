@@ -23,93 +23,65 @@ const Home = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      {/* Navbar
-      <nav className="flex items-center justify-between p-4">
-        <div className="flex items-center space-x-4">
-          <img src="/images/dsatrek-logo.png" alt="DSATrek Logo" className="h-8" />
-          <a href="#" className="text-gray-400 hover:text-white">Problems</a>
-          <a href="#" className="text-white border-b-2 border-yellow-500 pb-1">Interview</a>
-          <a href="#" className="text-gray-400 hover:text-white">Community</a>
-          <a href="#" className="text-gray-400 hover:text-white">Contest</a>
-          <a href="#" className="text-gray-400 hover:text-white">Visualizer</a>
-        </div>
-        <div className="flex items-center space-x-4">
-          <button className="bg-yellow-500 text-black px-4 py-2 rounded-md font-bold">PREMIUM</button>
-          <span className="text-gray-400">🔥 0</span>
-          <span className="text-gray-400">⏰</span>
-          <img src="/images/user-avatar.png" alt="User Avatar" className="h-8 w-8 rounded-full" />
-        </div>
-      </nav> */}
-
+    <div className="min-h-screen text-white" style={{ background: 'linear-gradient(135deg, #2a004a 0%, #000000 100%)' }}>
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold"></h1>
-          <button className="bg-gray-800 text-white px-4 py-2 rounded-md flex items-center space-x-2 " onClick={handleStartInterview}>
+          <button className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md flex items-center space-x-2 shadow-lg transition duration-300 ease-in-out transform hover:scale-105" onClick={handleStartInterview}>
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
             <span>{t('create_interview')}</span>
           </button>
         </div>
 
-        <div className="relative flex flex-col lg:flex-row items-center justify-between bg-black p-8 rounded-lg overflow-hidden">
+        <div className="relative flex flex-col lg:flex-row items-center justify-between bg-gradient-to-br from-purple-800 to-indigo-900 p-8 rounded-lg overflow-hidden shadow-2xl">
           <div className="lg:w-1/2 z-10">
-            <h2 className="text-5xl font-bold mb-4">{t('master_your_next_interview')}</h2>
-            <p className="text-gray-400 text-lg mb-8">
+            <h2 className="text-5xl font-bold mb-4 leading-tight text-purple-200">{t('master_your_next_interview')}</h2>
+            <p className="text-purple-300 text-lg mb-8 opacity-90">
               {t('home_tagline')}
             </p>
-            <div className="flex gap-4 mb-8">
-              <div className="bg-blue-700 p-4 rounded-lg flex items-center space-x-3 w-64">
-                <div className="w-4 h-4 rounded-full bg-blue-400"></div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+              <div className="bg-purple-700 bg-opacity-50 p-4 rounded-lg flex items-center space-x-3 shadow-md hover:shadow-xl transition duration-300 ease-in-out transform hover:-translate-y-1">
+                <div className="w-4 h-4 rounded-full bg-purple-400 animate-pulse"></div>
                 <div>
-                  <h3 className="font-bold">{t('ai_powered_feature')}</h3>
-                  <p className="text-sm text-gray-300">{t('ai_powered_description')}</p>
+                  <h3 className="font-bold text-purple-100">{t('ai_powered_feature')}</h3>
+                  <p className="text-sm text-purple-200 opacity-80">{t('ai_powered_description')}</p>
                 </div>
               </div>
-              <div className="bg-green-700 p-4 rounded-lg flex items-center space-x-3 w-64">
-                <div className="w-4 h-4 rounded-full bg-green-400"></div>
+              <div className="bg-indigo-700 bg-opacity-50 p-4 rounded-lg flex items-center space-x-3 shadow-md hover:shadow-xl transition duration-300 ease-in-out transform hover:-translate-y-1">
+                <div className="w-4 h-4 rounded-full bg-indigo-400 animate-pulse"></div>
                 <div>
-                  <h3 className="font-bold">{t('voice_interview_feature')}</h3>
-                  <p className="text-sm text-gray-300">{t('voice_interview_description')}</p>
+                  <h3 className="font-bold text-indigo-100">{t('voice_interview_feature')}</h3>
+                  <p className="text-sm text-indigo-200 opacity-80">{t('voice_interview_description')}</p>
                 </div>
               </div>
-              <div className="bg-purple-700 p-4 rounded-lg flex items-center space-x-3 w-64">
-                <div className="w-4 h-4 rounded-full bg-purple-400"></div>
+              <div className="bg-pink-700 bg-opacity-50 p-4 rounded-lg flex items-center space-x-3 shadow-md hover:shadow-xl transition duration-300 ease-in-out transform hover:-translate-y-1">
+                <div className="w-4 h-4 rounded-full bg-pink-400 animate-pulse"></div>
                 <div>
-                  <h3 className="font-bold">{t('smart_feedback_feature')}</h3>
-                  <p className="text-sm text-gray-300">{t('smart_feedback_description')}</p>
+                  <h3 className="font-bold text-pink-100">{t('smart_feedback_feature')}</h3>
+                  <p className="text-sm text-pink-200 opacity-80">{t('smart_feedback_description')}</p>
                 </div>
               </div>
             </div>
-            {/* <button className="bg-gray-800 text-white px-6 py-3 rounded-md flex items-center space-x-2" onClick={handleStartInterview}>
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14.752 11.122a1 1 0 010 1.756l-4.695 2.683A1 1 0 019 14.683V9.317a1 1 0 011.057-.879l4.695 2.683z"></path></svg>
-              <span>Start Your First Interview</span>
-            </button> */}
           </div>
 
           {/* Robot Image */}
-          <div className="lg:w-1/2 flex justify-center lg:justify-end mt-8 lg:mt-0 height-full ">
+          <div className="lg:w-1/2 flex justify-center lg:justify-end mt-8 lg:mt-0 relative">
             <img
-              src="/images/image.png"
+              src="/images/robot.png"
               alt="Robot"
-              className="object-contain"
+              className="object-contain w-full max-w-md lg:max-w-lg xl:max-w-xl animate-float"
               style={{
-                margin: '-50px', // adjust to align with text
-                position: 'absolute',
-                right: '20px',        // flush with right edge
-                bottom: '0',       // sits on bottom
-                width: '600px',    // big, like in your screenshot
-                height: '500px',    // keep aspect ratio
-                background: 'transparent',
-                filter: 'drop-shadow(0px 0px 30px rgba(0,0,0,0.6))'
+                filter: 'drop-shadow(0px 0px 40px rgba(150, 0, 255, 0.8))',
+                position: 'relative',
+                zIndex: 1,
               }}
             />
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-500 to-indigo-500 opacity-20 rounded-full blur-3xl animate-pulse-light"></div>
           </div>
-
-
         </div>
 
-        <div className="mt-8 text-center text-gray-500 text-sm">
+        <div className="mt-12 text-center text-purple-300 text-sm opacity-80">
           {t('ai_questions_note')}
         </div>
       </main>

@@ -25,6 +25,12 @@ import {
   DialogTitle,
   IconButton,
   Collapse,
+  TableSortLabel,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  TablePagination,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -32,6 +38,13 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import PeopleIcon from '@mui/icons-material/People';
+import EventNoteIcon from '@mui/icons-material/EventNote';
+import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import { CSVLink } from 'react-csv';
+import { blue } from '@mui/material/colors';
 
 const POLL_INTERVAL_MS = 30000; // 30 seconds
 
@@ -137,11 +150,81 @@ const RecruiterDashboard = () => {
   };
 
   const [searchTerm, setSearchTerm] = useState('');
+  const [filterStatus, setFilterStatus] = useState('all');
+  const [filterRole, setFilterRole] = useState('all');
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [openRow, setOpenRow] = useState(null);
 
-  const filteredCandidates = candidates.filter(candidate =>
-    candidate.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    candidate.role.toLowerCase().includes(searchTerm.toLowerCase())
+  const sortedCandidates = React.useMemo(() => {
+    let sortableCandidates = [...candidates];
+    if (sortConfig.key) {
+      sortableCandidates.sort((a, b) => {
+        if (a[sortConfig.key] < b[sortConfig.key]) {
+          return sortConfig.direction === 'ascending' ? -1 : 1;
+        }
+        if (a[sortConfig.key] > b[sortConfig.key]) {
+          return sortConfig.direction === 'ascending' ? 1 : -1;
+        }
+        return 0;
+      });
+    }
+    return sortableCandidates;
+  }, [candidates, sortConfig]);
+
+  const filteredCandidates = sortedCandidates.filter(candidate => {
+    const matchesSearch = candidate.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          candidate.role.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = filterStatus === 'all' || candidate.status === filterStatus;
+    const matchesRole = filterRole === 'all' || candidate.role === filterRole;
+    return matchesSearch && matchesStatus && matchesRole;
+  });
+
+  const requestSort = (key) => {
+    let direction = 'ascending';
+    if (sortConfig.key === key && sortConfig.direction === 'ascending') {
+      direction = 'descending';
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const getSortIcon = (key) => {
+    if (sortConfig.key !== key) return null;
+    return sortConfig.direction === 'ascending' ? <KeyboardArrowUpIcon fontSize="small" /> : <KeyboardArrowDownIcon fontSize="small" />;
+  };
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const totalCandidates = candidates.length;
+  const interviewsScheduled = candidates.filter(c => c.status === 'active').length;
+  const pendingReviews = candidates.filter(c => c.status === 'pending').length; // Assuming 'pending' status for review
+  const hiredCandidates = candidates.filter(c => c.status === 'hired').length; // Assuming 'hired' status
+
+  const csvData = filteredCandidates.map(candidate => ({
+    'Candidate Name': candidate.name,
+    'Role': candidate.role,
+    'Interview Date': candidate.date ? candidate.date.toLocaleString() : '—',
+    'Status': candidate.status,
+  }));
+
+  const StatCard = ({ title, value, icon, color }) => (
+    <Card sx={{ flex: 1, minWidth: 200, borderRadius: 2, boxShadow: 3, backgroundColor: color || '#e3f2fd' }}>
+      <CardContent sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <Box>
+          <Typography variant="h6" color="textSecondary" gutterBottom>{title}</Typography>
+          <Typography variant="h4" component="div" sx={{ fontWeight: 'bold' }}>{value}</Typography>
+        </Box>
+        {icon}
+      </CardContent>
+    </Card>
   );
 
   return (
@@ -150,10 +233,51 @@ const RecruiterDashboard = () => {
       <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
         <Typography variant="h4" sx={{ fontWeight: 'bold' }}>{t('Dashboard')}</Typography>
         <Box>
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<PersonAddIcon />}
+            sx={{ mr: 1, borderRadius: 2 }}
+            onClick={() => navigate('/interview')} // Assuming a route for adding a new candidate
+          >
+            {t('add_new_candidate')}
+          </Button>
           <Button variant="outlined" size="small" sx={{ mr: 1, borderRadius: 2 }} onClick={() => fetchCandidates(true)} disabled={loading}>
             {t('refresh')}
           </Button>
+          <Button variant="outlined" size="small" sx={{ mr: 1, borderRadius: 2 ,backgroundColor:blue}} >
+          <CSVLink data={csvData} filename={"candidates-dashboard.csv"} className="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedSizeSmall MuiButton-sizeSmall MuiButton-root MuiButton-outlined MuiButton-outlinedSizeSmall MuiButton-sizeSmall css-1k0122-MuiButtonBase-root-MuiButton-root" target="_blank">
+            {t('export_csv')}
+          </CSVLink>
+          </Button>
         </Box>
+      </Box>
+
+      <Box sx={{ display: 'flex', gap: 2, mb: 4, flexWrap: 'wrap' }}>
+        <StatCard
+          title={t('total_candidates')}
+          value={totalCandidates}
+          icon={<PeopleIcon sx={{ fontSize: 40, color: '#1976d2' }} />}
+          color="#e3f2fd"
+        />
+        <StatCard
+          title={t('interviews_scheduled')}
+          value={interviewsScheduled}
+          icon={<EventNoteIcon sx={{ fontSize: 40, color: '#ff9800' }} />}
+          color="#fff3e0"
+        />
+        <StatCard
+          title={t('pending_reviews')}
+          value={pendingReviews}
+          icon={<HourglassEmptyIcon sx={{ fontSize: 40, color: '#ba68c8' }} />}
+          color="#f3e5f5"
+        />
+        <StatCard
+          title={t('hired_candidates')}
+          value={hiredCandidates}
+          icon={<CheckCircleOutlineIcon sx={{ fontSize: 40, color: '#4caf50' }} />}
+          color="#e8f5e9"
+        />
       </Box>
 
       {error && (
@@ -164,14 +288,41 @@ const RecruiterDashboard = () => {
 
       <Card sx={{ borderRadius: 2, boxShadow: 3 }}>
         <CardContent>
-          <Box sx={{ mb: 2 }}>
+          <Box sx={{ mb: 2, display: 'flex', gap: 2, flexWrap: 'wrap' }}>
             <TextField
-              fullWidth
+              sx={{ flex: 1, minWidth: 200 }}
               label={t('search_by_name_or_role')}
               variant="outlined"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
+            <FormControl variant="outlined" sx={{ minWidth: 150 }}>
+              <InputLabel>{t('filter_by_status')}</InputLabel>
+              <Select
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value)}
+                label={t('filter_by_status')}
+              >
+                <MenuItem value="all">{t('all_statuses')}</MenuItem>
+                <MenuItem value="active">{t('active')}</MenuItem>
+                <MenuItem value="completed">{t('completed')}</MenuItem>
+                {/* Add other statuses as needed */}
+              </Select>
+            </FormControl>
+            <FormControl variant="outlined" sx={{ minWidth: 150 }}>
+              <InputLabel>{t('filter_by_role')}</InputLabel>
+              <Select
+                value={filterRole}
+                onChange={(e) => setFilterRole(e.target.value)}
+                label={t('filter_by_role')}
+              >
+                <MenuItem value="all">{t('all_roles')}</MenuItem>
+                {/* Dynamically generate roles from candidates or a predefined list */}
+                {[...new Set(candidates.map(c => c.role))].map(role => (
+                  <MenuItem key={role} value={role}>{role}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
           </Box>
           {loading ? (
             <Box display="flex" justifyContent="center" alignItems="center" py={6}>
@@ -183,22 +334,54 @@ const RecruiterDashboard = () => {
                 <TableHead>
                   <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
                     <TableCell />
-                    <TableCell sx={{ fontWeight: 'bold' }}>{t('candidate_name')}</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold' }}>{t('role')}</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold' }}>{t('interview_date')}</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold' }}>{t('status')}</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold' }}>
+                      <TableSortLabel
+                        active={sortConfig.key === 'name'}
+                        direction={sortConfig.direction}
+                        onClick={() => requestSort('name')}
+                      >
+                        {t('candidate_name')}
+                      </TableSortLabel>
+                    </TableCell>
+                    <TableCell sx={{ fontWeight: 'bold' }}>
+                      <TableSortLabel
+                        active={sortConfig.key === 'role'}
+                        direction={sortConfig.direction}
+                        onClick={() => requestSort('role')}
+                      >
+                        {t('role')}
+                      </TableSortLabel>
+                    </TableCell>
+                    <TableCell sx={{ fontWeight: 'bold' }}>
+                      <TableSortLabel
+                        active={sortConfig.key === 'date'}
+                        direction={sortConfig.direction}
+                        onClick={() => requestSort('date')}
+                      >
+                        {t('interview_date')}
+                      </TableSortLabel>
+                    </TableCell>
+                    <TableCell sx={{ fontWeight: 'bold' }}>
+                      <TableSortLabel
+                        active={sortConfig.key === 'status'}
+                        direction={sortConfig.direction}
+                        onClick={() => requestSort('status')}
+                      >
+                        {t('status')}
+                      </TableSortLabel>
+                    </TableCell>
                     <TableCell align="center" sx={{ fontWeight: 'bold' }}>{t('actions')}</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {filteredCandidates.length === 0 ? (
+                  {filteredCandidates.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={6} align="center">
                         {t('no_interviews_found')}
                       </TableCell>
                     </TableRow>
                   ) : (
-                    filteredCandidates.map((candidate) => (
+                    filteredCandidates.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((candidate) => (
                       <React.Fragment key={candidate.id}>
                         <TableRow sx={{ '&:hover': { backgroundColor: '#f5f5f5' } }}>
                           <TableCell>
@@ -274,6 +457,15 @@ const RecruiterDashboard = () => {
                   )}
                 </TableBody>
               </Table>
+              <TablePagination
+                rowsPerPageOptions={[5, 10, 25]}
+                component="div"
+                count={filteredCandidates.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+              />
             </TableContainer>
           )}
         </CardContent>

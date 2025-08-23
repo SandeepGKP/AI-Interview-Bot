@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Resizable } from 're-resizable'; // Import Resizable component
 
 const CodingAssessmentRound = ({ onComplete, roleTitle, candidateName, sessionId }) => {
   const { t } = useTranslation();
@@ -33,6 +34,7 @@ const CodingAssessmentRound = ({ onComplete, roleTitle, candidateName, sessionId
   const [videoPosition, setVideoPosition] = useState({ x: 20, y: 20 }); // Initial position
   const [isDragging, setIsDragging] = useState(false);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
+  const [leftPanelWidth, setLeftPanelWidth] = useState(50); // Initial width percentage for left panel
 
   const handleMouseDown = useCallback((e) => {
     if (videoRef.current && videoRef.current.contains(e.target)) {
@@ -61,22 +63,41 @@ const CodingAssessmentRound = ({ onComplete, roleTitle, candidateName, sessionId
     setIsDragging(false);
   }, []);
 
+  const handleDividerMouseDown = useCallback((e) => {
+    e.preventDefault();
+    document.addEventListener('mousemove', handleDividerMouseMove);
+    document.addEventListener('mouseup', handleDividerMouseUp);
+  }, []);
+
+  const handleDividerMouseMove = useCallback((e) => {
+    const container = e.currentTarget.parentElement;
+    if (container) {
+      const containerRect = container.getBoundingClientRect();
+      const newWidthPx = e.clientX - containerRect.left;
+      const newWidthPercent = (newWidthPx / containerRect.width) * 100;
+      setLeftPanelWidth(Math.max(20, Math.min(80, newWidthPercent))); // Constrain between 20% and 80%
+    }
+  }, []);
+
+  const handleDividerMouseUp = useCallback(() => {
+    document.removeEventListener('mousemove', handleDividerMouseMove);
+    document.removeEventListener('mouseup', handleDividerMouseUp);
+  }, []);
+
   useEffect(() => {
     document.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('mouseup', handleMouseUp);
-
     return () => {
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
     };
   }, [handleMouseMove, handleMouseUp]);
 
-  
-useEffect(() => {
-  if (question.function_signature) {
-    setCode(question.function_signature.signature + "\n    "); // signature + indent
-  }
-}, [question]);
+  useEffect(() => {
+    if (question.function_signature) {
+      setCode(question.function_signature.signature + "\n    "); // signature + indent
+    }
+  }, [question]);
 
   const startRecording = async () => {
     setRecordedChunks([]);
@@ -133,6 +154,15 @@ useEffect(() => {
   const fetchCodingQuestion = useCallback(async () => {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 120000); // 120 seconds timeout
+    
+    // Ensure the stream is stopped before fetching a new question
+    if (stream) {
+      stream.getTracks().forEach(track => track.stop());
+      setStream(null);
+    }
+    setVideoBlobUrl(null); // Clear previous video
+    setRecordedChunks([]); // Clear recorded chunks
+    setIsRecording(false); // Reset recording state
 
     try {
       setLoading(true);
@@ -215,7 +245,11 @@ useEffect(() => {
   return (
     <div className="flex flex-col lg:flex-row min-h-screen bg-gray-800 text-white">
       {/* Left Panel: Question */}
-      <div className="lg:w-1/2 p-6 bg-gray-900 border-r border-gray-700 flex flex-col">
+      <Resizable>
+      <div
+        className="p-6 bg-gray-900 border-r border-gray-700 flex flex-col"
+        style={{ flexBasis: `${leftPanelWidth}%`, flexGrow: 0, flexShrink: 0 }}
+      >
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-3xl font-bold text-yellow-500 text-center lg:text-left">
             {t('coding_assessment_round')} {candidateName && `for ${candidateName}`}
@@ -245,8 +279,6 @@ useEffect(() => {
           <div className="flex-grow overflow-y-auto pr-4 flex-wrap">
             <h3 className="text-2xl font-bold text-yellow-500 mb-4">{t('Question')}</h3>
             <pre className="bg-gray-700 p-4 rounded-md border border-gray-600 whitespace-pre-wrap text-gray-100 overflow-auto">
-              {/* <code>{JSON.stringify(question, null, 2)}</code> */}
-
               {(Array.isArray(question) ? question : [question]).map((item, index) => (
                 <div key={index} className="mb-4">
                   <h4 className="text-lg font-semibold text-yellow-400">{item.title}</h4>
@@ -277,7 +309,6 @@ useEffect(() => {
                   <br></br>
                   {item.examples && item.examples.length > 0 && (
                     <div>
-                      {/* <strong>{t('Examples')}:</strong> */}
                       <ul className="list-disc list-inside text-gray-300">
                         {item.examples.map((example, idx) => (
                           <div key={idx} className="mb-2">
@@ -302,17 +333,6 @@ useEffect(() => {
                     </div>
                   )}
                   <br></br>
-                  {/* ✅ Function signature
-                  {item.function_signature && (
-                    <div>
-                      <strong>{t('function_signature')}:</strong>
-                      <pre className="bg-gray-800 p-2 rounded mt-1 text-gray-200">
-                        {JSON.stringify(item.function_signature, null, 2)}
-                      </pre>
-                    </div>
-                  )} */}
-
-                  {/* ✅ Test cases */}
                   {item.test_cases && item.test_cases.length > 0 && (
                     <div>
                       <strong>{t('TestCases')}:</strong>
@@ -327,27 +347,24 @@ useEffect(() => {
                       </ul>
                     </div>
                   )}
-
-                  {/* ✅ Evaluation Criteria
-                  {item.evaluation_criteria && Object.keys(item.evaluation_criteria).length > 0 && (
-                    <div>
-                      <strong>{t('evaluation_criteria')}:</strong>
-                      <pre className="bg-gray-800 p-2 rounded mt-1 text-gray-200">
-                        {JSON.stringify(item.evaluation_criteria, null, 2)}
-                      </pre>
-                    </div>
-                  )} */}
                 </div>
               ))}
             </pre>
           </div>
-
-
         )}
       </div>
+      </Resizable>
+      {/* Divider */}
+      <div
+        onMouseDown={handleDividerMouseDown}
+        className="w-2 bg-gray-700 cursor-ew-resize flex-shrink-0"
+      ></div>
 
       {/* Right Panel: Code Editor and Video */}
-      <div className="lg:w-1/2 p-6 bg-gray-800 flex flex-col">
+      <div
+        className="p-6 bg-gray-800 flex flex-col"
+        style={{ flexGrow: 1 }}
+      >
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-lg font-semibold text-gray-200">{t('your_code')}:</h3>
         </div>
@@ -363,7 +380,7 @@ useEffect(() => {
         <div className="mt-6">
           <h3 className="text-xl font-semibold text-gray-200 mb-3">{t('record_your_explanation')}:</h3>
           <div
-            className="fixed bg-gray-700 rounded-md overflow-hidden shadow-lg"
+            className="fixed bg-white rounded-md overflow-hidden shadow-lg"
             style={{
               width: '200px', // Fixed width for draggable video
               height: '200px', // Fixed height for draggable video
@@ -375,7 +392,7 @@ useEffect(() => {
             }}
             onMouseDown={handleMouseDown}
           >
-            <video ref={videoRef} autoPlay muted className="w-full h-full object-cover"></video>
+            <video ref={videoRef} autoPlay muted className="w-full h-full object-cover" style={{ backgroundColor: 'white' }}></video>
             <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex justify-center gap-2">
               <button
                 onClick={startRecording}
@@ -400,8 +417,6 @@ useEffect(() => {
             </div>
           )}
         </div>
-
-
 
         {feedback && (
           <div className="mt-6 p-4 bg-blue-100 text-blue-800 rounded-md border border-blue-200">
