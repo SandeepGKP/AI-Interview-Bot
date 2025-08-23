@@ -303,6 +303,7 @@ router.post('/generate-report/:sessionId', async (req, res, next) => {
     if (!session) {
       return res.status(404).json({ error: 'Session not found' });
     }
+    console.log('Generating report for candidate:', session.candidateName); // Add this line for debugging
 
     const prompt = `
 Candidate Name: ${session.candidateName}
