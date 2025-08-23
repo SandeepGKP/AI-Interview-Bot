@@ -89,7 +89,10 @@ router.post('/generate-groq-interview', (req, res) => {
     ],
     responses: [],
     createdAt: new Date().toISOString(),
-    status: 'active'
+    status: 'active',
+    codingCompleted: false,
+    technicalCompleted: false,
+    hrCompleted: false
   };
   saveSessions(); // Save sessions after creating a new one
 
@@ -163,9 +166,12 @@ Return as a numbered list.`;
       roleDescription,
       introduction,
       questions,
-      responses: [],
-      createdAt: new Date().toISOString(),
-      status: 'active'
+    responses: [],
+    createdAt: new Date().toISOString(),
+    status: 'active',
+    codingCompleted: false,
+    technicalCompleted: false,
+    hrCompleted: false
     };
     saveSessions(); // Save sessions after creating a new one
 
@@ -249,9 +255,33 @@ router.get('/sessions', (req, res) => {
     createdAt: session.createdAt,
     status: session.status,
     responseCount: session.responses.length,
-    totalQuestions: session.questions.length
+    totalQuestions: session.questions.length,
+    codingCompleted: session.codingCompleted || false,
+    technicalCompleted: session.technicalCompleted || false,
+    hrCompleted: session.hrCompleted || false
   }));
   res.json(sessions);
+});
+
+/*
+ * POST /api/session/:sessionId/complete-round
+ * Marks a specific round as completed for a session
+ */
+router.post('/session/:sessionId/complete-round', (req, res) => {
+  const { sessionId } = req.params;
+  const { roundType } = req.body; // 'coding', 'technical', 'hr'
+
+  if (!interviewSessions[sessionId]) {
+    return res.status(404).json({ error: 'Interview session not found' });
+  }
+
+  if (!['coding', 'technical', 'hr'].includes(roundType)) {
+    return res.status(400).json({ error: 'Invalid round type' });
+  }
+
+  interviewSessions[sessionId][`${roundType}Completed`] = true;
+  saveSessions();
+  res.json({ success: true, message: `${roundType} round marked as completed.` });
 });
 
 /*
@@ -264,7 +294,10 @@ router.get('/candidates', (req, res) => {
     role: session.roleTitle,
     status: session.status,
     date: session.createdAt,
-    responseCount: session.responses.length
+    responseCount: session.responses.length,
+    codingCompleted: session.codingCompleted || false,
+    technicalCompleted: session.technicalCompleted || false,
+    hrCompleted: session.hrCompleted || false
   }));
   res.json(candidates);
 });
