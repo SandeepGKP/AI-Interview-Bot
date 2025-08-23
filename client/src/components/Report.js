@@ -47,9 +47,12 @@ const Report = () => {
     setError('');
     try {
       const res = await axios.post(`https://ai-interview-bot-backend.onrender.com/api/generate-report/${sessionId}`, {});
-      setReport(res.data);
-      console.log('Report fetched/generated successfully:', report.evaluation);
-
+      if (res.data) {
+        setReport(res.data);
+        console.log('Report fetched/generated successfully:', res.data.evaluation);
+      } else {
+        setError('Failed to get report: No data received.');
+      }
     } catch (err) {
       console.error('Error fetching/generating report:', err);
       setError(err.response?.data?.error || 'Failed to get report.');
@@ -88,63 +91,57 @@ const Report = () => {
     );
   }
 
-  const technicalSkillsData = {
-    labels: Object.keys(report.skillsBreakdown.technical_skills || {}),
-    datasets: [
-      {
-        label: 'Technical Skills',
-        data: Object.values(report.skillsBreakdown.technical_skills || {}).map((value) =>
-          parseInt(value.split('/')[0])
-        ),
-        backgroundColor: [
-          'rgba(255, 99, 132, 0.6)',
-          'rgba(54, 162, 235, 0.6)',
-          'rgba(255, 206, 86, 0.6)',
-          'rgba(75, 192, 192, 0.6)',
-          'rgba(153, 102, 255, 0.6)',
-          'rgba(255, 159, 64, 0.6)',
+  const getChartData = (skillsObject, labelPrefix) => {
+    const labels = Object.keys(skillsObject || {});
+    const data = Object.values(skillsObject || {}).map((value) =>
+      parseInt(String(value).split('/')[0])
+    );
+
+    if (labels.length === 0) {
+      return {
+        labels: [t('no_data_available')],
+        datasets: [
+          {
+            label: labelPrefix,
+            data: [1], // A single slice to represent no data
+            backgroundColor: ['rgba(128, 128, 128, 0.6)'], // Grey color for no data
+            borderColor: ['rgba(128, 128, 128, 1)'],
+            borderWidth: 1,
+          },
         ],
-        borderColor: [
-          'rgba(255, 99, 132, 1)',
-          'rgba(54, 162, 235, 1)',
-          'rgba(255, 206, 86, 1)',
-          'rgba(75, 192, 192, 1)',
-          'rgba(153, 102, 255, 1)',
-          'rgba(255, 159, 64, 1)',
-        ],
-        borderWidth: 1,
-      },
-    ],
+      };
+    }
+
+    return {
+      labels: labels,
+      datasets: [
+        {
+          label: labelPrefix,
+          data: data,
+          backgroundColor: [
+            'rgba(255, 99, 132, 0.6)',
+            'rgba(54, 162, 235, 0.6)',
+            'rgba(255, 206, 86, 0.6)',
+            'rgba(75, 192, 192, 0.6)',
+            'rgba(153, 102, 255, 0.6)',
+            'rgba(255, 159, 64, 0.6)',
+          ],
+          borderColor: [
+            'rgba(255, 99, 132, 1)',
+            'rgba(54, 162, 235, 1)',
+            'rgba(255, 206, 86, 1)',
+            'rgba(75, 192, 192, 1)',
+            'rgba(153, 102, 255, 1)',
+            'rgba(255, 159, 64, 1)',
+          ],
+          borderWidth: 1,
+        },
+      ],
+    };
   };
 
-  const softSkillsData = {
-    labels: Object.keys(report.skillsBreakdown.soft_skills || {}),
-    datasets: [
-      {
-        label: 'Soft Skills',
-        data: Object.values(report.skillsBreakdown.soft_skills || {}).map((value) =>
-          parseInt(value.split('/')[0])
-        ),
-        backgroundColor: [
-          'rgba(255, 99, 132, 0.6)',
-          'rgba(54, 162, 235, 0.6)',
-          'rgba(255, 206, 86, 0.6)',
-          'rgba(75, 192, 192, 0.6)',
-          'rgba(153, 102, 255, 0.6)',
-          'rgba(255, 159, 64, 0.6)',
-        ],
-        borderColor: [
-          'rgba(255, 99, 132, 1)',
-          'rgba(54, 162, 235, 1)',
-          'rgba(255, 206, 86, 1)',
-          'rgba(75, 192, 192, 1)',
-          'rgba(153, 102, 255, 1)',
-          'rgba(255, 159, 64, 1)',
-        ],
-        borderWidth: 1,
-      },
-    ],
-  };
+  const technicalSkillsData = getChartData(report.skillsBreakdown.technical_skills, t('technical_skills'));
+  const softSkillsData = getChartData(report.skillsBreakdown.soft_skills, t('soft_skills'));
 
   const getSummary = (evaluation) => {
     const summary = evaluation.split('Strengths:')[0];
