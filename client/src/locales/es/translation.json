@@ -182,5 +182,14 @@
   "generating_questions": "Generando preguntas...",
   "no_hr_questions_available": "No hay preguntas de RRHH disponibles.",
   "Dashboard": "Tablero",
-  "Report": "Informe"
+  "Report": "Informe",
+  "failed_to_mark_coding_round_complete": "No se pudo marcar la ronda de codificación como completa. Por favor, inténtelo de nuevo.",
+  "failed_to_mark_technical_round_complete": "No se pudo marcar la ronda técnica como completa. Por favor, inténtelo de nuevo.",
+  "failed_to_mark_hr_round_complete": "No se pudo marcar la ronda de RRHH como completa. Por favor, inténtelo de nuevo.",
+  "all_rounds": "Todas las Rondas",     
+  "coding_round": "Ronda de Codificación",
+  "technical_round": "Ronda Técnica",
+  "hr_round": "Ronda de RRHH",
+  "failed_to_load_report": "Error al cargar el informe."
+  
 }

@@ -187,6 +187,12 @@
   "generating_questions": "Generating questions...",
   "no_hr_questions_available": "No HR questions available." ,
   "Dashboard": "Dashboard",
-  "Report": "Report"
-
+  "Report": "Report",
+  "failed_to_mark_coding_round_complete": "Failed to mark coding round as complete. Please try again.",
+  "failed_to_mark_technical_round_complete": "Failed to mark technical round as complete. Please try again.",
+  "failed_to_mark_hr_round_complete": "Failed to mark HR round as complete. Please try again." ,
+  "all_rounds": "All Rounds",
+  "coding_round": "Coding Round",
+  "technical_round": "Technical Round", 
+  "hr_round": "HR Round"
 }

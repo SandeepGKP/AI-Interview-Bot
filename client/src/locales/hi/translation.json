@@ -181,5 +181,12 @@
   "generating_questions": "प्रश्न तैयार किए जा रहे हैं...",
   "no_hr_questions_available": "कोई एचआर प्रश्न उपलब्ध नहीं है।",
   "Dashboard": "डैशबोर्ड",
-  "Report": "रिपोर्ट"
+  "Report": "रिपोर्ट",
+  "failed_to_mark_coding_round_complete": "कोडिंग राउंड को पूरा के रूप में चिह्नित करने में विफल। कृपया पुनः प्रयास करें।",
+  "failed_to_mark_technical_round_complete": "तकनीकी राउंड को पूरा के रूप में चिह्नित करने में विफल। कृपया पुनः प्रयास करें।",
+  "failed_to_mark_hr_round_complete": "एचआर राउंड को पूरा के रूप में चिह्नित करने में विफल। कृपया पुनः प्रयास करें।",
+  "all_rounds": "सभी राउंड", 
+  "coding_round": "कोडिंग राउंड",
+  "technical_round": "तकनीकी राउंड",
+  "hr_round": "एचआर राउंड"
 }

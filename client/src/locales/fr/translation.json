@@ -184,5 +184,13 @@
   "generating_questions": "Génération des questions...",
   "no_hr_questions_available": "Aucune question RH disponible.",
   "Dashboard": "Tableau de bord",
-  "Report": "Rapport"
+  "Report": "Rapport",
+  "failed_to_mark_coding_round_complete": "Échec de la marque de la ronde de codage comme complète. Veuillez réessayer.",
+  "failed_to_mark_technical_round_complete": "Échec de la marque de la ronde technique comme complète. Veuillez réessayer.",
+  "failed_to_mark_hr_round_complete": "Échec de la marque de la ronde RH comme complète. Veuillez réessayer.",
+  "all_rounds": "Toutes les Rondes",    
+  "coding_round": "Ronde de Codage",
+  "technical_round": "Ronde Technique",
+  "hr_round": "Ronde RH"
+  
 }
