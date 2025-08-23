@@ -32,8 +32,37 @@ const upload = multer({
   limits: { fileSize: 50 * 1024 * 1024 } // 50MB limit
 });
 
+// File path for persistent storage
+const sessionsFilePath = path.join(__dirname, '../sessions.json');
+
 // In-memory storage for interview sessions
 let interviewSessions = {};
+
+// Function to load sessions from file
+const loadSessions = () => {
+  try {
+    if (fs.existsSync(sessionsFilePath)) {
+      const data = fs.readFileSync(sessionsFilePath, 'utf8');
+      interviewSessions = JSON.parse(data);
+      console.log('Interview sessions loaded from file.');
+    }
+  } catch (error) {
+    console.error('Error loading interview sessions:', error);
+  }
+};
+
+// Function to save sessions to file
+const saveSessions = () => {
+  try {
+    fs.writeFileSync(sessionsFilePath, JSON.stringify(interviewSessions, null, 2), 'utf8');
+    console.log('Interview sessions saved to file.');
+  } catch (error) {
+    console.error('Error saving interview sessions:', error);
+  }
+};
+
+// Load sessions when the server starts
+loadSessions();
 
 /*
  * POST /api/generate-groq-interview
@@ -60,8 +89,12 @@ router.post('/generate-groq-interview', (req, res) => {
     ],
     responses: [],
     createdAt: new Date().toISOString(),
-    status: 'active'
+    status: 'active',
+    codingCompleted: false,
+    technicalCompleted: false,
+    hrCompleted: false
   };
+  saveSessions(); // Save sessions after creating a new one
 
   res.json({
     sessionId,
@@ -133,10 +166,14 @@ Return as a numbered list.`;
       roleDescription,
       introduction,
       questions,
-      responses: [],
-      createdAt: new Date().toISOString(),
-      status: 'active'
+    responses: [],
+    createdAt: new Date().toISOString(),
+    status: 'active',
+    codingCompleted: false,
+    technicalCompleted: false,
+    hrCompleted: false
     };
+    saveSessions(); // Save sessions after creating a new one
 
     res.json({
       sessionId,
@@ -185,6 +222,7 @@ router.post('/upload-response/:sessionId/:questionIndex', upload.single('video')
     };
 
     interviewSessions[sessionId].responses.push(response);
+    saveSessions(); // Save sessions after adding a response
 
     res.json({
       success: true,
@@ -217,9 +255,33 @@ router.get('/sessions', (req, res) => {
     createdAt: session.createdAt,
     status: session.status,
     responseCount: session.responses.length,
-    totalQuestions: session.questions.length
+    totalQuestions: session.questions.length,
+    codingCompleted: session.codingCompleted || false,
+    technicalCompleted: session.technicalCompleted || false,
+    hrCompleted: session.hrCompleted || false
   }));
   res.json(sessions);
+});
+
+/*
+ * POST /api/session/:sessionId/complete-round
+ * Marks a specific round as completed for a session
+ */
+router.post('/session/:sessionId/complete-round', (req, res) => {
+  const { sessionId } = req.params;
+  const { roundType } = req.body; // 'coding', 'technical', 'hr'
+
+  if (!interviewSessions[sessionId]) {
+    return res.status(404).json({ error: 'Interview session not found' });
+  }
+
+  if (!['coding', 'technical', 'hr'].includes(roundType)) {
+    return res.status(400).json({ error: 'Invalid round type' });
+  }
+
+  interviewSessions[sessionId][`${roundType}Completed`] = true;
+  saveSessions();
+  res.json({ success: true, message: `${roundType} round marked as completed.` });
 });
 
 /*
@@ -232,7 +294,10 @@ router.get('/candidates', (req, res) => {
     role: session.roleTitle,
     status: session.status,
     date: session.createdAt,
-    responseCount: session.responses.length
+    responseCount: session.responses.length,
+    codingCompleted: session.codingCompleted || false,
+    technicalCompleted: session.technicalCompleted || false,
+    hrCompleted: session.hrCompleted || false
   }));
   res.json(candidates);
 });
@@ -253,6 +318,7 @@ router.delete('/candidates/:sessionId', (req, res) => {
       }
     });
     delete interviewSessions[sessionId];
+    saveSessions(); // Save sessions after deleting one
     return res.status(200).json({ message: 'Candidate session deleted successfully' });
   }
   res.status(404).json({ error: 'Candidate session not found' });
@@ -270,10 +336,11 @@ router.post('/generate-report/:sessionId', async (req, res, next) => {
     if (!session) {
       return res.status(404).json({ error: 'Session not found' });
     }
+    console.log('Session data for report generation:', JSON.stringify(session, null, 2)); // More detailed session logging
 
     const prompt = `
-Candidate Name: ${session.candidateName}
-Role: ${session.roleTitle}
+Candidate Name: ${session.candidateName || 'Unknown Candidate'}
+Role: ${session.roleTitle || 'Unknown Role'}
 Interview Questions and Answers:
 ${session.questions.map((q, i) =>
       `Q${i + 1}: ${q}\nA: ${session.responses?.[i]?.transcription || 'No response'}`
@@ -312,12 +379,13 @@ Provide a JSON object at the end of your evaluation containing a 'skills' key. T
       temperature: 0.7
     });
 
-    const evaluationContent = aiResponse?.choices?.[0]?.message?.content || "No evaluation generated.";
-    let evaluation = evaluationContent;
+    const evaluationContent = aiResponse?.choices?.[0]?.message?.content?.trim(); // Use .trim() here
+    console.log('Raw AI evaluation content:', evaluationContent); // Log raw AI response
+    let evaluation = evaluationContent || "No evaluation generated."; // Ensure a default value
     let skillsBreakdown = { technical_skills: {}, soft_skills: {} };
 
     // Attempt to extract JSON from the evaluation content
-    const jsonMatch = evaluationContent.match(/\{[\s\S]*\}/);
+    const jsonMatch = evaluationContent ? evaluationContent.match(/\{[\s\S]*\}/) : null; // Check if evaluationContent is not null/undefined
     if (jsonMatch) {
       try {
         const parsedJson = JSON.parse(jsonMatch[0]);
@@ -328,7 +396,12 @@ Provide a JSON object at the end of your evaluation containing a 'skills' key. T
         }
       } catch (e) {
         console.error("Error parsing skills JSON:", e);
+        // If JSON parsing fails, still use the full evaluationContent as evaluation
+        evaluation = evaluationContent;
       }
+    } else {
+      // If no JSON match, use the full evaluationContent as evaluation
+      evaluation = evaluationContent;
     }
 
     const report = {
