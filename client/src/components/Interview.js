@@ -527,6 +527,7 @@ const Interview = () => {
             setShowFullscreenPrompt(false);
             // If user declines, they can still proceed, but violations will be tracked
             setCurrentStage('introduction');
+            navigate('/'); // Navigate to home page
           }} color="error">
             {t('decline')}
           </Button>
