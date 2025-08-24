@@ -22,6 +22,7 @@ const CodingAssessmentRound = ({ onComplete, roleTitle, candidateName, sessionId
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const currentRoleTitle = roleTitle || 'Software Engineer'; // Use prop or default
+  const [selectedLanguage, setSelectedLanguage] = useState('JavaScript'); // Default coding language
 
   // Video recording states and refs
   const videoRef = useRef(null);
@@ -95,10 +96,13 @@ const CodingAssessmentRound = ({ onComplete, roleTitle, candidateName, sessionId
   }, [handleMouseMove, handleMouseUp]);
 
   useEffect(() => {
-    if (question.function_signature) {
+    if (question.function_signature && question.function_signature.language === selectedLanguage) {
       setCode(question.function_signature.signature + "\n    "); // signature + indent
+    } else {
+      // If the fetched signature doesn't match the selected language, set a generic placeholder
+      setCode(`// Write your ${selectedLanguage} code here\n`);
     }
-  }, [question]);
+  }, [question, selectedLanguage]);
 
   const startRecording = async () => {
     setRecordedChunks([]); // Clear previous chunks
@@ -177,7 +181,7 @@ const CodingAssessmentRound = ({ onComplete, roleTitle, candidateName, sessionId
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ roleTitle: currentRoleTitle, difficulty: 'medium', sessionId }),
+          body: JSON.stringify({ roleTitle: currentRoleTitle, difficulty: 'medium', sessionId, language: selectedLanguage }),
           signal: controller.signal,
         }
       );
@@ -210,7 +214,7 @@ const CodingAssessmentRound = ({ onComplete, roleTitle, candidateName, sessionId
       clearTimeout(timeoutId);
       setLoading(false);
     }
-  }, [currentRoleTitle, sessionId, t]);
+  }, [currentRoleTitle, sessionId, t, selectedLanguage]);
 
   useEffect(() => {
     fetchCodingQuestion();
@@ -294,7 +298,20 @@ const CodingAssessmentRound = ({ onComplete, roleTitle, candidateName, sessionId
 
       {/* Right Panel: Code Editor and Video */}
       <div className="p-8 bg-gray-900 flex flex-col flex-grow">
-        <h3 className="text-xl font-semibold text-purple-300 mb-4">{t('your_solution')}</h3>
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-xl font-semibold text-purple-300">{t('your_solution')}</h3>
+          <select
+            className="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 p-2.5"
+            value={selectedLanguage}
+            onChange={(e) => setSelectedLanguage(e.target.value)}
+            disabled={loading}
+          >
+            <option value="JavaScript">JavaScript</option>
+            <option value="Python">Python</option>
+            <option value="Java">Java</option>
+            <option value="C++">C++</option>
+          </select>
+        </div>
         <textarea
           className="flex-grow w-full p-4 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 font-mono text-base bg-gray-800 text-white resize-none"
           value={code}

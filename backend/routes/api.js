@@ -489,7 +489,7 @@ Provide a JSON object at the end of your evaluation containing a 'skills' key. T
  */
 router.post('/generate-coding-assessment', async (req, res, next) => {
   try {
-    const { roleTitle, difficulty } = req.body;
+    const { roleTitle, difficulty, language } = req.body; // Added language
 
     if (!roleTitle) {
       return res.status(400).json({ error: 'Role title is required' });
@@ -509,7 +509,7 @@ Required JSON structure:
   "examples": [
     { "input": "...", "output": "...", "explanation": "..." }
   ],
-  "function_signature": { "language": "JavaScript", "signature": "function fn(params) { }" },
+  "function_signature": { "language": "${language || 'JavaScript'}", "signature": "function fn(params) { }" },
   "test_cases": [
     { "input": "...", "expected_output": "..." }
   ],
