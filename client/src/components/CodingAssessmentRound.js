@@ -223,7 +223,7 @@ const CodingAssessmentRound = ({ onComplete, roleTitle, candidateName, sessionId
     }
     setFeedback(t('code_and_or_video_submitted_successfully_moving_to_the_next_round'));
     if (onComplete) {
-      onComplete({ code, video: videoBlobUrl });
+      onComplete({ code, video: videoBlobUrl, submitted: true });
     }
   };
 

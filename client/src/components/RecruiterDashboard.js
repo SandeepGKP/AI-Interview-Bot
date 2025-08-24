@@ -410,42 +410,48 @@ const RecruiterDashboard = () => {
                                 </Typography>
                                 <Table size="small">
                                   <TableBody>
-                                    <TableRow>
-                                      <TableCell>{t('Coding Assessment')}</TableCell>
-                                      <TableCell align="right">
-                                        <Button
-                                          variant="contained"
-                                          size="small"
-                                          onClick={() => viewDetails(candidate.id, 'coding')}
-                                        >
-                                          {t('view_details')}
-                                        </Button>
-                                      </TableCell>
-                                    </TableRow>
-                                    <TableRow>
-                                      <TableCell>{t('Technical Round')}</TableCell>
-                                      <TableCell align="right">
-                                        <Button
-                                          variant="contained"
-                                          size="small"
-                                          onClick={() => viewDetails(candidate.id, 'technical')}
-                                        >
-                                          {t('view_details')}
-                                        </Button>
-                                      </TableCell>
-                                    </TableRow>
-                                    <TableRow>
-                                      <TableCell>{t('HR Round')}</TableCell>
-                                      <TableCell align="right">
-                                        <Button
-                                          variant="contained"
-                                          size="small"
-                                          onClick={() => viewDetails(candidate.id, 'hr')}
-                                        >
-                                          {t('view_details')}
-                                        </Button>
-                                      </TableCell>
-                                    </TableRow>
+                                    {candidate.codingRoundSubmitted && (
+                                      <TableRow>
+                                        <TableCell>{t('Coding Assessment')}</TableCell>
+                                        <TableCell align="right">
+                                          <Button
+                                            variant="contained"
+                                            size="small"
+                                            onClick={() => viewDetails(candidate.id, 'coding')}
+                                          >
+                                            {t('view_details')}
+                                          </Button>
+                                        </TableCell>
+                                      </TableRow>
+                                    )}
+                                    {candidate.technicalRoundSubmitted && (
+                                      <TableRow>
+                                        <TableCell>{t('Technical Round')}</TableCell>
+                                        <TableCell align="right">
+                                          <Button
+                                            variant="contained"
+                                            size="small"
+                                            onClick={() => viewDetails(candidate.id, 'technical')}
+                                          >
+                                            {t('view_details')}
+                                          </Button>
+                                        </TableCell>
+                                      </TableRow>
+                                    )}
+                                    {candidate.hrRoundSubmitted && (
+                                      <TableRow>
+                                        <TableCell>{t('HR Round')}</TableCell>
+                                        <TableCell align="right">
+                                          <Button
+                                            variant="contained"
+                                            size="small"
+                                            onClick={() => viewDetails(candidate.id, 'hr')}
+                                          >
+                                            {t('view_details')}
+                                          </Button>
+                                        </TableCell>
+                                      </TableRow>
+                                    )}
                                   </TableBody>
                                 </Table>
                               </Box>

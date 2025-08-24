@@ -149,12 +149,12 @@ const Interview = () => {
   const [technicalVideo, setTechnicalVideo] = useState(null);
   const [hrVideo, setHrVideo] = useState(null);
 
-  const handleCodingComplete = async ({ code, video }) => {
+  const handleCodingComplete = async ({ code, video, submitted }) => {
     console.log('Coding Round Completed with answers:', code);
     console.log('Coding Video:', video);
     setCodingVideo(video);
     try {
-      await axios.post(`https://ai-interview-bot-backend.onrender.com/api/session/${sessionId}/complete-round`, { roundType: 'coding' });
+      await axios.post(`https://ai-interview-bot-backend.onrender.com/api/session/${sessionId}/complete-round`, { roundType: 'coding', submitted });
       console.log('Coding round marked as completed on backend.');
     } catch (error) {
       console.error('Error marking coding round complete:', error);
@@ -163,12 +163,12 @@ const Interview = () => {
     setCurrentStage('technical');
   };
 
-  const handleTechnicalComplete = async ({ answers, video }) => {
+  const handleTechnicalComplete = async ({ answers, video, submitted }) => {
     console.log('Technical Round Completed with answers:', answers);
     console.log('Technical Video:', video);
     setTechnicalVideo(video);
     try {
-      await axios.post(`https://ai-interview-bot-backend.onrender.com/api/session/${sessionId}/complete-round`, { roundType: 'technical' });
+      await axios.post(`https://ai-interview-bot-backend.onrender.com/api/session/${sessionId}/complete-round`, { roundType: 'technical', submitted });
       console.log('Technical round marked as completed on backend.');
     } catch (error) {
       console.error('Error marking technical round complete:', error);
@@ -177,12 +177,12 @@ const Interview = () => {
     setCurrentStage('hr');
   };
 
-  const handleHRComplete = async ({ answers, video }) => {
+  const handleHRComplete = async ({ answers, video, submitted }) => {
     console.log('HR Round Completed with answers:', answers);
     console.log('HR Video:', video);
     setHrVideo(video);
     try {
-      await axios.post(`https://ai-interview-bot-backend.onrender.com/api/session/${sessionId}/complete-round`, { roundType: 'hr' });
+      await axios.post(`https://ai-interview-bot-backend.onrender.com/api/session/${sessionId}/complete-round`, { roundType: 'hr', submitted });
       console.log('HR round marked as completed on backend.');
     } catch (error) {
       console.error('Error marking HR round complete:', error);

@@ -163,7 +163,7 @@ const HRRound = ({ onComplete, roleTitle, candidateName, sessionId }) => {
     }
     setFeedback(t('hr_interview_answers_and_or_video_submitted_successfully_moving_to_the_final_report'));
     if (onComplete) {
-      onComplete({ answers, video: videoBlobUrl });
+      onComplete({ answers, video: videoBlobUrl, submitted: true });
     }
   }, [questions, answers, onComplete, videoBlobUrl, t]);
 

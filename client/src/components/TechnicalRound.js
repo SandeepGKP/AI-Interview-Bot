@@ -162,7 +162,7 @@ const TechnicalRound = ({ onComplete, roleTitle, candidateName, sessionId }) => 
     }
     setFeedback(t('technical_interview_answers_and_or_video_submitted_successfully_moving_to_the_next_round_technical'));
     if (onComplete) {
-      onComplete({ answers, video: videoBlobUrl });
+      onComplete({ answers, video: videoBlobUrl, submitted: true });
     }
   };
 
