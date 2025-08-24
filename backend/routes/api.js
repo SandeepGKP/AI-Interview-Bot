@@ -568,7 +568,7 @@ router.post('/generate-hr-questions', async (req, res, next) => {
       return res.status(400).json({ error: 'Role title is required' });
     }
 
-    const prompt = `Generate 5-7 HR interview questions for a ${roleTitle} role in detail with Question words and dont tag question words.
+    const prompt = `Generate 5-7 HR interview questions for a ${roleTitle} role in detail (with Question words and dont tag question words) with complete question.
     Questions should cover:
     - Communication skills
     - Teamwork
