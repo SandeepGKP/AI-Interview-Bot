@@ -555,6 +555,7 @@ const Interview = () => {
         <DialogActions>
           <Button onClick={() => {
             setShowViolationPrompt(false);
+            navigate('/'); // Navigate to home page
             // If user declines, they can still proceed, but violations will be tracked
           }} color="error">
             {t('decline')}
