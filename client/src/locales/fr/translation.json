@@ -8,6 +8,11 @@
   "candidate_details_title": "Détails du candidat",
   "interview_session_title": "Session d'entretien",
   "report_title": "Rapport d'entretien",
+  "loading": "Chargement...", 
+  "error_occurred": "Une erreur est survenue. Veuillez réessayer.",
+  "retry": "Réessayer",
+  "select_language_label": "Sélectionner la langue :",
+
   "language_selector_label": "Sélectionner la langue :",
   "candidate_information": "Informations sur le candidat",
   "unknown_candidate": "Candidat inconnu",
@@ -45,6 +50,17 @@
   "stop_recording": "Arrêter l'enregistrement",
   "start_recording": "Démarrer l'enregistrement",
   "clear_recording": "Effacer l'enregistrement",
+  "recording_cleared": "Enregistrement effacé.",
+  "recording_failed": "L'enregistrement a échoué. Veuillez réessayer.",
+  "recording_in_progress": "Enregistrement en cours...",
+  "recording_complete": "Enregistrement terminé.",
+  "playback": "Lecture",
+  "pause": "Pause",
+  "resume": "Reprendre",
+  "record_again": "Enregistrer à nouveau",
+
+  "re_record": "Réenregistrer",
+  "are_you_sure_re_record": "Êtes-vous sûr de vouloir réenregistrer ? L'enregistrement actuel sera perdu.",
   "uploading": "Téléchargement",
   "submit_response": "Soumettre la réponse",
   "your_transcription": "Votre transcription",
@@ -108,6 +124,7 @@
   "total_questions_answered": "Total des questions répondues",
   "executive_summary": "Résumé exécutif",
   "skills_breakdown": "Répartition des compétences",
+
   "technical_skills": "Compétences techniques",
   "soft_skills": "Compétences non techniques",
   "no_specific_skill_breakdown": "Aucune répartition spécifique des compétences disponible à partir de l'évaluation de l'IA.",
@@ -120,7 +137,7 @@
   "product_manager_description": "Nous recherchons un chef de produit expérimenté pour diriger la stratégie et le développement de produits. De solides compétences en communication, une expérience des méthodologies agiles et une approche axée sur le client sont requises.",
   "language_english": "Anglais",
   "language_spanish": "Espagnol",
-  "language_french": "Français",
+  
   "default_introduction_fallback": "- Merci de nous rejoindre.\n- 5-7 questions sur les compétences en communication, l'expérience agile, l'orientation client.\n- Nous sommes ravis d'en apprendre davantage sur vos qualifications.",
   "delete_button_label": "Supprimer",
   "question_prefix": "Q",
@@ -132,6 +149,7 @@
   "define_role_desc": "Entrez le nom du candidat, le titre du poste et une description détaillée",
   "ai_questions_title": "2. Questions IA",
   "ai_questions_desc": "L'IA génère des questions d'entretien personnalisées",
+   
   "video_interview_title": "3. Entretien vidéo",
   "video_interview_desc": "Les candidats enregistrent leurs réponses vidéo",
   "ai_evaluation_title": "4. Évaluation IA",
@@ -142,6 +160,7 @@
   "ai_powered_feature": "Alimenté par l'IA",
   "ai_powered_description": "Questions personnalisées basées sur la description du poste",
   "voice_interview_feature": "Entretien vocal",
+
   "voice_interview_description": "Interaction vocale en temps réel avec l'intervieweur IA",
   "smart_feedback_feature": "Retour intelligent",
   "smart_feedback_description": "Analyse détaillée et suggestions d'amélioration",
@@ -333,5 +352,15 @@
   "select_role": "Sélectionner le rôle",
   "filter_by_status": "Filtrer par statut",
   "filter_by_role": "Filtrer par rôle",
-  "clear_filters": "Effacer les filtres"
+  "clear_filters": "Effacer les filtres",
+  "apply_filters": "Appliquer les filtres",
+  "no_candidates_found_with_current_filters": "Aucun candidat trouvé avec les filtres actuels.",
+  "failed_to_apply_filters": "Échec de l'application des filtres. Veuillez réessayer.",
+  "filters_applied_successfully": "Filtres appliqués avec succès.",
+  "loading_candidates": "Chargement des candidats...",
+  "loading_dashboard_metrics": "Chargement des métriques du tableau de bord...",
+  "loading_reports": "Chargement des rapports...",
+  "loading_sessions": "Chargement des sessions...",
+  "saving_user_preferences": "Enregistrement des préférences utilisateur...",
+  "saving_user_settings": "Enregistrement des paramètres utilisateur..."  
 }
