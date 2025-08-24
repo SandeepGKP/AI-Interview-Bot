@@ -251,7 +251,7 @@ const RecruiterDashboard = () => {
                 {t('export_csv')}
               </CSVLink>
             </Button>) :
-            <Button variant="outlined" size="small" sx={{ mr: 1, borderRadius: 2, backgroundColor: "white" , color:blue}} disabled >
+            <Button variant="outlined" size="small" sx={{ mr: 1, borderRadius: 2, backgroundColor: "grey" , color:blue}} disabled >
               <CSVLink data={csvData} filename={"candidates-dashboard.csv"} className="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedSizeSmall MuiButton-sizeSmall MuiButton-root MuiButton-outlined MuiButton-outlinedSizeSmall MuiButton-sizeSmall css-1k0122-MuiButtonBase-root-MuiButton-root" target="_blank">
                 {t('export_csv')}
               </CSVLink>
@@ -412,9 +412,15 @@ const RecruiterDashboard = () => {
                           <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
                             <Collapse in={openRow === candidate.id} timeout="auto" unmountOnExit>
                               <Box margin={2}>
-                                <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1 }}>
+                                {(candidate.codingRoundSubmitted || candidate.technicalRoundSubmitted || candidate.hrRoundSubmitted)?(
+                                  <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1 }}>
                                   {t('Interview Rounds')}
                                 </Typography>
+                                ):( 
+                                  <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1 }}>
+                                  {t('No Interview Rounds Found')}
+                                </Typography>
+                                )}  
                                 <Table size="small">
                                   <TableBody>
                                     {candidate.codingRoundSubmitted && (
