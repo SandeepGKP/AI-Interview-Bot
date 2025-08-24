@@ -6,24 +6,24 @@ import i18n from '../i18n';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'; // Import toastify CSS
 import { motion, AnimatePresence } from 'framer-motion';
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Button
+} from '@mui/material'; // Import MUI Dialog components
 
 // Import the new components
 import CodingAssessmentRound from './CodingAssessmentRound';
 import TechnicalRound from './TechnicalRound';
 import HRRound from './HRRound';
 
-const fetchIntroduction = async (roleTitle, roleDescription, t) => {
-  try {
-    const response = await axios.post('https://ai-interview-bot-backend.onrender.com/api/generate-groq-introduction', {
-      roleTitle,
-      roleDescription,
-    });
-    return response.data.introduction;
-  } catch (error) {
-    console.error('Error fetching introduction:', error);
-    return t('default_interview_introduction_fallback');
+const fetchIntroduction = (t) => {
+    return t('default_session_introduction');
   }
-};
+
 
 const Interview = () => {
   const { t } = useTranslation();
@@ -42,6 +42,28 @@ const Interview = () => {
   const [currentStage, setCurrentStage] = useState('setup'); // 'setup', 'introduction', 'coding', 'technical', 'hr', 'report'
   const [error, setError] = useState('');
   const [sessionId, setSessionId] = useState(paramSessionId); // Use local state for sessionId
+
+  // Fullscreen and violation states
+  const [showFullscreenPrompt, setShowFullscreenPrompt] = useState(false);
+  const [violationCount, setViolationCount] = useState(0);
+  const MAX_VIOLATIONS = 2;
+  const [interviewCompleted, setInterviewCompleted] = useState(false);
+  const [showViolationPrompt, setShowViolationPrompt] = useState(false);
+
+  // Refs to hold the latest state values for the fullscreen event listener
+  const currentStageRef = useRef(currentStage);
+  const interviewCompletedRef = useRef(interviewCompleted);
+  const violationCountRef = useRef(violationCount);
+  const navigateRef = useRef(navigate);
+  const tRef = useRef(t);
+
+  useEffect(() => {
+    currentStageRef.current = currentStage;
+    interviewCompletedRef.current = interviewCompleted;
+    violationCountRef.current = violationCount;
+    navigateRef.current = navigate;
+    tRef.current = t;
+  }, [currentStage, interviewCompleted, violationCount, navigate, t]);
 
   // Sample roles for quick start
   const sampleRoles = [
@@ -79,8 +101,6 @@ const Interview = () => {
     setSessionId(null); // Clear previous session ID if any
 
     try {
-      // This initial call can just generate the session ID and basic info
-      // The actual questions for each round will be fetched by their respective components
       const response = await axios.post('https://ai-interview-bot-backend.onrender.com/api/generate-interview', {
         candidateName: candidateName.trim(),
         roleTitle: roleTitle.trim(),
@@ -95,11 +115,9 @@ const Interview = () => {
         roleTitle: roleTitle.trim(),
         roleDescription: roleDescription.trim(),
         introduction: introduction,
-        // We don't need to store questions here, as each round fetches its own
       });
       setSessionId(newSessionId);
-      setCurrentStage('introduction'); // Move to introduction stage
-      navigate(`/interview/${newSessionId}`); // Update URL
+      navigate(`/interview/${newSessionId}`); // Update URL immediately
     } catch (err) {
       console.error('Error creating interview:', err);
       setError(err.response?.data?.error || t('failed_to_create_interview'));
@@ -115,7 +133,7 @@ const Interview = () => {
 
       try {
         const response = await axios.get(`https://ai-interview-bot-backend.onrender.com/api/session/${sessionId}`);
-        const introduction = await fetchIntroduction(response.data.roleTitle, response.data.roleDescription, t);
+        const introduction = await fetchIntroduction(t);
         setSession({ ...response.data, introduction, candidateName: response.data.candidateName || 'Candidate' }); // Ensure candidateName is set
         setCurrentStage('introduction'); // If session loaded, go to introduction or first stage
       } catch (err) {
@@ -127,6 +145,13 @@ const Interview = () => {
 
     loadSession();
   }, [sessionId, t]);
+
+  // Effect to show fullscreen prompt after session is loaded and stage is introduction
+  useEffect(() => {
+    if (session && currentStage === 'introduction') {
+      setShowFullscreenPrompt(true);
+    }
+  }, [session, currentStage]);
 
   // Speak introduction slowly
   useEffect(() => {
@@ -144,6 +169,78 @@ const Interview = () => {
   const handleIntroductionComplete = () => {
     setCurrentStage('coding');
   };
+
+  const enterFullScreen = () => {
+    console.log('Attempting to enter full-screen mode.');
+    const element = document.documentElement;
+    if (element.requestFullscreen) {
+      element.requestFullscreen();
+    } else if (element.mozRequestFullScreen) { // Firefox
+      element.mozRequestFullScreen();
+    } else if (element.webkitRequestFullscreen) { // Chrome, Safari and Opera
+      element.webkitRequestFullscreen();
+    } else if (element.msRequestFullscreen) { // IE/Edge
+      element.msRequestFullscreen();
+    }
+  };
+
+  const exitFullScreen = () => {
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    } else if (document.mozCancelFullScreen) { // Firefox
+      document.mozCancelFullScreen();
+    } else if (document.webkitExitFullscreen) { // Chrome, Safari and Opera
+      document.webkitExitFullscreen();
+    } else if (document.msExitFullscreen) { // IE/Edge
+      document.msExitFullscreen();
+    }
+  };
+
+  const handleFullscreenChange = () => {
+    console.log('Fullscreen change detected. Current fullscreenElement:', document.fullscreenElement);
+    if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement && !document.msFullscreenElement) {
+      console.log('Exited fullscreen mode.');
+      // Exited fullscreen
+      if (currentStageRef.current !== 'setup' && currentStageRef.current !== 'report' && !interviewCompletedRef.current) {
+        console.log('Interview is active, tracking violation.');
+        setViolationCount(prev => {
+          const newCount = prev + 1;
+          console.log(`Violation count: ${newCount}, Max violations: ${MAX_VIOLATIONS}`);
+          if (newCount > MAX_VIOLATIONS) {
+            toast.error(tRef.current('interview_terminated_fullscreen_violations'));
+            console.log('Max violations exceeded. Terminating interview and navigating to home.');
+            // Removed redundant exitFullScreen() call here as the document is already out of fullscreen
+            navigateRef.current('/'); // Navigate to home page
+            return prev; // Don't update count if terminating
+          } else {
+            setShowViolationPrompt(true); // Show violation prompt instead of toast
+            // toast.warn(tRef.current('fullscreen_violation_warning', { count: newCount, remaining: MAX_VIOLATIONS - newCount }));
+            console.log(`Fullscreen violation warning: ${newCount} of ${MAX_VIOLATIONS - newCount} remaining.`);
+          }
+          return newCount;
+        });
+      } else {
+        console.log('Not tracking violation: currentStage is setup/report or interview completed.');
+      }
+    } else {
+      console.log('Entered fullscreen mode.');
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+    document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+    document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+
+    return () => {
+      console.log('Removing fullscreen change event listeners.');
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+      document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
+      document.removeEventListener('mozfullscreenchange', handleFullscreenChange);
+      document.removeEventListener('MSFullscreenChange', handleFullscreenChange);
+    };
+  }, []); // Empty dependency array to ensure this effect runs only once on mount and cleanup on unmount
 
   const [codingVideo, setCodingVideo] = useState(null);
   const [technicalVideo, setTechnicalVideo] = useState(null);
@@ -187,6 +284,10 @@ const Interview = () => {
     } catch (error) {
       console.error('Error marking HR round complete:', error);
       toast.error(t('failed_to_mark_hr_round_complete'));
+    }
+    setInterviewCompleted(true); // Mark interview as completed
+    if (document.fullscreenElement) { // Only exit if currently in fullscreen
+      exitFullScreen(); // Exit fullscreen gracefully after completion
     }
     navigate("/"); // Navigate to report after all rounds, passing video data and candidate name
   };
@@ -363,15 +464,36 @@ const Interview = () => {
                 );
               case 'coding':
                 return (
-                  <CodingAssessmentRound onComplete={handleCodingComplete} roleTitle={session.roleTitle} candidateName={session.candidateName} sessionId={sessionId} />
+                  <>
+                    {currentStage !== 'setup' && currentStage !== 'report' && !interviewCompleted && (
+                      <div className="fixed top-4 right-4 bg-red-600 text-white px-4 py-2 rounded-md shadow-lg z-50">
+                        {t('violations_detected')}: {violationCount} / {MAX_VIOLATIONS}
+                      </div>
+                    )}
+                    <CodingAssessmentRound onComplete={handleCodingComplete} roleTitle={session.roleTitle} candidateName={session.candidateName} sessionId={sessionId} />
+                  </>
                 );
               case 'technical':
                 return (
-                  <TechnicalRound onComplete={handleTechnicalComplete} roleTitle={session.roleTitle} candidateName={session.candidateName} sessionId={sessionId} />
+                  <>
+                    {currentStage !== 'setup' && currentStage !== 'report' && !interviewCompleted && (
+                      <div className="fixed top-4 right-4 bg-red-600 text-white px-4 py-2 rounded-md shadow-lg z-50">
+                        {t('violations_detected')}: {violationCount} / {MAX_VIOLATIONS}
+                      </div>
+                    )}
+                    <TechnicalRound onComplete={handleTechnicalComplete} roleTitle={session.roleTitle} candidateName={session.candidateName} sessionId={sessionId} />
+                  </>
                 );
               case 'hr':
                 return (
-                  <HRRound onComplete={handleHRComplete} roleTitle={session.roleTitle} candidateName={session.candidateName} sessionId={sessionId} />
+                  <>
+                    {currentStage !== 'setup' && currentStage !== 'report' && !interviewCompleted && (
+                      <div className="fixed top-4 right-4 bg-red-600 text-white px-4 py-2 rounded-md shadow-lg z-50">
+                        {t('violations_detected')}: {violationCount} / {MAX_VIOLATIONS}
+                      </div>
+                    )}
+                    <HRRound onComplete={handleHRComplete} roleTitle={session.roleTitle} candidateName={session.candidateName} sessionId={sessionId} />
+                  </>
                 );
               default:
                 return null;
@@ -386,6 +508,64 @@ const Interview = () => {
     <div className="min-h-screen bg-black text-white">
       <ToastContainer />
       {renderStage()}
+
+      {/* Fullscreen Prompt Dialog */}
+      <Dialog
+        open={showFullscreenPrompt}
+        aria-labelledby="fullscreen-dialog-title"
+        aria-describedby="fullscreen-dialog-description"
+      >
+        <DialogTitle id="fullscreen-dialog-title">{t('enter_fullscreen_mode')}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="fullscreen-dialog-description">
+            {t('fullscreen_prompt_message')}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => {
+            setShowFullscreenPrompt(false);
+            // If user declines, they can still proceed, but violations will be tracked
+            setCurrentStage('introduction');
+          }} color="error">
+            {t('decline')}
+          </Button>
+          <Button onClick={() => {
+            enterFullScreen(); // Call enterFullScreen first
+            setShowFullscreenPrompt(false);
+            setCurrentStage('introduction');
+          }} color="primary" autoFocus>
+            {t('enter_fullscreen')}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Fullscreen Violation Dialog */}
+      <Dialog
+        open={showViolationPrompt}
+        aria-labelledby="violation-dialog-title"
+        aria-describedby="violation-dialog-description"
+      >
+        <DialogTitle id="violation-dialog-title">{t('fullscreen_violation_warning', { count: violationCount, remaining: MAX_VIOLATIONS - violationCount })}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="violation-dialog-description">
+            {t('fullscreen_prompt_message')}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => {
+            setShowViolationPrompt(false);
+            // If user declines, they can still proceed, but violations will be tracked
+          }} color="error">
+            {t('decline')}
+          </Button>
+          <Button onClick={() => {
+            enterFullScreen(); // Call enterFullScreen first
+            setShowViolationPrompt(false);
+          }} color="primary" autoFocus>
+            {t('enter_fullscreen')}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };

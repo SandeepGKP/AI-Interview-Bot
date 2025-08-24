@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Resizable } from 're-resizable'; // Import Resizable component
 import { motion } from 'framer-motion';
 
-const CodingAssessmentRound = ({ onComplete, roleTitle, candidateName, sessionId }) => {
+const CodingAssessmentRound = ({ onComplete, roleTitle, candidateName, sessionId, violationCount, maxViolations }) => {
   const { t } = useTranslation();
   const [code, setCode] = useState('');
   const [question, setQuestion] = useState({
@@ -255,6 +255,11 @@ const CodingAssessmentRound = ({ onComplete, roleTitle, candidateName, sessionId
               </h2>
             </div>
             {candidateName && <p className="text-lg text-gray-400 mb-4">{t('candidate')}: {candidateName}</p>}
+            {(violationCount !== undefined && maxViolations !== undefined) && (
+              <p className="text-md text-red-400 mb-2">
+                {t('fullscreen_violations_detected')}: {violationCount} / {maxViolations} ({t('remaining')}: {maxViolations - violationCount})
+              </p>
+            )}
           </div>
 
           {loading && <p className="text-center text-purple-400">{t('generating_question')}</p>}

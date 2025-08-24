@@ -52,12 +52,7 @@ function MainContent() {
               <Home />
             </motion.div>
           } />
-          <Route path="/interview" element={
-            <motion.div initial="initial" animate="in" exit="out" variants={pageVariants} transition={pageTransition}>
-              <Interview />
-            </motion.div>
-          } />
-          <Route path="/interview/:sessionId" element={
+          <Route path="/interview/:sessionId?" element={
             <motion.div initial="initial" animate="in" exit="out" variants={pageVariants} transition={pageTransition}>
               <Interview />
             </motion.div>

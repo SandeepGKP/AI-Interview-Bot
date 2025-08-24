@@ -338,5 +338,12 @@
   "no": "No",
   "photo_removed_successfully": "Photo removed successfully.",
   "failed_to_remove_photo": "Failed to remove photo. Please try again.",
-  "edit_candidate_details": "Edit Candidate Details"
+  "edit_candidate_details": "Edit Candidate Details",
+  "violations_detected": "Violations Detected",
+  "fullscreen_prompt_message": "To ensure a fair and uninterrupted interview experience, please enter full-screen mode. Exiting full-screen mode during a round will be counted as a violation.",
+  "enter_fullscreen_mode": "Enter Full-Screen Mode",
+  "enter_fullscreen": "Enter Full-Screen",
+  "decline": "Decline",
+  "interview_terminated_fullscreen_violations": "Interview terminated due to excessive full-screen violations.",
+  "fullscreen_violation_warning": "Full-screen violation detected! {{count}} of {{remaining}} remaining."
 }
