@@ -495,7 +495,7 @@ router.post('/generate-coding-assessment', async (req, res, next) => {
       return res.status(400).json({ error: 'Role title is required' });
     }
 
-    const prompt = `Generate a coding assessment problem for a ${roleTitle} role.
+    const prompt = `Generate always different coding assessment problem for a ${roleTitle} role so that no one can cheat.
 The style must mimic a LeetCode problem. 
 Return ONLY valid JSON (no explanations outside).
 
