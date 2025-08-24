@@ -101,30 +101,34 @@ const CodingAssessmentRound = ({ onComplete, roleTitle, candidateName, sessionId
   }, [question]);
 
   const startRecording = async () => {
-    setRecordedChunks([]);
+    setRecordedChunks([]); // Clear previous chunks
     setVideoBlobUrl(null);
     try {
       const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
       videoRef.current.srcObject = mediaStream;
+      videoRef.current.play();
       setStream(mediaStream);
 
       const options = { mimeType: 'video/webm; codecs=vp8,opus' };
       const mediaRecorder = new MediaRecorder(mediaStream, options);
       mediaRecorderRef.current = mediaRecorder;
 
+      let localRecordedChunks = []; // Use a local array to accumulate chunks
+
       mediaRecorder.ondataavailable = (event) => {
         if (event.data.size > 0) {
-          setRecordedChunks((prev) => [...prev, event.data]);
+          localRecordedChunks.push(event.data);
         }
       };
 
       mediaRecorder.onstop = () => {
-        const blob = new Blob(recordedChunks, { type: 'video/webm' });
+        const blob = new Blob(localRecordedChunks, { type: 'video/webm' });
         const url = URL.createObjectURL(blob);
         setVideoBlobUrl(url);
-        // Stop all tracks in the stream
-        if (stream) {
-          stream.getTracks().forEach(track => track.stop());
+        setRecordedChunks(localRecordedChunks); // Update state with all chunks after recording stops
+        // Stop all tracks in the stream directly
+        if (mediaStream) {
+          mediaStream.getTracks().forEach(track => track.stop());
         }
       };
 
@@ -156,10 +160,6 @@ const CodingAssessmentRound = ({ onComplete, roleTitle, candidateName, sessionId
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 120000); // 120 seconds timeout
     
-    if (stream) {
-      stream.getTracks().forEach(track => track.stop());
-      setStream(null);
-    }
     setVideoBlobUrl(null);
     setRecordedChunks([]);
     setIsRecording(false);
@@ -210,7 +210,7 @@ const CodingAssessmentRound = ({ onComplete, roleTitle, candidateName, sessionId
       clearTimeout(timeoutId);
       setLoading(false);
     }
-  }, [currentRoleTitle, sessionId, t, stream]);
+  }, [currentRoleTitle, sessionId, t]);
 
   useEffect(() => {
     fetchCodingQuestion();
@@ -249,22 +249,6 @@ const CodingAssessmentRound = ({ onComplete, roleTitle, candidateName, sessionId
               <h2 className="text-3xl font-bold text-purple-400">
                 {t('coding_assessment_round')}
               </h2>
-              <div className="flex gap-4">
-                <button
-                  onClick={() => fetchCodingQuestion()}
-                  className="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300 ease-in-out disabled:opacity-50"
-                  disabled={loading}
-                >
-                  {t('refresh')}
-                </button>
-                <button
-                  onClick={handleSubmit}
-                  className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300 ease-in-out disabled:opacity-50"
-                  disabled={loading || (!code.trim() && !videoBlobUrl)}
-                >
-                  {t('submit')}
-                </button>
-              </div>
             </div>
             {candidateName && <p className="text-lg text-gray-400 mb-4">{t('candidate')}: {candidateName}</p>}
           </div>
@@ -334,7 +318,7 @@ const CodingAssessmentRound = ({ onComplete, roleTitle, candidateName, sessionId
           <video ref={videoRef} autoPlay muted className="w-full h-full object-cover rounded-md"></video>
           <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex justify-center gap-2">
             <button
-              onClick={startRecording}
+              onClick={(e) => { e.preventDefault(); startRecording(); }}
               className="bg-green-600 hover:bg-green-700 text-white font-bold py-1 px-3 rounded-md text-sm transition duration-300 ease-in-out disabled:opacity-50"
               disabled={isRecording || loading}
             >
@@ -362,6 +346,22 @@ const CodingAssessmentRound = ({ onComplete, roleTitle, candidateName, sessionId
             <p>{feedback}</p>
           </div>
         )}
+      </div>
+      <div className="fixed bottom-4 right-4 z-50 flex gap-4">
+        <button
+          onClick={() => fetchCodingQuestion()}
+          className="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300 ease-in-out disabled:opacity-50"
+          disabled={loading}
+        >
+          {t('refresh')}
+        </button>
+        <button
+          onClick={handleSubmit}
+          className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300 ease-in-out disabled:opacity-50"
+          disabled={loading || (!code.trim() && !videoBlobUrl)}
+        >
+          {t('submit')}
+        </button>
       </div>
     </motion.div>
   );

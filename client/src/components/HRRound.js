@@ -66,6 +66,7 @@ const HRRound = ({ onComplete, roleTitle, candidateName, sessionId }) => {
     try {
       const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
       videoRef.current.srcObject = mediaStream;
+      videoRef.current.play();
       setStream(mediaStream);
 
       const options = { mimeType: 'video/webm; codecs=vp8,opus' };
@@ -174,27 +175,11 @@ const HRRound = ({ onComplete, roleTitle, candidateName, sessionId }) => {
       transition={{ duration: 0.5 }}
       className="min-h-screen bg-gray-900 text-gray-100 font-sans p-8"
     >
-      <div className="sticky top-0 z-10 bg-gray-900 pt-4 pb-4 -mt-8 -mx-8 px-8">
+      <div className="pt-4 pb-4 px-8">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-3xl font-bold text-purple-400">
             {t('hr_round_interview')}
           </h2>
-          <div className="flex gap-4">
-            <button
-              onClick={() => fetchHRQuestions()}
-              className="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300 ease-in-out disabled:opacity-50"
-              disabled={loading}
-            >
-              {t('refresh')}
-            </button>
-            <button
-              onClick={handleSubmit}
-              className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300 ease-in-out disabled:opacity-50"
-              disabled={loading || (questions.length > 0 && !questions.every((_, index) => answers[`question${index}`]?.trim() !== '') && !videoBlobUrl)}
-            >
-              {t('submit')}
-            </button>
-          </div>
         </div>
         {candidateName && <p className="text-lg text-gray-400 mb-4">{t('candidate')}: {candidateName}</p>}
       </div>
@@ -266,6 +251,22 @@ const HRRound = ({ onComplete, roleTitle, candidateName, sessionId }) => {
           <p>{feedback}</p>
         </div>
       )}
+      <div className="fixed bottom-4 right-4 z-50 flex gap-4">
+        <button
+          onClick={() => fetchHRQuestions()}
+          className="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300 ease-in-out disabled:opacity-50"
+          disabled={loading}
+        >
+          {t('refresh')}
+        </button>
+        <button
+          onClick={handleSubmit}
+          className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300 ease-in-out disabled:opacity-50"
+          disabled={loading || (questions.length > 0 && !questions.every((_, index) => answers[`question${index}`]?.trim() !== '') && !videoBlobUrl)}
+        >
+          {t('submit')}
+        </button>
+      </div>
     </motion.div>
   );
 };
