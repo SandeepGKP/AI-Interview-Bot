@@ -175,7 +175,7 @@ const RecruiterDashboard = () => {
 
   const filteredCandidates = sortedCandidates.filter(candidate => {
     const matchesSearch = candidate.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          candidate.role.toLowerCase().includes(searchTerm.toLowerCase());
+      candidate.role.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = filterStatus === 'all' || candidate.status === filterStatus;
     const matchesRole = filterRole === 'all' || candidate.role === filterRole;
     return matchesSearch && matchesStatus && matchesRole;
@@ -245,11 +245,18 @@ const RecruiterDashboard = () => {
           <Button variant="outlined" size="small" sx={{ mr: 1, borderRadius: 2 }} onClick={() => fetchCandidates(true)} disabled={loading}>
             {t('refresh')}
           </Button>
-          <Button variant="outlined" size="small" sx={{ mr: 1, borderRadius: 2 ,backgroundColor:blue}} >
-          <CSVLink data={csvData} filename={"candidates-dashboard.csv"} className="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedSizeSmall MuiButton-sizeSmall MuiButton-root MuiButton-outlined MuiButton-outlinedSizeSmall MuiButton-sizeSmall css-1k0122-MuiButtonBase-root-MuiButton-root" target="_blank">
-            {t('export_csv')}
-          </CSVLink>
-          </Button>
+          {totalCandidates > 0 ? (
+            <Button variant="outlined" size="small" sx={{ mr: 1, borderRadius: 2, backgroundColor: blue }} >
+              <CSVLink data={csvData} filename={"candidates-dashboard.csv"} className="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedSizeSmall MuiButton-sizeSmall MuiButton-root MuiButton-outlined MuiButton-outlinedSizeSmall MuiButton-sizeSmall css-1k0122-MuiButtonBase-root-MuiButton-root" target="_blank">
+                {t('export_csv')}
+              </CSVLink>
+            </Button>) :
+            <Button variant="outlined" size="small" sx={{ mr: 1, borderRadius: 2, backgroundColor: "white" , color:blue}} disabled >
+              <CSVLink data={csvData} filename={"candidates-dashboard.csv"} className="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedSizeSmall MuiButton-sizeSmall MuiButton-root MuiButton-outlined MuiButton-outlinedSizeSmall MuiButton-sizeSmall css-1k0122-MuiButtonBase-root-MuiButton-root" target="_blank">
+                {t('export_csv')}
+              </CSVLink>
+            </Button>
+          }
         </Box>
       </Box>
 

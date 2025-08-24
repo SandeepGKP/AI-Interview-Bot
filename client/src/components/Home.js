@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import i18n from '../i18n';
+import TypewriterEffect from './TypewriterEffect'; // Import the new component
 
 const Home = () => {
   const { t } = useTranslation();
@@ -37,7 +38,9 @@ const Home = () => {
 
         <div className="relative flex flex-col lg:flex-row items-center justify-between bg-gradient-to-br from-purple-800 to-indigo-900 p-6 sm:p-8 rounded-lg overflow-hidden shadow-2xl">
           <div className="lg:w-1/2 z-10 text-center lg:text-left">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 leading-tight text-purple-200">{t('master_your_next_interview')}</h2>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 leading-tight text-purple-200">
+              <TypewriterEffect text={t('master_your_next_interview')} typingDelay={100} deletingDelay={100} pauseDelay={2000} />
+            </h2>
             <p className="text-purple-300 text-base sm:text-lg mb-8 opacity-90">
               {t('home_tagline')}
             </p>
