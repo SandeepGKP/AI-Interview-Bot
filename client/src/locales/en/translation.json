@@ -102,7 +102,7 @@
   "data_scientist_description": "Seeking a Data Scientist with expertise in Python, machine learning, and statistical analysis. Experience with TensorFlow, pandas, and data visualization tools is preferred.",
   "product_manager": "Product Manager",
   "product_manager_description": "Looking for an experienced Product Manager to lead product strategy and development. Strong communication skills, experience with agile methodologies, and customer-focused mindset required.",
-  "ai_questions_note": "The AI will generate 5-7 personalized questions based on your role description. Candidates can complete the interview at their own pace.",
+  "ai_questions_note": "The AI will generate personalized questions based on your role description. Candidates can complete the interview at their own pace.",
   "failed_to_get_report": "Failed to get report.",
   "no_report_available": "No report available.",
   "candidate_evaluation_report": "Candidate Evaluation Report",
