@@ -57,18 +57,19 @@ const Header = () => {
         <IconButton edge="start" color="inherit" aria-label="menu" sx={{ mr: 2 }} onClick={() => navigate('/')}>
           <VideoCall sx={{ color: '#1976d2' }} />
         </IconButton>
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontWeight: 'bold' ,color:"blue" }}>
+        <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontWeight: 'bold' ,color:"blue", display: { xs: 'none', sm: 'block' } }}>
           {t('header_title')}
         </Typography>
         
-        <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+        <Box sx={{ display: 'flex', gap: { xs: 1, sm: 2 }, alignItems: 'center' }}>
           <Button
             color="inherit"
             startIcon={<Home />}
             onClick={() => navigate('/')}
             sx={{
               fontWeight: location.pathname === '/' ? 'bold' : 'normal',
-              color: location.pathname === '/' ? '#1976d2' : 'inherit'
+              color: location.pathname === '/' ? '#1976d2' : 'inherit',
+               display: { xs: 'none', sm: 'inline-flex' }
             }}
           >
             {t('home')}
@@ -80,7 +81,8 @@ const Header = () => {
             onClick={() => navigate('/recruiter')}
             sx={{
               fontWeight: location.pathname === '/recruiter' ? 'bold' : 'normal',
-              color: location.pathname === '/recruiter' ? '#1976d2' : 'inherit'
+              color: location.pathname === '/recruiter' ? '#1976d2' : 'inherit',
+              display: { xs: 'none', sm: 'inline-flex' }
             }}
           >
             {t('Dashboard')}

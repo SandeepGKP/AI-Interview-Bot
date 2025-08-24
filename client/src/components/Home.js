@@ -25,19 +25,20 @@ const Home = () => {
   return (
     <div className="min-h-screen text-white" style={{ background: 'linear-gradient(135deg, #2a004a 0%, #000000 100%)' }}>
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold"></h1>
+      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="flex flex-col sm:flex-row justify-between items-center mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-0"></h1>
           <button className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md flex items-center space-x-2 shadow-lg transition duration-300 ease-in-out transform hover:scale-105" onClick={handleStartInterview}>
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-            <span>{t('create_interview')}</span>
+            <span className="hidden sm:inline">{t('create_interview')}</span>
+            <span className="sm:hidden">{t('create')}</span>
           </button>
         </div>
 
-        <div className="relative flex flex-col lg:flex-row items-center justify-between bg-gradient-to-br from-purple-800 to-indigo-900 p-8 rounded-lg overflow-hidden shadow-2xl">
-          <div className="lg:w-1/2 z-10">
-            <h2 className="text-5xl font-bold mb-4 leading-tight text-purple-200">{t('master_your_next_interview')}</h2>
-            <p className="text-purple-300 text-lg mb-8 opacity-90">
+        <div className="relative flex flex-col lg:flex-row items-center justify-between bg-gradient-to-br from-purple-800 to-indigo-900 p-6 sm:p-8 rounded-lg overflow-hidden shadow-2xl">
+          <div className="lg:w-1/2 z-10 text-center lg:text-left">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 leading-tight text-purple-200">{t('master_your_next_interview')}</h2>
+            <p className="text-purple-300 text-base sm:text-lg mb-8 opacity-90">
               {t('home_tagline')}
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
@@ -70,7 +71,7 @@ const Home = () => {
             <img
               src="/images/robot.png"
               alt="Robot"
-              className="object-contain w-full max-w-md lg:max-w-lg xl:max-w-xl animate-float"
+              className="object-contain w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl animate-float"
               style={{
                 filter: 'drop-shadow(0px 0px 40px rgba(150, 0, 255, 0.8))',
                 position: 'relative',

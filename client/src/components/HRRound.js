@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import { motion } from 'framer-motion';
 
 const HRRound = ({ onComplete, roleTitle, candidateName, sessionId }) => {
   const { t } = useTranslation();
@@ -24,7 +25,7 @@ const HRRound = ({ onComplete, roleTitle, candidateName, sessionId }) => {
   const [offset, setOffset] = useState({ x: 0, y: 0 });
 
   const handleMouseDown = useCallback((e) => {
-    if (videoRef.current && videoRef.current.contains(e.target)) {
+    if (videoRef.current && videoRef.current.parentElement.contains(e.target)) {
       setIsDragging(true);
       setOffset({
         x: e.clientX - videoPosition.x,
@@ -38,9 +39,8 @@ const HRRound = ({ onComplete, roleTitle, candidateName, sessionId }) => {
       let newX = e.clientX - offset.x;
       let newY = e.clientY - offset.y;
 
-      // Keep video within screen bounds (simple boundary check)
-      newX = Math.max(0, Math.min(newX, window.innerWidth - (videoRef.current?.offsetWidth || 320)));
-      newY = Math.max(0, Math.min(newY, window.innerHeight - (videoRef.current?.offsetHeight || 240)));
+      newX = Math.max(0, Math.min(newX, window.innerWidth - 320));
+      newY = Math.max(0, Math.min(newY, window.innerHeight - 240));
 
       setVideoPosition({ x: newX, y: newY });
     }
@@ -82,7 +82,6 @@ const HRRound = ({ onComplete, roleTitle, candidateName, sessionId }) => {
         const blob = new Blob(recordedChunks, { type: 'video/webm' });
         const url = URL.createObjectURL(blob);
         setVideoBlobUrl(url);
-        // Stop all tracks in the stream
         if (stream) {
           stream.getTracks().forEach(track => track.stop());
         }
@@ -103,7 +102,6 @@ const HRRound = ({ onComplete, roleTitle, candidateName, sessionId }) => {
     }
   };
 
-  // Cleanup stream on component unmount
   useEffect(() => {
     return () => {
       if (stream) {
@@ -114,25 +112,21 @@ const HRRound = ({ onComplete, roleTitle, candidateName, sessionId }) => {
 
   const fetchHRQuestions = useCallback(async () => {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 120000); // 120 seconds timeout
+    const timeoutId = setTimeout(() => controller.abort(), 120000);
 
     try {
       setLoading(true);
       setError(null);
       const response = await fetch('https://ai-interview-bot-backend.onrender.com/api/generate-hr-questions', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ roleTitle: currentRoleTitle, existingSessionId: sessionId }),
-        signal: controller.signal, // Attach the abort signal
+        signal: controller.signal,
       });
 
-      clearTimeout(timeoutId); // Clear the timeout if the request completes
+      clearTimeout(timeoutId);
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
       const data = await response.json();
       setQuestions(data.questions);
@@ -143,17 +137,13 @@ const HRRound = ({ onComplete, roleTitle, candidateName, sessionId }) => {
       setAnswers(initialAnswers);
     } catch (err) {
       console.error("Failed to fetch HR questions:", err);
-      if (err.name === 'AbortError') {
-        setError(t('request_timed_out_please_try_again_hr'));
-      } else {
-        setError(t('failed_to_load_hr_questions'));
-      }
+      setError(err.name === 'AbortError' ? t('request_timed_out_please_try_again_hr') : t('failed_to_load_hr_questions'));
       setQuestions([]);
     } finally {
-      clearTimeout(timeoutId); // Ensure timeout is cleared even on error
+      clearTimeout(timeoutId);
       setLoading(false);
     }
-  }, [currentRoleTitle, t]);
+  }, [currentRoleTitle, sessionId, t]);
 
   useEffect(() => {
     fetchHRQuestions();
@@ -171,102 +161,112 @@ const HRRound = ({ onComplete, roleTitle, candidateName, sessionId }) => {
       return;
     }
     setFeedback(t('hr_interview_answers_and_or_video_submitted_successfully_moving_to_the_final_report'));
-    console.log('HR answers submitted:', answers);
-    console.log('Video submitted:', videoBlobUrl);
     if (onComplete) {
       onComplete({ answers, video: videoBlobUrl });
     }
-  }, [questions, answers, onComplete, videoBlobUrl]);
+  }, [questions, answers, onComplete, videoBlobUrl, t]);
 
   return (
-    <div className="p-6 bg-white rounded-lg shadow-md max-w-3xl mx-auto my-8">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-3xl font-bold text-gray-800 text-center">{t('hr_round_interview')} {candidateName && t('for_candidate', { candidateName })}</h2>
-        <button
-          onClick={() => fetchHRQuestions()}
-          className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-md transition duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
-          disabled={loading}
-        >
-          {t('refresh')}
-        </button>
-        <button
-          onClick={handleSubmit}
-          className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md transition duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
-          disabled={loading || (questions.length > 0 && !questions.every((_, index) => answers[`question${index}`]?.trim() !== '') && !videoBlobUrl)}
-        >
-          {t('submit')}
-        </button>
-      </div>
-
-      {loading && <p className="text-center text-blue-500">{t('generating_questions')}</p>}
-      {error && <p className="text-center text-red-500">{t(error)}</p>}
-
-      {!loading && !error && questions.length > 0 ? (
-        questions.map((q, index) => (
-          <div key={index} className="mb-6">
-            <h3 className="text-xl font-semibold text-gray-700 mb-3">{t('question')} {index + 1}:</h3>
-            <p className="text-gray-600 bg-gray-50 p-4 rounded-md border border-gray-200 whitespace-pre-wrap">{q}</p>
-            <textarea
-              className="w-full p-4 mt-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-800"
-              rows="5"
-              name={`question${index}`}
-              value={answers[`question${index}`] || ''}
-              onChange={(e) => handleChange(e, index)}
-              placeholder={t('your_answer_for_question', { index: index + 1 })}
-            ></textarea>
-          </div>
-        ))
-      ) : (
-        !loading && !error && <p className="text-center text-gray-600">{t('no_hr_questions_available')}</p>
-      )}
-
-      <div className="mt-6">
-        <h3 className="text-xl font-semibold text-gray-700 mb-3">{t('record_your_explanation')}:</h3>
-        <div
-          className="fixed bg-gray-200 rounded-md overflow-hidden shadow-lg"
-          style={{
-            width: '200px', // Fixed width for draggable video
-            height: '200px', // Fixed height for draggable video
-            top: videoPosition.y,
-            left: videoPosition.x,
-            cursor: isRecording ? 'grabbing' : 'grab',
-            zIndex: 1000, // Ensure it's on top
-            border: '4px solid white', // Make border thicker
-          }}
-          onMouseDown={handleMouseDown}
-        >
-          <video ref={videoRef} autoPlay muted className="w-full h-full object-cover"></video>
-          <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex justify-center gap-2">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.5 }}
+      className="min-h-screen bg-gray-900 text-gray-100 font-sans p-8"
+    >
+      <div className="sticky top-0 z-10 bg-gray-900 pt-4 pb-4 -mt-8 -mx-8 px-8">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-3xl font-bold text-purple-400">
+            {t('hr_round_interview')}
+          </h2>
+          <div className="flex gap-4">
             <button
-              onClick={startRecording}
-              className="bg-red-600 hover:bg-red-700 text-white font-bold py-1 px-3 rounded-md text-sm transition duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={isRecording || loading}
+              onClick={() => fetchHRQuestions()}
+              className="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300 ease-in-out disabled:opacity-50"
+              disabled={loading}
             >
-              {isRecording ? t('recording') : t('start')}
+              {t('refresh')}
             </button>
             <button
-              onClick={stopRecording}
-              className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-1 px-3 rounded-md text-sm transition duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={!isRecording || loading}
+              onClick={handleSubmit}
+              className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300 ease-in-out disabled:opacity-50"
+              disabled={loading || (questions.length > 0 && !questions.every((_, index) => answers[`question${index}`]?.trim() !== '') && !videoBlobUrl)}
             >
-              {t('stop')}
+              {t('submit')}
             </button>
           </div>
         </div>
-        {videoBlobUrl && (
-          <div className="mt-4">
-            <h4 className="text-lg font-semibold text-gray-700 mb-2">{t('recorded_video')}:</h4>
-            <video src={videoBlobUrl} controls className="w-full h-64 bg-gray-200 rounded-md"></video>
-          </div>
+        {candidateName && <p className="text-lg text-gray-400 mb-4">{t('candidate')}: {candidateName}</p>}
+      </div>
+
+      {loading && <p className="text-center text-purple-400">{t('generating_questions')}</p>}
+      {error && <p className="text-center text-red-400">{t(error)}</p>}
+
+      <div className="max-w-4xl mx-auto">
+        {!loading && !error && questions.length > 0 ? (
+          questions.map((q, index) => (
+            <div key={index} className="mb-8 bg-gray-800 p-6 rounded-lg shadow-lg">
+              <h3 className="text-xl font-semibold text-purple-300 mb-3">{t('question')} {index + 1}:</h3>
+              <p className="text-gray-300 bg-gray-700 p-4 rounded-md whitespace-pre-wrap">{q}</p>
+              <textarea
+                className="w-full p-4 mt-4 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-base bg-gray-700 text-white"
+                rows="5"
+                name={`question${index}`}
+                value={answers[`question${index}`] || ''}
+                onChange={(e) => handleChange(e, index)}
+                placeholder={t('your_answer_for_question', { index: index + 1 })}
+              ></textarea>
+            </div>
+          ))
+        ) : (
+          !loading && !error && <p className="text-center text-gray-500">{t('please_click_refresh_button')}</p>
         )}
       </div>
 
+      <div
+        className="fixed bg-black rounded-lg overflow-hidden shadow-lg border-2 border-purple-500 p-2"
+        style={{
+          width: '320px',
+          height: '240px',
+          top: videoPosition.y,
+          left: videoPosition.x,
+          cursor: isDragging ? 'grabbing' : 'grab',
+          zIndex: 1000,
+        }}
+        onMouseDown={handleMouseDown}
+      >
+        <video ref={videoRef} autoPlay muted className="w-full h-full object-cover rounded-md"></video>
+        <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex justify-center gap-2">
+          <button
+            onClick={startRecording}
+            className="bg-green-600 hover:bg-green-700 text-white font-bold py-1 px-3 rounded-md text-sm transition duration-300 ease-in-out disabled:opacity-50"
+            disabled={isRecording || loading}
+          >
+            {isRecording ? t('recording') : t('start')}
+          </button>
+          <button
+            onClick={stopRecording}
+            className="bg-red-600 hover:bg-red-700 text-white font-bold py-1 px-3 rounded-md text-sm transition duration-300 ease-in-out disabled:opacity-50"
+            disabled={!isRecording || loading}
+          >
+            {t('stop')}
+          </button>
+        </div>
+      </div>
+
+      {videoBlobUrl && (
+        <div className="fixed bottom-4 right-4 z-1000">
+          <h4 className="text-lg font-semibold text-purple-200 mb-2">{t('recorded_video')}:</h4>
+          <video src={videoBlobUrl} controls className="w-full max-w-md bg-gray-800 rounded-lg"></video>
+        </div>
+      )}
+
       {feedback && (
-        <div className="mt-6 p-4 bg-green-100 text-green-800 rounded-md border border-green-200">
+        <div className="fixed bottom-4 left-4 z-1000 p-4 bg-purple-800 text-purple-200 rounded-lg border border-purple-700">
           <p>{feedback}</p>
         </div>
       )}
-    </div>
+    </motion.div>
   );
 };
 

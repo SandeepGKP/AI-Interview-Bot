@@ -280,8 +280,17 @@ const Report = () => {
           >
             {t('executive_summary')}
           </Typography>
-          <Divider sx={{ mb: 2, bgcolor: '#4a5568' }} />
-          <Box sx={{ whiteSpace: 'pre-line', lineHeight: 1.7, px: 2, fontSize: '1rem' }}>
+          <Divider sx={{ mb: 3, bgcolor: '#4a5568' }} />
+          <Box sx={{
+            whiteSpace: 'pre-line',
+            lineHeight: 1.8,
+            px: 3,
+            fontSize: '1.1rem',
+            bgcolor: '#1a202c',
+            borderRadius: 2,
+            p: 3,
+            borderLeft: '4px solid #63b3ed'
+          }}>
             {getSummary(report.evaluation)}
           </Box>
         </Paper>
@@ -450,15 +459,19 @@ const Report = () => {
           >
             {t('detailed_evaluation')}
           </Typography>
-          <Divider sx={{ mb: 2, bgcolor: '#4a5568' }} />
+          <Divider sx={{ mb: 3, bgcolor: '#4a5568' }} />
           <Box
             sx={{
               whiteSpace: 'pre-line',
-              lineHeight: 1.7,
+              lineHeight: 1.8,
               fontSize: '1rem',
-              maxHeight: 300,
+              maxHeight: 400,
               overflowY: 'auto',
-              px: 2,
+              px: 3,
+              bgcolor: '#1a202c',
+              borderRadius: 2,
+              p: 3,
+              borderLeft: '4px solid #f6ad55'
             }}
           >
             {removeJsonFromString(report.evaluation)}
