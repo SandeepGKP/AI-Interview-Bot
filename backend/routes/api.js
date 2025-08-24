@@ -104,7 +104,10 @@ router.post('/generate-groq-interview', (req, res) => {
       status: 'active',
       codingCompleted: false,
       technicalCompleted: false,
-      hrCompleted: false
+      hrCompleted: false,
+      codingRoundSubmitted: false,
+      technicalRoundSubmitted: false,
+      hrRoundSubmitted: false
     };
     interviewSessions[sessionId] = session;
   }
@@ -157,6 +160,9 @@ router.post('/generate-interview', async (req, res, next) => {
         codingCompleted: false,
         technicalCompleted: false,
         hrCompleted: false,
+        codingRoundSubmitted: false,
+        technicalRoundSubmitted: false,
+        hrRoundSubmitted: false,
         codingAssessment: null // New field to store coding assessment problem
       };
       interviewSessions[sessionId] = session;
@@ -289,7 +295,10 @@ router.get('/sessions', (req, res) => {
     totalQuestions: session.questions.length,
     codingCompleted: session.codingCompleted || false,
     technicalCompleted: session.technicalCompleted || false,
-    hrCompleted: session.hrCompleted || false
+    hrCompleted: session.hrCompleted || false,
+    codingRoundSubmitted: session.codingRoundSubmitted || false,
+    technicalRoundSubmitted: session.technicalRoundSubmitted || false,
+    hrRoundSubmitted: session.hrRoundSubmitted || false
   }));
   res.json(sessions);
 });
@@ -300,7 +309,7 @@ router.get('/sessions', (req, res) => {
  */
 router.post('/session/:sessionId/complete-round', (req, res) => {
   const { sessionId } = req.params;
-  const { roundType } = req.body; // 'coding', 'technical', 'hr'
+  const { roundType, submitted } = req.body; // 'coding', 'technical', 'hr', and submitted flag
 
   if (!interviewSessions[sessionId]) {
     return res.status(404).json({ error: 'Interview session not found' });
@@ -311,8 +320,13 @@ router.post('/session/:sessionId/complete-round', (req, res) => {
   }
 
   interviewSessions[sessionId][`${roundType}Completed`] = true;
+  // Update the specific submitted flag for the round
+  if (typeof submitted === 'boolean') {
+    interviewSessions[sessionId][`${roundType}RoundSubmitted`] = submitted;
+  }
+  
   saveSessions();
-  res.json({ success: true, message: `${roundType} round marked as completed.` });
+  res.json({ success: true, message: `${roundType} round marked as completed. Submitted status: ${submitted}` });
 });
 
 /*
@@ -328,7 +342,10 @@ router.get('/candidates', (req, res) => {
     responseCount: session.responses.length,
     codingCompleted: session.codingCompleted || false,
     technicalCompleted: session.technicalCompleted || false,
-    hrCompleted: session.hrCompleted || false
+    hrCompleted: session.hrCompleted || false,
+    codingRoundSubmitted: session.codingRoundSubmitted || false,
+    technicalRoundSubmitted: session.technicalRoundSubmitted || false,
+    hrRoundSubmitted: session.hrRoundSubmitted || false
   }));
   res.json(candidates);
 });
