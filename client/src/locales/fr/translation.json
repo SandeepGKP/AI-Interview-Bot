@@ -362,5 +362,8 @@
   "loading_reports": "Chargement des rapports...",
   "loading_sessions": "Chargement des sessions...",
   "saving_user_preferences": "Enregistrement des préférences utilisateur...",
-  "saving_user_settings": "Enregistrement des paramètres utilisateur..."  
+  "saving_user_settings": "Enregistrement des paramètres utilisateur..."  ,
+  "fullscreen_prompt_message": "Pour une meilleure expérience, veuillez passer en mode plein écran.",
+  "enter_fullscreen": "Entrer en plein écran",
+  "exit_fullscreen": "Quitter le plein écran"
 }

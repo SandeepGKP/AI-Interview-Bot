@@ -302,5 +302,6 @@
   "understand": "Entiendo", 
   "max_violations_exceeded": "Ha excedido el número máximo de violaciones permitidas. La entrevista será terminada.",
   "candidates_must_remain_in_fullscreen_during_interview": "Los candidatos deben permanecer en modo de pantalla completa durante toda la entrevista. Salir de pantalla completa más de {{maxViolations}} veces resultará en la terminación de la entrevista."
-
+,
+"fullscreen_prompt_message": "Por favor, active el modo de pantalla completa para continuar con la entrevista."
 }

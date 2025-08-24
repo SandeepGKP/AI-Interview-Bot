@@ -235,12 +235,13 @@ const RecruiterDashboard = () => {
         <Box>
           <Button
             variant="contained"
-            color="primary"
+            color="grey"
             startIcon={<PersonAddIcon />}
             sx={{ mr: 1, borderRadius: 2 }}
             onClick={() => navigate('/interview')} // Assuming a route for adding a new candidate
           >
-            {t('add_new_candidate')}
+            <span className=" hidden sm:inline font-bold opacity-200 leading-tight text-transparent bg-clip-text 
+             bg-[radial-gradient(circle_at_center,#F87171,#FBBF24,#34D399,#3B82F6,#A78BFA)]">{t('add_new_candidate')}</span>
           </Button>
           <Button variant="outlined" size="small" sx={{ mr: 1, borderRadius: 2 }} onClick={() => fetchCandidates(true)} disabled={loading}>
             {t('refresh')}
@@ -251,7 +252,7 @@ const RecruiterDashboard = () => {
                 {t('export_csv')}
               </CSVLink>
             </Button>) :
-            <Button variant="outlined" size="small" sx={{ mr: 1, borderRadius: 2, backgroundColor: "grey" , color:blue}} disabled >
+            <Button variant="outlined" size="small" sx={{ mr: 1, borderRadius: 2, backgroundColor: "grey", color: blue }} disabled >
               <CSVLink data={csvData} filename={"candidates-dashboard.csv"} className="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedSizeSmall MuiButton-sizeSmall MuiButton-root MuiButton-outlined MuiButton-outlinedSizeSmall MuiButton-sizeSmall css-1k0122-MuiButtonBase-root-MuiButton-root" target="_blank">
                 {t('export_csv')}
               </CSVLink>
@@ -265,7 +266,9 @@ const RecruiterDashboard = () => {
           title={t('total_candidates')}
           value={totalCandidates}
           icon={<PeopleIcon sx={{ fontSize: 40, color: '#1976d2' }} />}
-          color="#e3f2fd"
+          style={{
+            background: "radial-gradient(circle at center, #e3f2fd, #90caf9, #1976d2)"
+          }}
         />
         <StatCard
           title={t('interviews_scheduled')}
@@ -412,15 +415,15 @@ const RecruiterDashboard = () => {
                           <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
                             <Collapse in={openRow === candidate.id} timeout="auto" unmountOnExit>
                               <Box margin={2}>
-                                {(candidate.codingRoundSubmitted || candidate.technicalRoundSubmitted || candidate.hrRoundSubmitted)?(
+                                {(candidate.codingRoundSubmitted || candidate.technicalRoundSubmitted || candidate.hrRoundSubmitted) ? (
                                   <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1 }}>
-                                  {t('Interview Rounds')}
-                                </Typography>
-                                ):( 
+                                    {t('Interview Rounds')}
+                                  </Typography>
+                                ) : (
                                   <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1 }}>
-                                  {t('No Interview Rounds Found')}
-                                </Typography>
-                                )}  
+                                    {t('No Interview Rounds Found')}
+                                  </Typography>
+                                )}
                                 <Table size="small">
                                   <TableBody>
                                     {candidate.codingRoundSubmitted && (

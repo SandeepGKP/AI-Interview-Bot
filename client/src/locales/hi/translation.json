@@ -396,5 +396,20 @@
   "new_password_required": "नया पासवर्ड आवश्यक है।",
   "current_password_required": "वर्तमान पासवर्ड आवश्यक है।",
   "current_password_incorrect": "वर्तमान पासवर्ड गलत है।",
-  "password_changed_successfully": "पासवर्ड सफलतापूर्वक बदल दिया गया।"
+  "password_changed_successfully": "पासवर्ड सफलतापूर्वक बदल दिया गया।",
+  "fullscreen_prompt_message": "बेहतर अनुभव के लिए, कृपया पूर्ण स्क्रीन मोड में जाएं।",
+  "enter_fullscreen": "पूर्ण स्क्रीन में जाएं",
+  "exit_fullscreen": "पूर्ण स्क्रीन से बाहर निकलें",
+  "fullscreen": "पूर्ण स्क्रीन",
+  "minimize": "कम करें",
+  "maximize": "बढ़ाएं",
+  "restore": "पुनर्स्थापित करें",
+  "failed_to_enter_fullscreen": "पूर्ण स्क्रीन में प्रवेश करने में विफल। कृपया पुनः प्रयास करें।",
+  "failed_to_exit_fullscreen": "पूर्ण स्क्रीन से बाहर निकलने में विफल। कृपया पुनः प्रयास करें।",
+  "entering_fullscreen": "पूर्ण स्क्रीन में प्रवेश हो रहा है...",
+  "exiting_fullscreen": "पूर्ण स्क्रीन से बाहर निकलना...",
+  "loading_fullscreen": "पूर्ण स्क्रीन लोड हो रही है...",
+  "user_settings": "उपयोगकर्ता सेटिंग्स",
+  "user_preferences": "उपयोगकर्ता प्राथमिकताएं",
+  "dark_mode": "डार्क मोड"
 }

@@ -22,7 +22,7 @@ import HRRound from './HRRound';
 
 const fetchIntroduction = (t) => {
     return t('default_session_introduction');
-  }
+  } 
 
 
 const Interview = () => {
@@ -46,7 +46,7 @@ const Interview = () => {
   // Fullscreen and violation states
   const [showFullscreenPrompt, setShowFullscreenPrompt] = useState(false);
   const [violationCount, setViolationCount] = useState(0);
-  const MAX_VIOLATIONS = 2;
+  const MAX_VIOLATIONS = 1;
   const [interviewCompleted, setInterviewCompleted] = useState(false);
   const [showViolationPrompt, setShowViolationPrompt] = useState(false);
 
@@ -494,7 +494,7 @@ const Interview = () => {
                     )}
                     <HRRound onComplete={handleHRComplete} roleTitle={session.roleTitle} candidateName={session.candidateName} sessionId={sessionId} />
                   </>
-                );
+                ); 
               default:
                 return null;
             }
@@ -511,6 +511,7 @@ const Interview = () => {
 
       {/* Fullscreen Prompt Dialog */}
       <Dialog
+        
         open={showFullscreenPrompt}
         aria-labelledby="fullscreen-dialog-title"
         aria-describedby="fullscreen-dialog-description"

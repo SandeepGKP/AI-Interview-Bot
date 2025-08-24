@@ -11,7 +11,7 @@ const Home = () => {
   const [roleTitle, setRoleTitle] = useState('');
   const [roleDescription, setRoleDescription] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState(''); 
   const [introduction, setIntroduction] = useState('');
   const [totalQuestions, setTotalQuestions] = useState(0);
   const [showIntro, setShowIntro] = useState(false);
@@ -29,17 +29,18 @@ const Home = () => {
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col sm:flex-row justify-between items-center mb-8">
           <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-0"></h1>
-          <button className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md flex items-center space-x-2 shadow-lg transition duration-300 ease-in-out transform hover:scale-105" onClick={handleStartInterview}>
+          <button className=" hover:bg-cyan-700 px-4 py-2 rounded-md flex items-center space-x-2 shadow-lg transition duration-300 ease-in-out transform hover:scale-105" onClick={handleStartInterview}>
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-            <span className="hidden sm:inline">{t('create_interview')}</span>
+            <span className="hidden sm:inline font-bold opacity-200 leading-tight text-transparent bg-clip-text 
+             bg-[radial-gradient(circle_at_center,#F87171,#FBBF24,#34D399,#3B82F6,#A78BFA)]">{t('create_interview')}</span>
             <span className="sm:hidden">{t('create')}</span>
           </button>
         </div>
 
         <div className="relative flex flex-col lg:flex-row items-center justify-between bg-gradient-to-br from-purple-800 to-indigo-900 p-6 sm:p-8 rounded-lg overflow-hidden shadow-2xl">
-          <div className="lg:w-1/2 z-10 text-center lg:text-left">
+          <div className="lg:w-2/3 z-10 text-center lg:text-left">
             <h2
-              className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 leading-tight text-transparent bg-clip-text 
+              className="text-3xl sm:text-4xl lg:text-5xl font-bold mt-2 leading-tight text-transparent bg-clip-text 
              bg-[radial-gradient(circle_at_center,_#F87171,_#FBBF24,_#34D399,_#3B82F6,_#A78BFA)]"
               style={{ fontFamily: "'Rubik Wet Paint', cursive" }}
             >
@@ -57,10 +58,11 @@ const Home = () => {
             </h2>
 
 
-            <p className="text-purple-300 text-base sm:text-lg mb-8 opacity-90">
+            <p className="text-purple-300 text-base sm:text-lg mt-8 opacity-200 leading-tight text-transparent bg-clip-text 
+             bg-[radial-gradient(circle_at_center,#F87171,#FBBF24,#34D399,#3B82F6,#A78BFA)]">
               {t('home_tagline')}
             </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 mt-5">
               <div className="bg-purple-700 bg-opacity-50 p-4 rounded-lg flex items-center space-x-3 shadow-md hover:shadow-xl transition duration-300 ease-in-out transform hover:-translate-y-1">
                 <div className="w-4 h-4 rounded-full bg-purple-400 animate-pulse"></div>
                 <div>

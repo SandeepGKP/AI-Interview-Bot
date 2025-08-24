@@ -428,6 +428,9 @@
   "failed_to_load_skill_data": "Failed to load skill data. Please try again later.",
   "skill_data_loaded_successfully": "Skill data loaded successfully.",
 
-  "loading_skill_data": "Loading skill data..."
+  "loading_skill_data": "Loading skill data...",
+
+  "failed_to_load_report_data": "Failed to load report data. Please try again later.",
+  "report_data_loaded_successfully": "Report data loaded successfully."
 
 }
