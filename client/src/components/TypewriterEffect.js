@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const TypewriterEffect = ({ text, typingDelay = 100, deletingDelay = 100, pauseDelay = 2000 }) => {
+const TypewriterEffect = ({ text, typingDelay = 100, deletingDelay = 100, pauseDelay = 2000 ,cursorRenderer}) => {
   const [currentText, setCurrentText] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
   const [charIndex, setCharIndex] = useState(0);
@@ -34,7 +34,7 @@ const TypewriterEffect = ({ text, typingDelay = 100, deletingDelay = 100, pauseD
   return (
     <span>
       {currentText}
-      <span className="animate-blink">!</span>
+      {cursorRenderer && cursorRenderer()}
     </span>
   );
 };

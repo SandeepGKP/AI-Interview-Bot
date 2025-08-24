@@ -38,9 +38,25 @@ const Home = () => {
 
         <div className="relative flex flex-col lg:flex-row items-center justify-between bg-gradient-to-br from-purple-800 to-indigo-900 p-6 sm:p-8 rounded-lg overflow-hidden shadow-2xl">
           <div className="lg:w-1/2 z-10 text-center lg:text-left">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 leading-tight text-purple-200">
-              <TypewriterEffect text={t('master_your_next_interview')} typingDelay={100} deletingDelay={100} pauseDelay={2000} />
+            <h2
+              className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 leading-tight text-transparent bg-clip-text 
+             bg-[radial-gradient(circle_at_center,_#F87171,_#FBBF24,_#34D399,_#3B82F6,_#A78BFA)]"
+              style={{ fontFamily: "'Rubik Wet Paint', cursive" }}
+            >
+              <TypewriterEffect
+                text={t('master_your_next_interview')}
+                typingDelay={100}
+                deletingDelay={100}
+                pauseDelay={1000}
+                cursorRenderer={() => (
+                  <span className="animate-blink" style={{ color: 'pink' }}>
+                    !
+                  </span>
+                )}
+              />
             </h2>
+
+
             <p className="text-purple-300 text-base sm:text-lg mb-8 opacity-90">
               {t('home_tagline')}
             </p>
