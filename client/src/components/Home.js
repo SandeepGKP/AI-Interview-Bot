@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import i18n from '../i18n';
 import TypewriterEffect from './TypewriterEffect'; // Import the new component
+import Button from '@mui/material/Button';
 
 const Home = () => {
   const { t } = useTranslation();
@@ -29,12 +30,12 @@ const Home = () => {
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col sm:flex-row justify-between items-center mb-8">
           <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-0"></h1>
-          <button className=" hover:bg-cyan-700 px-4 py-2 rounded-md flex items-center space-x-2 shadow-lg transition duration-300 ease-in-out transform hover:scale-105" onClick={handleStartInterview}>
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+          <Button variant="outlined" sx={{ mr: 1, borderRadius: 2, }} onClick={handleStartInterview}>
+            <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
             <span className="hidden sm:inline font-bold opacity-200 leading-tight text-transparent bg-clip-text 
              bg-[radial-gradient(circle_at_center,#F87171,#FBBF24,#34D399,#3B82F6,#A78BFA)]">{t('create_interview')}</span>
             <span className="sm:hidden">{t('create')}</span>
-          </button>
+          </Button>
         </div>
 
         <div className="relative flex flex-col lg:flex-row items-center justify-between bg-gradient-to-br from-purple-800 to-indigo-900 p-6 sm:p-8 rounded-lg overflow-hidden shadow-2xl">

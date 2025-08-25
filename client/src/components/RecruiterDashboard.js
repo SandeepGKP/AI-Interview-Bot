@@ -234,8 +234,7 @@ const RecruiterDashboard = () => {
         <Typography variant="h4" sx={{ fontWeight: 'bold' }}>{t('Dashboard')}</Typography>
         <Box>
           <Button
-            variant="contained"
-            color="grey"
+            variant="outlined"
             startIcon={<PersonAddIcon />}
             sx={{ mr: 1, borderRadius: 2 }}
             onClick={() => navigate('/interview')} // Assuming a route for adding a new candidate
@@ -244,7 +243,8 @@ const RecruiterDashboard = () => {
              bg-[radial-gradient(circle_at_center,#F87171,#FBBF24,#34D399,#3B82F6,#A78BFA)]">{t('add_new_candidate')}</span>
           </Button>
           <Button variant="outlined" size="small" sx={{ mr: 1, borderRadius: 2 }} onClick={() => fetchCandidates(true)} disabled={loading}>
-            {t('refresh')}
+            <span className="hidden sm:inline font-bold opacity-200 leading-tight text-transparent bg-clip-text 
+             bg-[radial-gradient(circle_at_center,#F87171,#FBBF24,#34D399,#3B82F6,#A78BFA)]" > {t('refresh')}</span>
           </Button>
           {totalCandidates > 0 ? (
             <Button variant="outlined" size="small" sx={{ mr: 1, borderRadius: 2, backgroundColor: blue }} >
