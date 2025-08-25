@@ -1,5 +1,6 @@
 // client/src/App.js
 import React from 'react';
+
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 // Components
@@ -9,6 +10,7 @@ import RecruiterDashboard from './components/RecruiterDashboard';
 import Report from './components/Report';
 import Header from './components/Header';
 import CandidateDetails from './components/CandidateDetails';
+import Visualizer from './components/Visualizer/Visualizer';
 
 function App() {
   return (
@@ -70,6 +72,11 @@ function MainContent() {
           <Route path="/candidate/:candidateId" element={
             <motion.div initial="initial" animate="in" exit="out" variants={pageVariants} transition={pageTransition}>
               <CandidateDetails />
+            </motion.div>
+          } />
+          <Route path="/visualizer" element={
+            <motion.div initial="initial" animate="in" exit="out" variants={pageVariants} transition={pageTransition}>
+              <Visualizer />
             </motion.div>
           } />
         </Routes>

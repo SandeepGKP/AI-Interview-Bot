@@ -6,7 +6,7 @@ import i18n from '../i18n';
 import TypewriterEffect from './TypewriterEffect'; // Import the new component
 import Button from '@mui/material/Button';
 import GradientBarCard from './BarChart';
-
+import Sidebar from './Visualizer/Sidebar'; // Import Sidebar
 
 const Home = () => {
   const { t } = useTranslation();
@@ -17,7 +17,7 @@ const Home = () => {
   const [error, setError] = useState('');
   const [introduction, setIntroduction] = useState('');
   const [totalQuestions, setTotalQuestions] = useState(0);
-  const [showIntro, setShowIntro] = useState(false);
+  const [showIntro, setShowIntro] = useState(0);
   const [sessionId, setSessionId] = useState(null);
 
   const navigate = useNavigate();
@@ -26,10 +26,15 @@ const Home = () => {
     navigate('/interview'); // Navigate to the interview page
   };
 
+  const handleSelectAlgorithm = (algorithm) => {
+    navigate('/visualizer', { state: { selectedAlgorithm: algorithm } });
+  };
+
   return (
-    <div className="min-h-screen text-white" style={{ background: 'linear-gradient(135deg, #2a004a 0%, #000000 100%)' }}>
+    <div className="h-screen text-white flex" style={{ background: 'linear-gradient(135deg, #2a004a 0%, #000000 100%)' }}>
+      <Sidebar onSelectAlgorithm={handleSelectAlgorithm} />
       {/* Main Content */}
-      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="flex-1 overflow-y-scroll container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col sm:flex-row justify-between items-center mb-8">
           <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-0"></h1>
           <Button id="sparkle-border"  variant="outlined" sx={{ mr: 1, borderRadius: 2, }} onClick={handleStartInterview}>
@@ -87,16 +92,16 @@ const Home = () => {
                   <p className="text-sm text-pink-200 opacity-80">{t('smart_feedback_description')}</p>
                 </div>
               </div>
-              <div className="bg-opacity-50 p-4 rounded-lg flex items-center space-x-5 shadow-md hover:shadow-xl transition duration-300 ease-in-out transform hover:-translate-y-1">
-                <div className="w-4 h-4 rounded-full bg-pink-400 animate-pulse"></div>
-                <div className="flex flex-col items-center justify-center space-y-1">
+              <div className="bg-opacity-50 p-4 rounded-lg flex flex-row items-center space-x-5 shadow-md hover:shadow-xl transition duration-300 ease-in-out transform hover:-translate-y-1">
+                <div className="w-4 h-4 ml-0 rounded-full bg-pink-400 animate-pulse"></div>
+                {/* <div className="flex flex-col items-center space-y-1"> */}
                   {/* <h3 className="font-bold text-pink-100">{t('skill_proficiency')}</h3> */}
 
                   {/* Gradient bar chart inside */}
-                  <div className="w-full h-24">
+                  {/* <div className="w-full h-24"> */}
                     <GradientBarCard />
-                  </div>
-                </div>
+                  {/* </div> */}
+                {/* </div> */}
 
               </div>
             </div>

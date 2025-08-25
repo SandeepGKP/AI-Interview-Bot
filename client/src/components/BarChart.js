@@ -6,7 +6,7 @@ import {
 } from "recharts";
 
 const data = [
-  { name: "A", value: 50 },
+  { name: "A", value: 80 },
   { name: "B", value: 19 },
   { name: "C", value: 15 },
   { name: "D", value: 30 },
@@ -17,12 +17,9 @@ const data = [
 
 const GradientBarCard = () => {
   return (
-    <div className="bg-opacity-50 p-2 rounded-lg flex items-center space-x-3 shadow-md hover:shadow-xl transition duration-300 ease-in-out transform hover:-translate-y-1">
-      {/* Left pulse dot */}
-      {/* <div className="w-4 h-4 rounded-full bg-pink-400 animate-pulse"></div> */}
+    // <div className="bg-opacity-50 p-2 rounded-lg flex items-center space-x-3 shadow-md hover:shadow-xl transition duration-300 ease-in-out transform hover:-translate-y-1">
 
-      {/* Small gradient bar chart */}
-      <div className="w-60 h-20"> 
+      // <div className="w-60 h-20 bg-opacity-50 p-2 rounded-lg flex items-center space-x-3 shadow-md hover:shadow-xl transition duration-300 ease-in-out transform hover:-translate-y-1"> 
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data}>
             <defs>
@@ -75,8 +72,7 @@ const GradientBarCard = () => {
             />
           </BarChart>
         </ResponsiveContainer>
-      </div>
-    </div>
+      // </div>
   );
 };
 
