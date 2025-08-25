@@ -6,9 +6,11 @@
   0% {
     transform: translateY(0px);
   }
+
   50% {
     transform: translateY(-20px);
   }
+
   100% {
     transform: translateY(0px);
   }
@@ -23,10 +25,12 @@
     opacity: 0.2;
     transform: scale(1);
   }
+
   50% {
     opacity: 0.4;
     transform: scale(1.05);
   }
+
   100% {
     opacity: 0.2;
     transform: scale(1);
@@ -38,10 +42,71 @@
 }
 
 @keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+  }
 }
 
 .animate-blink {
   animation: blink 0.5s step-end infinite;
+}
+
+/* styles.css */
+@keyframes glitter {
+  0% {
+    stroke-opacity: 0.4;
+    stroke-dashoffset: 0;
+  }
+
+  50% {
+    stroke-opacity: 1;
+    stroke-dashoffset: 10;
+  }
+
+  100% {
+    stroke-opacity: 0.4;
+    stroke-dashoffset: 20;
+  }
+}
+
+.glitter-border {
+  animation: glitter 2s linear infinite;
+  stroke-dasharray: 5, 5;
+}
+
+
+@keyframes twinkle {
+  0% {
+    stroke-opacity: 0.6;
+  }
+
+  20% {
+    stroke-opacity: 1;
+  }
+
+  40% {
+    stroke-opacity: 0.4;
+  }
+
+  60% {
+    stroke-opacity: 1;
+  }
+
+  80% {
+    stroke-opacity: 0.5;
+  }
+
+  100% {
+    stroke-opacity: 0.6;
+  }
+}
+
+.sparkle-border {
+  animation: twinkle 1.2s ease-in-out infinite;
 }
