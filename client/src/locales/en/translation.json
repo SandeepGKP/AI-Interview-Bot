@@ -431,6 +431,9 @@
   "loading_skill_data": "Loading skill data...",
 
   "failed_to_load_report_data": "Failed to load report data. Please try again later.",
-  "report_data_loaded_successfully": "Report data loaded successfully."
+  "report_data_loaded_successfully": "Report data loaded successfully.",
+  "analysis":"Analisys",
+  "skill_proficiency":"Skill Proficiency"
+
 
 }

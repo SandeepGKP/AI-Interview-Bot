@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import i18n from '../i18n';
 import TypewriterEffect from './TypewriterEffect'; // Import the new component
 import Button from '@mui/material/Button';
+import GradientBarCard from './BarChart';
 
 const Home = () => {
   const { t } = useTranslation();
@@ -12,7 +13,7 @@ const Home = () => {
   const [roleTitle, setRoleTitle] = useState('');
   const [roleDescription, setRoleDescription] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(''); 
+  const [error, setError] = useState('');
   const [introduction, setIntroduction] = useState('');
   const [totalQuestions, setTotalQuestions] = useState(0);
   const [showIntro, setShowIntro] = useState(false);
@@ -84,6 +85,18 @@ const Home = () => {
                   <h3 className="font-bold text-pink-100">{t('smart_feedback_feature')}</h3>
                   <p className="text-sm text-pink-200 opacity-80">{t('smart_feedback_description')}</p>
                 </div>
+              </div>
+              <div className="bg-opacity-50 p-4 rounded-lg flex items-center space-x-5 shadow-md hover:shadow-xl transition duration-300 ease-in-out transform hover:-translate-y-1">
+                <div className="w-4 h-4 rounded-full bg-pink-400 animate-pulse"></div>
+                <div className="flex flex-col items-center justify-center space-y-1">
+                  {/* <h3 className="font-bold text-pink-100">{t('skill_proficiency')}</h3> */}
+
+                  {/* Gradient bar chart inside */}
+                  <div className="w-full h-24">
+                    <GradientBarCard />
+                  </div>
+                </div>
+
               </div>
             </div>
           </div>
