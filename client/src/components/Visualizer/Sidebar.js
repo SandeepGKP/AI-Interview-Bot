@@ -8,7 +8,6 @@ const Sidebar = ({ onSelectAlgorithm }) => {
   const algorithms = {
     [t('searching_category')]: [t('binary_search_alg'), t('linear_search_alg')],
     [t('sorting_category')]: [t('bubble_sort_alg'), t('selection_sort_alg'), t('insertion_sort_alg'), t('merge_sort_alg'), t('quick_sort_alg')],
-    [t('array_category')]: [t('kadanes_algorithm_alg'), t('two_pointers_alg'), t('sliding_window_alg')],
     [t('graph_category')]: [t('bfs_alg'), t('dfs_alg'), t('dijkstras_algorithm_alg'), t('prims_algorithm_alg'), t('kruskals_algorithm_alg')],
     [t('tree_category')]: [t('preorder_traversal_alg'), t('inorder_traversal_alg'), t('postorder_traversal_alg'), t('level_order_traversal_alg')]
   };
@@ -23,9 +22,6 @@ const Sidebar = ({ onSelectAlgorithm }) => {
       [t('insertion_sort_alg')]: 'Insertion Sort',
       [t('merge_sort_alg')]: 'Merge Sort',
       [t('quick_sort_alg')]: 'Quick Sort',
-      [t('kadanes_algorithm_alg')]: 'Kadane\'s Algorithm',
-      [t('two_pointers_alg')]: 'Two Pointers',
-      [t('sliding_window_alg')]: 'Sliding Window',
       [t('bfs_alg')]: 'BFS',
       [t('dfs_alg')]: 'DFS',
       [t('dijkstras_algorithm_alg')]: 'Dijkstra\'s Algorithm',
@@ -42,7 +38,7 @@ const Sidebar = ({ onSelectAlgorithm }) => {
   return (
     <div className="w-25 overflow-y-scroll bg-gray-800 p-4 h-full">
       <h2 className="mb-6"><span className="text-purple-300  text-6xl sm:text-3xl  opacity-200 leading-tight text-transparent bg-clip-text 
-             bg-[radial-gradient(circle_at_center,#F87171,#FBBF24,#34D399,#3B82F6,#A78BFA)]">{t('algoviz')}</span></h2>
+             bg-[radial-gradient(circle_at_center,#F87171,#FBBF24,#34D399,#3B82F6,#A78BFA)]">🧠AlgoViz</span></h2>
 
       {Object.entries(algorithms).map(([category, algs]) => (
         <div key={category} className="mb-4 ml-10 ">

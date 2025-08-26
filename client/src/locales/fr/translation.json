@@ -135,7 +135,7 @@
   "language_english": "Anglais",
   "language_spanish": "Espagnol",
   "language_french": "Français",
-  
+  "create": "Créer",
   "default_introduction_fallback": "- Merci de nous rejoindre.\n- 5-7 questions sur les compétences en communication, l'expérience agile, l'orientation client.\n- Nous sommes ravis d'en apprendre davantage sur vos qualifications.",
   "delete_button_label": "Supprimer",
   "question_prefix": "Q",
@@ -316,6 +316,10 @@
   "all_rights_reserved": "Tous droits réservés.",
   "select_language": "Sélectionner la langue",
   "language": "Langue",
+  "language.en": "Anglais",
+  "language.es": "Espagnol",
+  "language.fr": "Français",
+  "language.hi": "Hindi",
   "failed_to_load_user_preferences": "Échec du chargement des préférences utilisateur. Veuillez réessayer plus tard.",
   "failed_to_save_user_preferences": "Échec de l'enregistrement des préférences utilisateur. Veuillez réessayer plus tard.",
   "user_preferences_saved_successfully": "Préférences utilisateur enregistrées avec succès.",
@@ -416,5 +420,8 @@
   "preorder_traversal_alg": "Parcours préfixe",
   "inorder_traversal_alg": "Parcours infixe",
   "postorder_traversal_alg": "Parcours postfixe",
-  "level_order_traversal_alg": "Parcours en largeur"
+  "level_order_traversal_alg": "Parcours en largeur",
+  "graph_input_format_unweighted": "Exemple : `{ \"A\": [\"B\", \"C\"], \"B\": [\"A\"], \"C\": [\"A\"] }` (non pondéré)",
+  "graph_input_format_weighted": "Exemple : `{ \"A\": {\"B\": 1, \"C\": 5}, \"B\": {\"A\": 1}, \"C\": {\"A\": 5} }` (pondéré)",
+  "tree_input_format": "Exemple : `{ \"value\": 1, \"left\": {\"value\": 2}, \"right\": {\"value\": 3} }`"
 }

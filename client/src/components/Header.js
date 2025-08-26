@@ -131,7 +131,7 @@ const Header = () => {
             >
               {Object.keys(i18n.options.resources).map((lang) => (
                 <MenuItem key={lang} value={lang}>
-              {t(lang === 'en' ? 'English' : lang === 'es' ? 'Spanish' : lang === 'fr' ? 'French' : lang === 'hi' ? 'Hindi' : lang)}
+              {t(`language.${lang}`)}
                 </MenuItem>
               ))}
             </Select>

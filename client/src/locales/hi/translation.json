@@ -126,6 +126,7 @@
   "language_english": "अंग्रेज़ी",
   "language_spanish": "स्पेनिश",
   "language_french": "फ़्रेंच",
+  "create": "बनाएं",
   "default_introduction_fallback": "- हमारे साथ जुड़ने के लिए धन्यवाद।\n- संचार कौशल, एजाइल अनुभव, ग्राहक केंद्रितता पर 5-7 प्रश्न।\n- आपके योग्यताओं के बारे में जानने के लिए उत्साहित हैं।",
   "delete_button_label": "हटाएं",
   "question_prefix": "प्र",
@@ -302,6 +303,10 @@
   "all_rights_reserved": "सभी अधिकार सुरक्षित।",
   "select_language": "भाषा चुनें",
   "language": "भाषा",
+  "language.en": "अंग्रेज़ी",
+  "language.es": "स्पेनिश",
+  "language.fr": "फ़्रेंच",
+  "language.hi": "हिंदी",
   "failed_to_load_user_preferences": "उपयोगकर्ता प्राथमिकताएं लोड करने में विफल। कृपया बाद में पुनः प्रयास करें।",
   "failed_to_save_user_preferences": "उपयोगकर्ता प्राथमिकताएं सहेजने में विफल। कृपया बाद में पुनः प्रयास करें।",
   "user_preferences_saved_successfully": "उपयोगकर्ता प्राथमिकताएं सफलतापूर्वक सहेजी गईं।",
@@ -464,5 +469,8 @@
   "preorder_traversal_alg": "प्रीऑर्डर ट्रैवर्सल",
   "inorder_traversal_alg": "इनऑर्डर ट्रैवर्सल",
   "postorder_traversal_alg": "पोस्टऑर्डर ट्रैवर्सल",
-  "level_order_traversal_alg": "लेवल ऑर्डर ट्रैवर्सल"
+  "level_order_traversal_alg": "लेवल ऑर्डर ट्रैवर्सल",
+  "graph_input_format_unweighted": "उदाहरण: `{ \"A\": [\"B\", \"C\"], \"B\": [\"A\"], \"C\": [\"A\"] }` (भारहीन)",
+  "graph_input_format_weighted": "उदाहरण: `{ \"A\": {\"B\": 1, \"C\": 5}, \"B\": {\"A\": 1}, \"C\": {\"A\": 5} }` (भारित)",
+  "tree_input_format": "उदाहरण: `{ \"value\": 1, \"left\": {\"value\": 2}, \"right\": {\"value\": 3} }`"
 }

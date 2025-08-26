@@ -11,18 +11,32 @@ const VisualizationArea = ({ data, output, animations, currentStep, algorithmTyp
     // Apply animation effects based on currentStep and animations
     const currentAnimation = animations && animations[currentStep];
 
+    // Determine the array to visualize: either the animated state or the initial data
+    const arrayToVisualize = (currentAnimation && currentAnimation.array && (algorithmType === 'Sorting' || algorithmType === 'Array' || algorithmType === 'Searching'))
+      ? currentAnimation.array
+      : data;
+
+    if (!arrayToVisualize || arrayToVisualize.length === 0) {
+      return <p>No data to visualize. Please input data and run an algorithm.</p>;
+    }
+
+    // Calculate max value for scaling, considering only numbers
+    const maxVal = Math.max(...arrayToVisualize.filter(item => typeof item.value === 'number' && !isNaN(item.value)).map(item => item.value));
+
     return (
-      <div className="flex items-end h-64 bg-gray-700 p-2 rounded-md">
-        {data.map((value, index) => {
-          let bgColor = 'bg-blue-500';
+      <div className="h-80 bg-gray-700 p-2 rounded-md relative"> {/* Removed flex items-end */}
+        {arrayToVisualize.map((item, index) => {
+          const value = item.value;
+          const id = item.id;
+          let bgColor = 'bg-gradient-bar'; // Default color for all bars, reset each render
+
           if (currentAnimation) {
+            // Apply highlight colors based on the current animation step
             if (currentAnimation.type === 'compare') {
-              if (currentAnimation.originalIndices && currentAnimation.originalIndices.includes(index)) {
-                bgColor = 'bg-yellow-500'; // Highlight elements being compared (Binary Search - original indices)
-              } else if (currentAnimation.indices && currentAnimation.indices.includes(index)) {
-                bgColor = 'bg-yellow-500'; // Fallback to sorted indices if original not available (e.g., Two Pointers)
+              if (currentAnimation.indices && currentAnimation.indices.includes(index)) {
+                bgColor = 'bg-yellow-500'; // Highlight elements being compared
               } else if (currentAnimation.index === index) {
-                bgColor = 'bg-yellow-500'; // Highlight element being compared (e.g., Linear Search)
+                bgColor = 'bg-yellow-500'; // Highlight element being compared
               }
             } else if (currentAnimation.type === 'swap' && currentAnimation.indices && currentAnimation.indices.includes(index)) {
               bgColor = 'bg-red-500'; // Highlight elements being swapped
@@ -45,9 +59,13 @@ const VisualizationArea = ({ data, output, animations, currentStep, algorithmTyp
             }
           }
 
-          const height = (typeof value === 'number' && !isNaN(value)) ? (value / Math.max(...data.filter(item => typeof item === 'number' && !isNaN(item)))) * 100 : 20; // Scale height based on max value, default to 20% for non-numbers
+          const height = (typeof value === 'number' && !isNaN(value) && maxVal > 0) ? (value / maxVal) * 100 : 20; // Scale height based on max value, default to 20% for non-numbers or if maxVal is 0
+          const gapPercentage = 0.5; // 0.5% gap between bars
+          const totalBarWidth = 50 / arrayToVisualize.length;
+          const barWidth = totalBarWidth - gapPercentage; // Adjust bar width to account for gap
+          const leftPosition = index * totalBarWidth + (gapPercentage / 2); // Calculate left position with gap
 
-          let textColor = 'text-white';
+          let textColor = 'bg-gradient-text text-transparent bg-clip-text';
           if (currentAnimation && currentAnimation.type === 'found') {
             if ((currentAnimation.indices && currentAnimation.indices.includes(index)) || currentAnimation.index === index) {
               textColor = 'text-black'; // Change text color for found element
@@ -56,9 +74,14 @@ const VisualizationArea = ({ data, output, animations, currentStep, algorithmTyp
 
           return (
             <div
-              key={index}
-              className={`${bgColor} mx-0.5 flex items-center justify-center relative`}
-              style={{ height: `${height}%`, width: `${100 / data.length}%`, transition: 'height 0.1s linear, background-color 0.1s linear' }}
+              key={id} // Use unique ID as key
+              className={`${bgColor} flex items-center rounded-t-xl justify-center ml-72 absolute bottom-0`}
+              style={{
+                height: `${height}%`,
+                width: `${barWidth}%`,
+                left: `${leftPosition}%`,
+                transition: `left ${speed / 1000}s linear, background-color 0.1s linear` // Use speed from props for transition duration
+              }}
             >
               <span className={`text-xs ${textColor} absolute bottom-0 left-1/2 transform -translate-x-1/2`}>
                 {value}
@@ -72,7 +95,7 @@ const VisualizationArea = ({ data, output, animations, currentStep, algorithmTyp
 
   const renderGraphVisualization = () => {
     if (!data || Object.keys(data).length === 0) {
-      return <p>No graph data to visualize. Please input data in adjacency list format (e.g., {"{A: ['B', 'C'], B: ['A'], C: ['A']}"}) and run an algorithm.</p>;
+      return <p className="bg-gradient-text text-transparent bg-clip-text">No graph data to visualize. Please input data in adjacency list format (e.g., {"{A: ['B', 'C'], B: ['A'], C: ['A']}"}) and run an algorithm.</p>;
     }
 
     const allNodes = new Set();
@@ -140,7 +163,7 @@ const VisualizationArea = ({ data, output, animations, currentStep, algorithmTyp
                       className={`${strokeColor} stroke-${strokeWidth}`} />
                 {/* Render weight if available */}
                 {weight !== undefined && (algorithmType === 'Dijkstra\'s Algorithm' || algorithmType === 'Prim\'s Algorithm' || algorithmType === 'Kruskal\'s Algorithm') && (
-                  <text x={(x1 + x2) / 2} y={(y1 + y2) / 2 - 5} textAnchor="middle" className="fill-white text-xs">
+                  <text x={(x1 + x2) / 2} y={(y1 + y2) / 2 - 5} textAnchor="middle" className="bg-gradient-text text-transparent bg-clip-text text-xs">
                     {weight}
                   </text>
                 )}
@@ -162,7 +185,7 @@ const VisualizationArea = ({ data, output, animations, currentStep, algorithmTyp
           return (
             <g key={node}>
               <circle cx={x} cy={y} r="15" className={`${fillColor} stroke-white stroke-1`} />
-              <text x={x} y={y + 5} textAnchor="middle" className="fill-white text-sm">{node}</text>
+              <text x={x} y={y + 5} textAnchor="middle" className="bg-gradient-text text-transparent bg-clip-text text-sm">{node}</text>
             </g>
           );
         })}
@@ -172,7 +195,7 @@ const VisualizationArea = ({ data, output, animations, currentStep, algorithmTyp
 
   const renderTreeVisualization = () => {
     if (!data || !data.value) { // Assuming data is the root TreeNode
-      return <p>No tree data to visualize. Please input data in a specific format (e.g., {"{value: 1, left: {value: 2}, right: {value: 3}}"}).</p>;
+      return <p className="bg-gradient-text text-transparent bg-clip-text">No tree data to visualize. Please input data in a specific format (e.g., {"{value: 1, left: {value: 2}, right: {value: 3}}"}).</p>;
     }
 
     const nodePositions = {};
@@ -241,7 +264,7 @@ const VisualizationArea = ({ data, output, animations, currentStep, algorithmTyp
           return (
             <g key={value}>
               <circle cx={x} cy={y} r={nodeRadius} className={`${fillColor} stroke-white stroke-1`} />
-              <text x={x} y={y + 5} textAnchor="middle" className="fill-white text-sm">{value}</text>
+              <text x={x} y={y + 5} textAnchor="middle" className="bg-gradient-text text-transparent bg-clip-text text-sm">{value}</text>
             </g>
           );
         })}
@@ -257,12 +280,12 @@ const VisualizationArea = ({ data, output, animations, currentStep, algorithmTyp
     } else if (algorithmType === 'Tree') {
       return renderTreeVisualization();
     }
-    return <p>Select an algorithm to see its visualization.</p>;
+    return <p className="bg-gradient-text text-transparent bg-clip-text">Select an algorithm to see its visualization.</p>;
   };
 
   return (
     <div className="flex-1 bg-gray-900 p-4 rounded-lg shadow-md">
-      <h2 className="text-2xl font-semibold mb-4">Visualization Area</h2>
+      <h2 className="text-2xl font-semibold mb-4 bg-gradient-text text-transparent bg-clip-text">Visualization Area</h2>
       <div className="mb-4">
         {renderVisualization()}
       </div>

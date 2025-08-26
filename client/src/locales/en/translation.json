@@ -160,7 +160,7 @@
   "English": "English",
   "Spanish": "Spanish",
   "French": "French",
-  
+  "create": "Create",
   "create_interview": "Create Interview",
   "master_your_next_interview": "Master Your Next Interview",
   "home_tagline": "Practice with AI-powered mock interviews tailored to your role. Get real-time feedback and boost your confidence with our advanced interview system.",
@@ -296,6 +296,10 @@
   "all_rights_reserved": "All rights reserved.",
   "select_language": "Select Language",
   "language": "Language",
+  "language.en": "English",
+  "language.es": "Spanish",
+  "language.fr": "French",
+  "language.hi": "Hindi",
   "failed_to_load_user_preferences": "Failed to load user preferences. Please try again later.",
   "failed_to_save_user_preferences": "Failed to save user preferences. Please try again later.",
   "user_preferences_saved_successfully": "User preferences saved successfully.",
@@ -425,6 +429,7 @@
   "skill_proficiency":"Skill Proficiency",
 
   "algorithm_visualizer": "Algorithm Visualizer",
+  "please_give_input":"Please give input",
   "selected_algorithm": "Selected Algorithm:",
   "select_algorithm_to_begin": "Please select an algorithm from the sidebar to begin.",
   "select_algorithm_and_provide_input": "Please select an algorithm and provide input data.",
@@ -476,5 +481,17 @@
   "preorder_traversal_alg": "Preorder Traversal",
   "inorder_traversal_alg": "Inorder Traversal",
   "postorder_traversal_alg": "Postorder Traversal",
-  "level_order_traversal_alg": "Level Order Traversal"
+  "level_order_traversal_alg": "Level Order Traversal",
+  "graph_input_format_unweighted": "Example: `{ \"A\": [\"B\", \"C\"], \"B\": [\"A\"], \"C\": [\"A\"] }` (unweighted)",
+  "graph_input_format_weighted": "Example: `{ \"A\": {\"B\": 1, \"C\": 5}, \"B\": {\"A\": 1}, \"C\": {\"A\": 5} }` (weighted)",
+  "tree_input_format": "Example: `{ \"value\": 1, \"left\": {\"value\": 2}, \"right\": {\"value\": 3} }`",
+  "input_data_saved":"Input Data Saved",
+  "Hindi": "Hindi",
+  "candidate": "Candidate",
+  "fullscreen_violations_detected": "Fullscreen Violations Detected",
+  "remaining": "Remaining",
+  "constraints": "Constraints",
+  "examples": "Examples",
+  "explanation": "Explanation",
+  "output": "Output"
 }

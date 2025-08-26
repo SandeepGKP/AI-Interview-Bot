@@ -4,6 +4,9 @@ import Sidebar from './Sidebar';
 import InputForm from './InputForm';
 import ControlPanel from './ControlPanel';
 import VisualizationArea from './VisualizationArea';
+import { useTranslation } from 'react-i18next';
+
+import { toast } from 'react-toastify';
 
 // Import algorithms
 import * as sortingAlgorithms from '../algorithms/sortingAlgorithms';
@@ -13,6 +16,8 @@ import * as treeAlgorithms from '../algorithms/treeAlgorithms';
 import * as searchingAlgorithms from '../algorithms/searchingAlgorithms';
 
 const Visualizer = () => {
+  
+  const {t}=useTranslation();
   const location = useLocation(); // Use useLocation hook
   const [selectedAlgorithm, setSelectedAlgorithm] = useState(location.state?.selectedAlgorithm || null);
   const [inputData, setInputData] = useState('');
@@ -23,6 +28,7 @@ const Visualizer = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [speed, setSpeed] = useState(500); // milliseconds
+  const [finalSortedData, setFinalSortedData] = useState([]); // New state to store the final sorted array
   const timeoutRef = useRef(null);
 
   useEffect(() => {
@@ -38,13 +44,17 @@ const Visualizer = () => {
       }, speed);
     } else if (currentStep >= animations.length) {
       setIsPlaying(false);
+      // When animation finishes, update visualizationData to the final sorted array for sorting algorithms
+      if (getAlgorithmCategory(selectedAlgorithm) === 'Sorting') {
+        setVisualizationData(finalSortedData);
+      }
     }
     return () => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
     };
-  }, [isPlaying, currentStep, animations, speed]);
+  }, [isPlaying, currentStep, animations, speed, selectedAlgorithm, finalSortedData]);
 
   const handleAlgorithmSelect = (algorithm) => {
     setSelectedAlgorithm(algorithm);
@@ -65,8 +75,10 @@ const Visualizer = () => {
       // For now, let's just update inputData and handle target extraction in handleRunAlgorithm
       // This might need refinement if other algorithms also need multiple inputs
       setTargetValue(data.target); // Assuming a new state for targetValue in Visualizer
+      {data.target ? toast.success('Input data saved') : toast.success('Please give input data to proceed');}
     } else {
       setInputData(data);
+      {data ? toast.success('Input data saved') : toast.success('Please give input data to proceed');}
     }
   };
 
@@ -89,6 +101,8 @@ const Visualizer = () => {
     if (!selectedAlgorithm || !inputData) {
       setAlgorithmOutput('Please select an algorithm and provide input data.');
       return;
+    }else{
+      toast.success(`${selectedAlgorithm}`+' initiated to play');
     }
 
     let result = null;
@@ -100,9 +114,9 @@ const Visualizer = () => {
       if (algorithmCategory === 'Sorting' || algorithmCategory === 'Array') {
         // Check if input contains non-numeric characters
         if (/[a-zA-Z]/.test(inputData)) {
-          processedData = inputData.split(',').map(item => item.trim()); // Treat as string array
+          processedData = inputData.split(',').map((item, id) => ({ id, value: item.trim() })); // Treat as string array with unique IDs
         } else {
-          processedData = inputData.split(',').map(Number); // Treat as number array
+          processedData = inputData.split(',').map((item, id) => ({ id, value: Number(item) })); // Treat as number array with unique IDs
         }
       } else if (algorithmCategory === 'Graph') {
         // Assuming graph input is a JSON string representing an adjacency list
@@ -130,9 +144,9 @@ const Visualizer = () => {
       } else if (algorithmCategory === 'Searching') {
         // Searching algorithms typically work on arrays of numbers or strings
         if (/[a-zA-Z]/.test(inputData)) {
-          processedData = inputData.split(',').map(item => item.trim()); // Treat as string array
+          processedData = inputData.split(',').map((item, id) => ({ id, value: item.trim() })); // Treat as string array with unique IDs
         } else {
-          processedData = inputData.split(',').map(Number); // Treat as number array
+          processedData = inputData.split(',').map((item, id) => ({ id, value: Number(item) })); // Treat as number array with unique IDs
         }
       }
       else {
@@ -155,6 +169,7 @@ const Visualizer = () => {
     switch (selectedAlgorithm) {
       case 'Bubble Sort':
         ({ sortedArray: result, animations: generatedAnimations } = sortingAlgorithms.bubbleSort(processedData));
+
         break;
       case 'Selection Sort':
         ({ sortedArray: result, animations: generatedAnimations } = sortingAlgorithms.selectionSort(processedData));
@@ -172,11 +187,11 @@ const Visualizer = () => {
         ({ result, animations: generatedAnimations } = arrayAlgorithms.kadanesAlgorithm(processedData));
         break;
       case 'Two Pointers':
-        const targetTwoPointers = processedData.length > 1 ? processedData[processedData.length - 1] : 10;
+        const targetTwoPointers = processedData.length > 1 ? processedData[processedData.length - 1].value : 10;
         ({ result, animations: generatedAnimations } = arrayAlgorithms.twoPointers(processedData.slice(0, -1), targetTwoPointers));
         break;
       case 'Sliding Window':
-        const kSlidingWindow = processedData.length > 1 ? processedData[processedData.length - 1] : 3;
+        const kSlidingWindow = processedData.length > 1 ? processedData[processedData.length - 1].value : 3;
         ({ result, animations: generatedAnimations } = arrayAlgorithms.slidingWindow(processedData.slice(0, -1), kSlidingWindow));
         break;
       case 'Linear Search':
@@ -184,8 +199,7 @@ const Visualizer = () => {
           setAlgorithmOutput('Please provide a target value for Linear Search.');
           return;
         }
-        // Ensure targetValue matches the type of processedData elements
-        const processedTargetLinear = typeof processedData[0] === 'number' ? Number(targetValue) : targetValue;
+        const processedTargetLinear = typeof processedData[0].value === 'number' ? Number(targetValue) : targetValue;
         ({ foundIndex: result, animations: generatedAnimations } = searchingAlgorithms.linearSearch(processedData, processedTargetLinear));
         break;
       case 'Binary Search':
@@ -193,18 +207,19 @@ const Visualizer = () => {
           setAlgorithmOutput('Please provide a target value for Binary Search.');
           return;
         }
-        // Ensure targetValue matches the type of processedData elements
-        const processedTargetBinary = typeof processedData[0] === 'number' ? Number(targetValue) : targetValue;
-        ({ foundIndex: result, animations: generatedAnimations } = searchingAlgorithms.binarySearch(processedData, processedTargetBinary));
+        const processedTargetBinary = typeof processedData[0].value === 'number' ? Number(targetValue) : targetValue;
+        let binarySearchResult;
+        ({ foundIndex: result, animations: generatedAnimations, sortedArray: binarySearchResult } = searchingAlgorithms.binarySearch(processedData, processedTargetBinary));
+        processedData = binarySearchResult; // For binary search, processedData is already the sorted array with IDs
         break;
       case 'BFS':
-        ({ visitedNodes: result, animations: generatedAnimations } = graphAlgorithms.bfs(processedData, Object.keys(processedData)[0])); // Start from first node
+        ({ visitedNodes: result, animations: generatedAnimations } = graphAlgorithms.bfs(processedData, Object.keys(processedData)[0]));
         break;
       case 'DFS':
-        ({ visitedNodes: result, animations: generatedAnimations } = graphAlgorithms.dfs(processedData, Object.keys(processedData)[0])); // Start from first node
+        ({ visitedNodes: result, animations: generatedAnimations } = graphAlgorithms.dfs(processedData, Object.keys(processedData)[0]));
         break;
       case 'Dijkstra\'s Algorithm':
-        ({ distances: result, animations: generatedAnimations } = graphAlgorithms.dijkstrasAlgorithm(processedData, Object.keys(processedData)[0])); // Start from first node
+        ({ distances: result, animations: generatedAnimations } = graphAlgorithms.dijkstrasAlgorithm(processedData, Object.keys(processedData)[0]));
         break;
       case 'Prim\'s Algorithm':
         ({ mst: result, animations: generatedAnimations } = graphAlgorithms.primsAlgorithm(processedData));
@@ -233,47 +248,70 @@ const Visualizer = () => {
         return;
     }
 
-    setAlgorithmOutput(`Output for ${selectedAlgorithm}: ${JSON.stringify(result, null, 2)}`);
-    // Ensure visualizationData is always an array for array/sorting, or the processedData for graphs/trees.
-    if (algorithmCategory === 'Sorting' || algorithmCategory === 'Array') {
-      setVisualizationData(result || processedData);
+    let formattedOutput;
+    if (Array.isArray(result) && result.length > 0 && typeof result[0] === 'object' && result[0] !== null && 'value' in result[0]) {
+      formattedOutput = result.map(item => item.value).join(', ');
+    } else if (Array.isArray(result) && result.length > 0 && typeof result[0] === 'object' && result[0] !== null && 'node' in result[0]) {
+      // For graph/tree traversals that return objects like { node: 'A', distance: 0 }
+      formattedOutput = result.map(item => item.node || item.value).join(', ');
+    }
+    else {
+      formattedOutput = JSON.stringify(result, null, 2);
+    }
+
+    setAlgorithmOutput(`Output for ${selectedAlgorithm}: ${formattedOutput}`);
+    if (selectedAlgorithm === 'Binary Search') {
+      setVisualizationData(processedData); // processedData is already mapped for Binary Search
+    } else if (algorithmCategory === 'Sorting' || algorithmCategory === 'Array' || algorithmCategory === 'Searching') {
+      setVisualizationData(processedData); // Initial state with IDs
     } else {
       setVisualizationData(processedData); // For graphs and trees, visualize the structure itself
     }
-    setAnimations(generatedAnimations);
+    setAnimations(generatedAnimations); // Animations now contain {id, value} objects
     setCurrentStep(0);
-    setIsPlaying(false); // Start paused
+    setIsPlaying(false);
+
+    if (algorithmCategory === 'Sorting') {
+      setFinalSortedData(result); // result is already {id, value} objects
+    }
   };
 
   const handlePlay = () => {
-    if (currentStep < animations.length) {
-      setIsPlaying(true);
-    }
+    setIsPlaying(true);
+    toast.success("Agorithm is running");
   };
 
   const handlePause = () => {
     setIsPlaying(false);
+    toast.success("Agorithm stopped");
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
   };
 
   const handleStepForward = () => {
-    setIsPlaying(false);
-    setCurrentStep((prevStep) => Math.min(prevStep + 1, animations.length - 1));
+    setIsPlaying(false); // Pause playback when stepping forward manually
+    toast.success("Agorithm moved one step Forward");
+    setCurrentStep((prevStep) => Math.min(prevStep + 1, animations.length));
   };
 
   const handleStepBack = () => {
     setIsPlaying(false);
+    toast.success("Agorithm moved one step backward");
     setCurrentStep((prevStep) => Math.max(prevStep - 1, 0));
   };
 
   const handleSpeedChange = (newSpeed) => {
     setSpeed(newSpeed);
   };
-
+  
   return (
     <div className="flex h-screen bg-gray-900 text-white">
       <Sidebar onSelectAlgorithm={handleAlgorithmSelect} />
       <div className="flex-1 flex h-full flex-col p-4 overflow-y-scroll">
-        <h1 className="text-3xl font-bold mb-4">Algorithm Visualizer</h1>
+        <h1 className="text-3xl font-bold mb-4">
+          <span className="hidden sm:inline font-bold opacity-200 leading-tight text-transparent bg-clip-text 
+             bg-[radial-gradient(circle_at_center,_#93C5FD,_#A5B4FC,_#C084FC,_#F472B6,_#1F2937)]" > {t('algorithm_visualizer')}</span></h1>
         {selectedAlgorithm ? (
           <div>
             <p className="text-xl mb-4">Selected Algorithm: {selectedAlgorithm}</p>

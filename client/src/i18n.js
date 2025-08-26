@@ -25,8 +25,17 @@ i18n
         translation: hiTranslation,
       },
     },
+    lng: 'en', // Set default language to 'en'
     fallbackLng: 'en',
     debug: true,
+    detection: {
+      order: ['navigator', 'localStorage', 'htmlTag', 'path', 'subdomain'],
+      caches: ['localStorage'],
+      lookupLocalStorage: 'i18nextLng',
+      // This will strip the region code (e.g., en-US becomes en)
+      // and ensure that only the base language is used for resource lookup.
+      load: 'languageOnly', 
+    },
     interpolation: {
       escapeValue: false, // not needed for react as it escapes by default
     },

@@ -1,43 +1,53 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
+
 
 const ControlPanel = ({ onRunAlgorithm, onPlay, onPause, onStepForward, onStepBack, onSpeedChange, isPlaying, speed }) => {
+  const { t } = useTranslation();
+  
   return (
     <div className="bg-gray-800 p-4 rounded-lg shadow-md mb-4 flex items-center space-x-4">
+      
       <button
         onClick={onRunAlgorithm}
-        className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+        className="bg-blue-100 outline-red-300 hover:bg-blue-300 text-white font-bold py-2 px-4 rounded-3xl focus:outline-none focus:shadow-outline"
       >
-        Run Algorithm
+       <span className="hidden sm:inline font-bold opacity-200 leading-tight text-transparent bg-clip-text 
+             bg-[radial-gradient(circle_at_center,_#B71C1C,_#E65100,_#880E4F,_#BF360C,_#4A148C)]" > {t('run_algorithm')}</span>
       </button>
 
       <button
         onClick={onPlay}
         disabled={isPlaying}
-        className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline disabled:opacity-50"
+        className="bg-green-200 hover:bg-green-300 text-white font-bold py-2 px-4 rounded-3xl focus:outline-none focus:shadow-outline disabled:opacity-50"
       >
-        Play
+        <span className="hidden sm:inline font-bold opacity-200 leading-tight text-transparent bg-clip-text 
+             bg-[radial-gradient(circle_at_center,_#B71C1C,_#E65100,_#880E4F,_#BF360C,_#4A148C)]" > {t('play')}</span>
       </button>
 
       <button
         onClick={onPause}
         disabled={!isPlaying}
-        className="bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline disabled:opacity-50"
+        className="bg-yellow-200 hover:bg-yellow-300 text-white font-bold py-2 px-4 rounded-3xl focus:outline-none focus:shadow-outline disabled:opacity-50"
       >
-        Pause
+        <span className="hidden sm:inline font-bold opacity-200 leading-tight text-transparent bg-clip-text 
+             bg-[radial-gradient(circle_at_center,_#B71C1C,_#E65100,_#880E4F,_#BF360C,_#4A148C)]" > {t('pause')}</span>
       </button>
 
       <button
         onClick={onStepBack}
-        className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+        className="bg-purple-200 hover:bg-purple-300 text-white font-bold py-2 px-4 rounded-3xl focus:outline-none focus:shadow-outline"
       >
-        Step Back
+        <span className="hidden sm:inline font-bold opacity-200 leading-tight text-transparent bg-clip-text 
+             bg-[radial-gradient(circle_at_center,_#B71C1C,_#E65100,_#880E4F,_#BF360C,_#4A148C)]" > {t('step_back')}</span>
       </button>
 
       <button
         onClick={onStepForward}
-        className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+        className="bg-purple-200 hover:hover:bg-purple-300 text-white font-bold py-2 px-4 rounded-3xl focus:outline-none focus:shadow-outline"
       >
-        Step Forward
+        <span className="hidden sm:inline font-bold opacity-200 leading-tight text-transparent bg-clip-text 
+             bg-[radial-gradient(circle_at_center,_#B71C1C,_#E65100,_#880E4F,_#BF360C,_#4A148C)]" > {t('step_forward')}</span>
       </button>
 
       <div className="flex items-center space-x-2">
@@ -46,7 +56,7 @@ const ControlPanel = ({ onRunAlgorithm, onPlay, onPause, onStepForward, onStepBa
           type="range"
           id="speed"
           min="100"
-          max="2000"
+          max="2500"
           step="100"
           value={speed}
           onChange={(e) => onSpeedChange(Number(e.target.value))}

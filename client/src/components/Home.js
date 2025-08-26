@@ -54,12 +54,12 @@ const Home = () => {
             >
               <TypewriterEffect
                 text={t('master_your_next_interview')}
-                typingDelay={100}
+                typingDelay={200}
                 deletingDelay={100}
                 pauseDelay={1000}
                 cursorRenderer={() => (
-                  <span className="animate-blink" style={{ color: 'pink' }}>
-                    !
+                  <span className="animate-blink rotate-6" style={{ color: 'pink' }}>
+                    ✍️
                   </span>
                 )}
               />

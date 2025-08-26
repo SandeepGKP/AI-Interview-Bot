@@ -54,7 +54,7 @@
 }
 
 .animate-blink {
-  animation: blink 0.5s step-end infinite;
+  animation: blink 0.0s step-end infinite;
 }
 
 /* styles.css */

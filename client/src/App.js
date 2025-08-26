@@ -10,12 +10,15 @@ import RecruiterDashboard from './components/RecruiterDashboard';
 import Report from './components/Report';
 import Header from './components/Header';
 import CandidateDetails from './components/CandidateDetails';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Visualizer from './components/Visualizer/Visualizer';
 
 function App() {
   return (
     <Router>
       <MainContent />
+      <ToastContainer />
     </Router>
   );
 }
