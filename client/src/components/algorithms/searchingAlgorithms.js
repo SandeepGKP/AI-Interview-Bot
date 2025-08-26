@@ -14,6 +14,7 @@ export const linearSearch = (arr, target) => {
 };
 
 export const binarySearch = (arr, target) => {
+  arr.sort();
   const animations = [];
   let foundIndex = -1;
   let low = 0;
