@@ -1,6 +1,6 @@
 import React from 'react';
 
-const VisualizationArea = ({ data, output, animations, currentStep, algorithmType }) => {
+const VisualizationArea = ({ data, output, animations, currentStep, algorithmType,speed }) => {
   // Render logic for different types of visualizations (e.g., bars for sorting, nodes/edges for graphs)
   // This is a basic example for array visualization.
   const renderArrayVisualization = () => {

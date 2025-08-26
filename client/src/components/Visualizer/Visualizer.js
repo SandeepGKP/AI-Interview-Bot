@@ -332,6 +332,7 @@ const Visualizer = () => {
               animations={animations}
               currentStep={currentStep}
               algorithmType={getAlgorithmCategory(selectedAlgorithm)}
+              speed={speed}
             />
           </div>
         ) : (
