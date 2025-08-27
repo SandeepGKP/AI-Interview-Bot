@@ -111,4 +111,4 @@ const TreeVisualization = ({ data, output, animations, currentStep, algorithmTyp
   );
 };
 
-export default memo(TreeVisualization);
+export default TreeVisualization;
