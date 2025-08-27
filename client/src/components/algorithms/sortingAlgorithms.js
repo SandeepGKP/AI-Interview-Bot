@@ -40,20 +40,67 @@ export const selectionSort = (arr) => {
 export const insertionSort = (arr) => {
   const n = arr.length;
   const animations = [];
-  let array = [...arr];
+  let array = [...arr]; // Use a copy to modify
+
+  animations.push({ type: 'initial', array: [...array], sortedBoundary: 0, algorithm: 'Insertion Sort' });
 
   for (let i = 1; i < n; i++) {
-    let current = array[i];
+    let currentElement = { ...array[i] }; // The element being inserted
     let j = i - 1;
-    while (j >= 0 && array[j].value > current.value) {
-      animations.push({ type: 'compare', indices: [j, j + 1], array: [...array] });
-      array[j + 1] = array[j];
-      animations.push({ type: 'shift', indices: [j, j + 1], array: [...array] });
+
+    // Animation step: The element at index `i` is picked up.
+    // The array now has a "gap" at index `i`.
+    let arrayWithGap = [...array];
+    arrayWithGap[i] = { id: `gap-${i}`, value: null, isGap: true }; // Mark as a gap
+    animations.push({
+      type: 'pickup',
+      array: [...arrayWithGap], // Array with the gap
+      movingElement: { ...currentElement, originalIndex: i }, // The element being moved
+      emptyIndex: i, // The index where the gap is
+      sortedBoundary: i - 1,
+      algorithm: 'Insertion Sort'
+    });
+
+    while (j >= 0 && array[j].value > currentElement.value) {
+      // Animation step: Compare array[j] and currentElement
+      animations.push({
+        type: 'compare',
+        array: [...arrayWithGap], // Array with the current gap
+        movingElement: { ...currentElement, originalIndex: i },
+        emptyIndex: j + 1, // The element at j+1 is being compared with currentElement
+        indices: [j, j + 1], // Indices involved in comparison
+        sortedBoundary: i - 1,
+        algorithm: 'Insertion Sort'
+      });
+
+      // Shift array[j] to array[j+1]
+      arrayWithGap[j + 1] = array[j]; // Move the actual element from array[j] to arrayWithGap[j+1]
+      arrayWithGap[j] = { id: `gap-${j}`, value: null, isGap: true }; // Create a new gap at j
+      animations.push({
+        type: 'shift',
+        array: [...arrayWithGap], // Array with the new gap
+        movingElement: { ...currentElement, originalIndex: i },
+        emptyIndex: j, // The new empty index
+        shiftedFrom: j,
+        shiftedTo: j + 1,
+        sortedBoundary: i - 1,
+        algorithm: 'Insertion Sort'
+      });
       j--;
     }
-    array[j + 1] = current;
-    animations.push({ type: 'insert', index: j + 1, value: current.value, array: [...array] });
+
+    // Animation step: Insert currentElement into its final position
+    arrayWithGap[j + 1] = currentElement;
+    array = [...arrayWithGap]; // Update the main array for the next iteration
+    animations.push({
+      type: 'insert',
+      array: [...array], // Final array state for this insertion
+      insertedIndex: j + 1, // Where it was inserted
+      sortedBoundary: i, // The sorted boundary extends
+      algorithm: 'Insertion Sort'
+    });
   }
+  animations.push({ type: 'final', array: [...array], sortedBoundary: n - 1, algorithm: 'Insertion Sort' });
   return { sortedArray: array, animations: animations };
 };
 

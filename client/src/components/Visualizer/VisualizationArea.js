@@ -1,95 +1,214 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 
-const VisualizationArea = ({ data, output, animations, currentStep, algorithmType,speed }) => {
-  // Render logic for different types of visualizations (e.g., bars for sorting, nodes/edges for graphs)
-  // This is a basic example for array visualization.
+const VisualizationArea = ({ data, output, animations, currentStep, algorithmType, speed,algorithm }) => {
   const renderArrayVisualization = () => {
     if (!data || data.length === 0) {
       return <p>No data to visualize. Please input data and run an algorithm.</p>;
     }
 
-    // Apply animation effects based on currentStep and animations
     const currentAnimation = animations && animations[currentStep];
 
-    // Determine the array to visualize: either the animated state or the initial data
-    const arrayToVisualize = (currentAnimation && currentAnimation.array && (algorithmType === 'Sorting' || algorithmType === 'Array' || algorithmType === 'Searching'))
-      ? currentAnimation.array
-      : data;
+    let arrayToVisualize = data;
+    let movingElement = null;
+    let emptyIndex = -1;
+
+    if (currentAnimation && currentAnimation.array && (algorithmType === 'Sorting' || algorithmType === 'Array' || algorithmType === 'Searching')) {
+      arrayToVisualize = currentAnimation.array;
+      if (currentAnimation.movingElement) {
+        movingElement = currentAnimation.movingElement;
+        emptyIndex = currentAnimation.emptyIndex;
+      }
+    } else if (animations && currentStep >= animations.length && animations.length > 0) {
+      arrayToVisualize = animations[animations.length - 1].array;
+    }
 
     if (!arrayToVisualize || arrayToVisualize.length === 0) {
       return <p>No data to visualize. Please input data and run an algorithm.</p>;
     }
 
-    // Calculate max value for scaling, considering only numbers
-    const maxVal = Math.max(...arrayToVisualize.filter(item => typeof item.value === 'number' && !isNaN(item.value)).map(item => item.value));
+    const nodeRadius = 20;
+    const containerHeight = 200;
+    const numNodes = arrayToVisualize.length;
+    const fixedGap = 20;
+
+    const svgRef = React.useRef(null);
+    const [actualContainerWidth, setActualContainerWidth] = React.useState(0);
+
+    React.useEffect(() => {
+      if (svgRef.current) {
+        setActualContainerWidth(svgRef.current.clientWidth);
+      }
+    }, [arrayToVisualize, speed]);
+
+    let startY;
+
+    if (algorithmType === 'Sorting' && algorithm === 'Insertion Sort'){
+      startY = containerHeight - 2 * nodeRadius;
+    }
+    else{
+      startY = containerHeight / 2
+    }
+    let cxPositions = [];
+
+    if (numNodes > 0) {
+      const totalNodesDiameter = numNodes * (2 * nodeRadius);
+      const totalGapWidth = (numNodes - 1) * fixedGap;
+      const totalOccupiedWidth = totalNodesDiameter + totalGapWidth;
+
+      let currentStartX = (actualContainerWidth - totalOccupiedWidth) / 2;
+
+      if (currentStartX < 0) {
+        currentStartX = 0;
+      }
+
+      for (let i = 0; i < numNodes; i++) {
+        cxPositions.push(currentStartX + nodeRadius + i * (2 * nodeRadius + fixedGap));
+      }
+    }
 
     return (
-      <div className="h-80 bg-gray-700 p-2 rounded-md relative"> {/* Removed flex items-end */}
+      <svg ref={svgRef} width="100%" height={containerHeight} className="bg-gray-700 p-2 rounded-md relative">
         {arrayToVisualize.map((item, index) => {
+          if (item.isGap) return null; // Do not render gap placeholders
+
           const value = item.value;
           const id = item.id;
-          let bgColor = 'bg-gradient-bar'; // Default color for all bars, reset each render
+          let fillColor = 'fill-blue-500';
 
-          if (currentAnimation) {
-            // Apply highlight colors based on the current animation step
-            if (currentAnimation.type === 'compare') {
-              if (currentAnimation.indices && currentAnimation.indices.includes(index)) {
-                bgColor = 'bg-yellow-500'; // Highlight elements being compared
-              } else if (currentAnimation.index === index) {
-                bgColor = 'bg-yellow-500'; // Highlight element being compared
+          const isAnimationComplete = (animations && currentStep >= animations.length - 1);
+
+          if (!isAnimationComplete && currentAnimation) {
+            if (algorithmType === 'Sorting' && currentAnimation.algorithm === 'Insertion Sort') {
+              const sortedBoundary = currentAnimation.sortedBoundary !== undefined ? currentAnimation.sortedBoundary : -1;
+              if (index <= sortedBoundary) {
+                fillColor = 'fill-green-500'; // Sorted part
+              } else {
+                fillColor = 'fill-blue-500'; // Unsorted part
               }
-            } else if (currentAnimation.type === 'swap' && currentAnimation.indices && currentAnimation.indices.includes(index)) {
-              bgColor = 'bg-red-500'; // Highlight elements being swapped
-            } else if (currentAnimation.type === 'shift' && currentAnimation.indices && currentAnimation.indices.includes(index)) {
-              bgColor = 'bg-orange-500'; // Highlight elements being shifted
-            } else if (currentAnimation.type === 'insert' && currentAnimation.index === index) {
-              bgColor = 'bg-green-500'; // Highlight element being inserted
-            } else if (currentAnimation.type === 'merge' && currentAnimation.index === index) {
-              bgColor = 'bg-purple-500'; // Highlight elements during merge
-            } else if (currentAnimation.type === 'process' && currentAnimation.index === index) {
-              bgColor = 'bg-indigo-500'; // Highlight elements being processed (e.g., Kadane's)
-            } else if (currentAnimation.type === 'found') {
-              if (currentAnimation.indices && currentAnimation.indices.includes(index)) {
-                bgColor = 'bg-green-500'; // Highlight found elements (e.g., Two Pointers)
-              } else if (currentAnimation.index === index) {
-                bgColor = 'bg-green-500'; // Highlight found element (e.g., Linear Search, Binary Search)
+
+              if (currentAnimation.type === 'compare' && currentAnimation.indices && currentAnimation.indices.includes(index)) {
+                fillColor = 'fill-yellow-500'; // Elements being compared
+              } else if (currentAnimation.type === 'shift' && currentAnimation.indices && currentAnimation.indices.includes(index)) {
+                fillColor = 'fill-orange-500'; // Elements being shifted
+              } else if (currentAnimation.type === 'insert' && currentAnimation.insertedIndex === index) {
+                fillColor = 'fill-red-500'; // Element being inserted
               }
-            } else if (currentAnimation.type === 'window' && currentAnimation.indices && index >= currentAnimation.indices[0] && index <= currentAnimation.indices[1]) {
-              bgColor = 'bg-teal-500'; // Highlight sliding window
+            } else {
+              if (currentAnimation.type === 'compare') {
+                if (currentAnimation.indices && currentAnimation.indices.includes(index)) {
+                  fillColor = 'fill-yellow-500';
+                } else if (currentAnimation.index === index) {
+                  fillColor = 'fill-yellow-500';
+                }
+              } else if (currentAnimation.type === 'swap' && currentAnimation.indices && currentAnimation.indices.includes(index)) {
+                fillColor = 'fill-red-500';
+              } else if (currentAnimation.type === 'shift' && currentAnimation.indices && currentAnimation.indices.includes(index)) {
+                fillColor = 'fill-orange-500';
+              } else if (currentAnimation.type === 'insert' && currentAnimation.index === index) {
+                fillColor = 'fill-green-500';
+              } else if (currentAnimation.type === 'merge' && currentAnimation.index === index) {
+                fillColor = 'fill-purple-500';
+              } else if (currentAnimation.type === 'process' && currentAnimation.index === index) {
+                fillColor = 'fill-indigo-500';
+              } else if (currentAnimation.type === 'found') {
+                if (currentAnimation.indices && currentAnimation.indices.includes(index)) {
+                  fillColor = 'fill-green-500';
+                } else if (currentAnimation.index === index) {
+                  fillColor = 'fill-green-500';
+                }
+              } else if (currentAnimation.type === 'window' && currentAnimation.indices && index >= currentAnimation.indices[0] && index <= currentAnimation.indices[1]) {
+                fillColor = 'fill-teal-500';
+              }
             }
           }
 
-          const height = (typeof value === 'number' && !isNaN(value) && maxVal > 0) ? (value / maxVal) * 100 : 20; // Scale height based on max value, default to 20% for non-numbers or if maxVal is 0
-          const gapPercentage = 0.5; // 0.5% gap between bars
-          const totalBarWidth = 50 / arrayToVisualize.length;
-          const barWidth = totalBarWidth - gapPercentage; // Adjust bar width to account for gap
-          const leftPosition = index * totalBarWidth + (gapPercentage / 2); // Calculate left position with gap
+          const cx = cxPositions[index];
 
-          let textColor = 'bg-gradient-text text-transparent bg-clip-text';
-          if (currentAnimation && currentAnimation.type === 'found') {
-            if ((currentAnimation.indices && currentAnimation.indices.includes(index)) || currentAnimation.index === index) {
-              textColor = 'text-black'; // Change text color for found element
-            }
-          }
+          const showArrow = currentAnimation && (
+            (currentAnimation.type === 'compare' && currentAnimation.indices && currentAnimation.indices.includes(index)) ||
+            (currentAnimation.type === 'swap' && currentAnimation.indices && currentAnimation.indices.includes(index)) ||
+            (currentAnimation.type === 'shift' && currentAnimation.indices && currentAnimation.indices.includes(index)) ||
+            (currentAnimation.type === 'insert' && currentAnimation.insertedIndex === index) ||
+            (currentAnimation.type === 'merge' && currentAnimation.index === index) ||
+            (currentAnimation.type === 'process' && currentAnimation.index === index) ||
+            (currentAnimation.type === 'found' && currentAnimation.indices && currentAnimation.indices.includes(index)) ||
+            (currentAnimation.type === 'window' && currentAnimation.indices && index >= currentAnimation.indices[0] && index <= currentAnimation.indices[1])
+          );
 
           return (
-            <div
-              key={id} // Use unique ID as key
-              className={`${bgColor} flex items-center rounded-t-xl justify-center ml-72 absolute bottom-0`}
-              style={{
-                height: `${height}%`,
-                width: `${barWidth}%`,
-                left: `${leftPosition}%`,
-                transition: `left ${speed / 1000}s linear, background-color 0.1s linear` // Use speed from props for transition duration
-              }}
+            <motion.g
+              key={id}
+              initial={{ x: cx }}
+              animate={{ x: cx }}
+              transition={{ duration: speed / 1000, ease: "linear" }}
             >
-              <span className={`text-xs ${textColor} absolute bottom-0 left-1/2 transform -translate-x-1/2`}>
+              <circle
+                cx={0}
+                cy={startY}
+                r={nodeRadius}
+                className={`${fillColor} stroke-white stroke-1`}
+                style={{ transition: `fill 0.1s linear` }}
+              />
+              <text
+                x={0}
+                y={startY + 5}
+                textAnchor="middle"
+                className="bg-gradient-text text-transparent bg-clip-text text-sm"
+              >
                 {value}
-              </span>
-            </div>
+              </text>
+              {showArrow && (
+                <motion.text
+                  x={0}
+                  // y={startY - nodeRadius - 10}
+                  textAnchor="middle"
+                  className="text-white text-xl"
+                  initial={{ opacity: 0, y: startY - nodeRadius - 10 }}
+                  animate={{ opacity: 1, y: startY - nodeRadius - 10 }}
+                  transition={{ duration: 0.3, repeat: Infinity, repeatType: "reverse" }}
+                >
+                  &#x2193;
+                </motion.text>
+              )}
+            </motion.g>
           );
         })}
-      </div>
+        {movingElement && (
+          <motion.g
+            key={movingElement.id}
+            initial={{ x: cxPositions[movingElement.originalIndex], y: startY }}
+            animate={{ x: cxPositions[emptyIndex], y: startY - nodeRadius - 30 }} // Animate to a "picked up" position
+            transition={{ duration: speed / 1000, ease: "linear" }}
+          >
+            <circle
+              cx={0}
+              cy={0}
+              r={nodeRadius}
+              className="fill-purple-500 stroke-white stroke-1" // Highlight the moving element
+            />
+            <text
+              x={0}
+              y={5}
+              textAnchor="middle"
+              className="bg-gradient-text text-transparent bg-clip-text text-sm"
+            >
+              {movingElement.value}
+            </text>
+            <motion.text
+              x={0}
+              y={-25}
+              textAnchor="middle"
+              className="text-white text-xl"
+              initial={{ opacity: 0, y: -40 }}
+              animate={{ opacity: 1, y: -20 }}
+              transition={{ duration: 0.4, repeat: Infinity, repeatType: "reverse", ease: "easeOut" }}
+            >
+              &#x2193; {/* Downward arrow character */}
+            </motion.text>
+          </motion.g>
+        )}
+      </svg>
     );
   };
 
@@ -106,7 +225,7 @@ const VisualizationArea = ({ data, output, animations, currentStep, algorithmTyp
     const nodesArray = Array.from(allNodes);
 
     const nodePositions = {};
-    const radius = 150; // Increased radius for better spacing
+    const radius = 150;
     const centerX = 200;
     const centerY = 200;
 
@@ -120,14 +239,14 @@ const VisualizationArea = ({ data, output, animations, currentStep, algorithmTyp
 
     const currentAnimation = animations && animations[currentStep];
     const visitedNodes = new Set();
-    const activeEdges = new Set(); // For edges being explored or part of MST
+    const activeEdges = new Set();
 
     if (currentAnimation) {
       if (currentAnimation.type === 'visit' || currentAnimation.type === 'enqueue') {
         visitedNodes.add(currentAnimation.node);
       } else if (currentAnimation.type === 'explore') {
         activeEdges.add(`${currentAnimation.from}-${currentAnimation.to}`);
-        activeEdges.add(`${currentAnimation.to}-${currentAnimation.from}`); // Bidirectional
+        activeEdges.add(`${currentAnimation.to}-${currentAnimation.from}`);
       } else if (currentAnimation.type === 'add_to_mst' || currentAnimation.type === 'process_edge') {
         activeEdges.add(`${currentAnimation.edge.from}-${currentAnimation.edge.to}`);
         activeEdges.add(`${currentAnimation.edge.to}-${currentAnimation.edge.from}`);
@@ -135,12 +254,9 @@ const VisualizationArea = ({ data, output, animations, currentStep, algorithmTyp
     }
 
     return (
-      <svg width="400" height="400" className="bg-gray-700 rounded-md">
-        {/* Render Edges */}
-        {/* Render Edges */}
+      <svg width="400" height="400" className="bg-gray-700 w-full rounded-md mx-auto">
         {nodesArray.map(node =>
           data[node] ? Object.entries(data[node]).map(([neighbor, weight]) => {
-            // Ensure both node and neighbor have positions before drawing edge
             if (!nodePositions[node] || !nodePositions[neighbor]) return null;
 
             const x1 = nodePositions[node].x;
@@ -161,7 +277,6 @@ const VisualizationArea = ({ data, output, animations, currentStep, algorithmTyp
               <g key={`${node}-${neighbor}`}>
                 <line x1={x1} y1={y1} x2={x2} y2={y2}
                       className={`${strokeColor} stroke-${strokeWidth}`} />
-                {/* Render weight if available */}
                 {weight !== undefined && (algorithmType === 'Dijkstra\'s Algorithm' || algorithmType === 'Prim\'s Algorithm' || algorithmType === 'Kruskal\'s Algorithm') && (
                   <text x={(x1 + x2) / 2} y={(y1 + y2) / 2 - 5} textAnchor="middle" className="bg-gradient-text text-transparent bg-clip-text text-xs">
                     {weight}
@@ -171,7 +286,6 @@ const VisualizationArea = ({ data, output, animations, currentStep, algorithmTyp
             );
           }) : null
         )}
-        {/* Render Nodes */}
         {nodesArray.map(node => {
           const { x, y } = nodePositions[node];
           let fillColor = 'fill-blue-500';
@@ -182,11 +296,33 @@ const VisualizationArea = ({ data, output, animations, currentStep, algorithmTyp
           } else if (currentAnimation && currentAnimation.type === 'enqueue' && currentAnimation.node === node) {
             fillColor = 'fill-purple-500';
           }
+          const showArrow = currentAnimation && (
+            (currentAnimation.type === 'visit' && currentAnimation.node === node) ||
+            (currentAnimation.type === 'enqueue' && currentAnimation.node === node)
+          );
           return (
-            <g key={node}>
-              <circle cx={x} cy={y} r="15" className={`${fillColor} stroke-white stroke-1`} />
-              <text x={x} y={y + 5} textAnchor="middle" className="bg-gradient-text text-transparent bg-clip-text text-sm">{node}</text>
-            </g>
+            <motion.g
+              key={node}
+              initial={{ x: x, y: y }}
+              animate={{ x: x, y: y }}
+              transition={{ duration: speed / 1000, ease: "linear" }}
+            >
+              <circle cx={0} cy={0} r="15" className={`${fillColor} stroke-white stroke-1`} />
+              <text x={0} y={5} textAnchor="middle" className="bg-gradient-text text-transparent bg-clip-text text-sm">{node}</text>
+              {showArrow && (
+                <motion.text
+                  x={0}
+                  y={-25}
+                  textAnchor="middle"
+                  className="text-white text-xl"
+                  initial={{ opacity: 0, y: -35 }}
+                  animate={{ opacity: 1, y: -25 }}
+                  transition={{ duration: 0.5, repeat: Infinity, repeatType: "reverse" }}
+                >
+                  &#x2193;
+                </motion.text>
+              )}
+            </motion.g>
           );
         })}
       </svg>
@@ -194,17 +330,24 @@ const VisualizationArea = ({ data, output, animations, currentStep, algorithmTyp
   };
 
   const renderTreeVisualization = () => {
-    if (!data || !data.value) { // Assuming data is the root TreeNode
+    if (!data || !data.value) {
       return <p className="bg-gradient-text text-transparent bg-clip-text">No tree data to visualize. Please input data in a specific format (e.g., {"{value: 1, left: {value: 2}, right: {value: 3}}"}).</p>;
     }
 
     const nodePositions = {};
     const nodeRadius = 15;
-    const levelHeight = 60;
+    const levelHeight = 80;
     const horizontalSpacing = 40;
 
-    // A more robust way to calculate positions to avoid overlaps, especially for binary trees.
-    // This is a simplified version, a real layout algorithm would be more complex.
+    const treeSvgRef = React.useRef(null);
+    const [treeContainerWidth, setTreeContainerWidth] = React.useState(0);
+
+    React.useEffect(() => {
+      if (treeSvgRef.current) {
+        setTreeContainerWidth(treeSvgRef.current.clientWidth);
+      }
+    }, [data, speed]);
+
     const layoutTree = (node, x, y, level, siblingOffset) => {
       if (!node) return null;
 
@@ -216,8 +359,9 @@ const VisualizationArea = ({ data, output, animations, currentStep, algorithmTyp
       return { x, y, nodeRef: node };
     };
 
-    // Initial call for layoutTree
-    layoutTree(data, 200, 30, 0, 100); // Start root at (200, 30), initial sibling offset
+    // Calculate initial centerX dynamically
+    const initialCenterX = treeContainerWidth / 2;
+    layoutTree(data, initialCenterX, 30, 0, 100);
 
     const currentAnimation = animations && animations[currentStep];
     const visitedNodes = new Set();
@@ -232,28 +376,26 @@ const VisualizationArea = ({ data, output, animations, currentStep, algorithmTyp
     }
 
     return (
-      <svg width="400" height="400" className="bg-gray-700 rounded-md">
-        {/* Render Edges */}
+      <svg ref={treeSvgRef} width="100%" height="400" className="bg-gray-700 w-full rounded-md mx-auto">
         {Object.values(nodePositions).map(({ x, y, nodeRef }) => {
           const edges = [];
           if (nodeRef.left && nodePositions[nodeRef.left.value]) {
             const childPos = nodePositions[nodeRef.left.value];
             edges.push(
               <line key={`${nodeRef.value}-${nodeRef.left.value}`} x1={x} y1={y + nodeRadius} x2={childPos.x} y2={childPos.y - nodeRadius}
-                    className="stroke-gray-400 stroke-2" />
+                    className="stroke-gray-400 stroke-2 translate-y-4" />
             );
           }
           if (nodeRef.right && nodePositions[nodeRef.right.value]) {
             const childPos = nodePositions[nodeRef.right.value];
             edges.push(
               <line key={`${nodeRef.value}-${nodeRef.right.value}`} x1={x} y1={y + nodeRadius} x2={childPos.x} y2={childPos.y - nodeRadius}
-                    className="stroke-gray-400 stroke-2" />
+                    className="stroke-gray-400 stroke-2 translate-y-4" />
             );
           }
           return edges;
         })}
 
-        {/* Render Nodes */}
         {Object.entries(nodePositions).map(([value, { x, y }]) => {
           let fillColor = 'fill-blue-500';
           if (visitedNodes.has(Number(value))) {
@@ -261,11 +403,33 @@ const VisualizationArea = ({ data, output, animations, currentStep, algorithmTyp
           } else if (enqueuedNodes.has(Number(value))) {
             fillColor = 'fill-purple-500';
           }
+          const showArrow = currentAnimation && (
+            (currentAnimation.type === 'visit' && currentAnimation.node === Number(value)) ||
+            (currentAnimation.type === 'enqueue' && currentAnimation.node === Number(value))
+          );
           return (
-            <g key={value}>
-              <circle cx={x} cy={y} r={nodeRadius} className={`${fillColor} stroke-white stroke-1`} />
-              <text x={x} y={y + 5} textAnchor="middle" className="bg-gradient-text text-transparent bg-clip-text text-sm">{value}</text>
-            </g>
+            <motion.g
+              key={value}
+              initial={{ x: x, y: y}}
+              animate={{ x: x, y: y }}
+              transition={{ duration: speed / 1000, ease: "linear" }}
+            >
+              <circle cx={0} cy={0} r={nodeRadius} className={`${fillColor} stroke-white stroke-1 translate-y-4 `} />
+              <text x={0} y={5} textAnchor="middle" className="bg-gradient-text text-transparent bg-clip-text text-sm translate-y-4">{value}</text>
+              {showArrow && (
+                <motion.text
+                  x={0}
+                  y={20}
+                  textAnchor="middle"
+                  className="text-white text-xl translate-y-5"
+                  initial={{ opacity: 0, y: -35 }}
+                  animate={{ opacity: 1, y: -25 }}
+                  transition={{ duration: 0.5, repeat: Infinity, repeatType: "reverse" }}
+                >
+                  &#x2193;
+                </motion.text>
+              )}
+            </motion.g>
           );
         })}
       </svg>

@@ -31,6 +31,7 @@ const Visualizer = () => {
   const [finalSortedData, setFinalSortedData] = useState([]); // New state to store the final sorted array
   const timeoutRef = useRef(null);
 
+
   useEffect(() => {
     if (location.state?.selectedAlgorithm) {
       setSelectedAlgorithm(location.state.selectedAlgorithm);
@@ -333,6 +334,7 @@ const Visualizer = () => {
               currentStep={currentStep}
               algorithmType={getAlgorithmCategory(selectedAlgorithm)}
               speed={speed}
+              algorithm={selectedAlgorithm}
             />
           </div>
         ) : (
