@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "framer-motion": "^12.23.12",
     "react-csv": "^2.2.2"
   }
 }
