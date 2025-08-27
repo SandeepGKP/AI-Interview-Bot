@@ -5,6 +5,15 @@ import { motion } from 'framer-motion';
 import RenderVisualization from './RenderVisualizations';
 
 const ArrayVisualizationComponent = React.memo(({ data, output, animations, currentStep, algorithmType, speed, algorithm }) => {
+  const svgRef = useRef(null);
+  const [actualContainerWidth, setActualContainerWidth] = useState(0);
+
+  useEffect(() => {
+    if (svgRef.current) {
+      setActualContainerWidth(svgRef.current.clientWidth);
+    }
+  }, [data, animations, currentStep, algorithmType, speed, algorithm]); // Added all props as dependencies to ensure effect runs when relevant props change
+
   if (!data || data.length === 0) {
     return <p>No data to visualize. Please input data and run an algorithm.</p>;
   }
@@ -33,15 +42,6 @@ const ArrayVisualizationComponent = React.memo(({ data, output, animations, curr
   const containerHeight = 200;
   const numNodes = arrayToVisualize.length;
   const fixedGap = 20;
-
-  const svgRef = useRef(null);
-  const [actualContainerWidth, setActualContainerWidth] = useState(0);
-
-  useEffect(() => {
-    if (svgRef.current) {
-      setActualContainerWidth(svgRef.current.clientWidth);
-    }
-  }, [arrayToVisualize, speed]);
 
   let startY;
 
