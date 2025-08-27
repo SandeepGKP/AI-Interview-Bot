@@ -1,8 +1,8 @@
-import React ,{ useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 
-const VisualizationArea = ({ data, output, animations, currentStep, algorithmType, speed,algorithm }) => {
-  
+const VisualizationArea = ({ data, output, animations, currentStep, algorithmType, speed, algorithm }) => {
+
   const renderArrayVisualization = () => {
     if (!data || data.length === 0) {
       return <p>No data to visualize. Please input data and run an algorithm.</p>;
@@ -44,10 +44,10 @@ const VisualizationArea = ({ data, output, animations, currentStep, algorithmTyp
 
     let startY;
 
-    if (algorithmType === 'Sorting' && algorithm === 'Insertion Sort'){
+    if (algorithmType === 'Sorting' && algorithm === 'Insertion Sort') {
       startY = containerHeight - 2 * nodeRadius;
     }
-    else{
+    else {
       startY = containerHeight / 2
     }
     let cxPositions = [];
@@ -198,7 +198,7 @@ const VisualizationArea = ({ data, output, animations, currentStep, algorithmTyp
             </text>
             <motion.text
               x={0}
-              y={-25}
+              // y={-25}
               textAnchor="middle"
               className="text-white text-xl"
               initial={{ opacity: 0, y: -40 }}
@@ -277,7 +277,7 @@ const VisualizationArea = ({ data, output, animations, currentStep, algorithmTyp
             return (
               <g key={`${node}-${neighbor}`}>
                 <line x1={x1} y1={y1} x2={x2} y2={y2}
-                      className={`${strokeColor} stroke-${strokeWidth}`} />
+                  className={`${strokeColor} stroke-${strokeWidth}`} />
                 {weight !== undefined && (algorithmType === 'Dijkstra\'s Algorithm' || algorithmType === 'Prim\'s Algorithm' || algorithmType === 'Kruskal\'s Algorithm') && (
                   <text x={(x1 + x2) / 2} y={(y1 + y2) / 2 - 5} textAnchor="middle" className="bg-gradient-text text-transparent bg-clip-text text-xs">
                     {weight}
@@ -329,132 +329,13 @@ const VisualizationArea = ({ data, output, animations, currentStep, algorithmTyp
       </svg>
     );
   };
-
-  const renderTreeVisualization = () => {
-    if (!data || !data.value) {
-      return <p className="bg-gradient-text text-transparent bg-clip-text">No tree data to visualize. Please input data in a specific format (e.g., {"{value: 1, left: {value: 2}, right: {value: 3}}"}).</p>;
-    }
-
-    const nodePositions = {};
-    const nodeRadius = 15;
-    const levelHeight = 80;
-    const horizontalSpacing = 40;
-
-    const treeSvgRef = useRef(null);
-    const [treeContainerWidth, setTreeContainerWidth] = useState(0);
-
-    useEffect(() => {
-      if (treeSvgRef.current) {
-        setTreeContainerWidth(treeSvgRef.current.clientWidth);
-      }
-    }, [data, speed]);
-
-    const layoutTree = (node, x, y, level, siblingOffset) => {
-      if (!node) return null;
-
-      const leftChildPos = layoutTree(node.left, x - siblingOffset, y + levelHeight, level + 1, siblingOffset / 2);
-      const rightChildPos = layoutTree(node.right, x + siblingOffset, y + levelHeight, level + 1, siblingOffset / 2);
-
-      nodePositions[node.value] = { x, y, level, nodeRef: node };
-
-      return { x, y, nodeRef: node };
-    };
-
-    // Calculate initial centerX dynamically
-    const initialCenterX = treeContainerWidth / 2;
-    layoutTree(data, initialCenterX, 30, 0, 100);
-
-    const currentAnimation = animations && animations[currentStep];
-    const visitedNodes = new Set();
-    const enqueuedNodes = new Set();
-
-    if (currentAnimation) {
-      if (currentAnimation.type === 'visit') {
-        visitedNodes.add(currentAnimation.node);
-      } else if (currentAnimation.type === 'enqueue') {
-        enqueuedNodes.add(currentAnimation.node);
-      }
-    }
-
-    return (
-      <svg ref={treeSvgRef} width="100%" height="400" className="bg-gray-700 w-full rounded-md mx-auto">
-        <motion.g>
-        {Object.values(nodePositions).map(({ x, y, nodeRef }) => {
-          const edges = [];
-          if (nodeRef.left && nodePositions[nodeRef.left.value]) {
-            const childPos = nodePositions[nodeRef.left.value];
-            edges.push(
-              <line key={`${nodeRef.value}-${nodeRef.left.value}`} x1={x} y1={y + nodeRadius} x2={childPos.x} y2={childPos.y - nodeRadius}
-                    className="stroke-gray-400 stroke-2 translate-y-4" />
-            );
-          }
-          if (nodeRef.right && nodePositions[nodeRef.right.value]) {
-            const childPos = nodePositions[nodeRef.right.value];
-            edges.push(
-              <line key={`${nodeRef.value}-${nodeRef.right.value}`} x1={x} y1={y + nodeRadius} x2={childPos.x} y2={childPos.y - nodeRadius}
-                    className="stroke-gray-400 stroke-2 translate-y-4" />
-            );
-          }
-          return edges;
-        })}
-        </motion.g>
-
-        {Object.entries(nodePositions).map(([value, { x, y }]) => {
-          let fillColor = 'fill-blue-500';
-          if (visitedNodes.has(Number(value))) {
-            fillColor = 'fill-yellow-500';
-          } else if (enqueuedNodes.has(Number(value))) {
-            fillColor = 'fill-purple-500';
-          }
-          const showArrow = currentAnimation && (
-            (currentAnimation.type === 'visit' && currentAnimation.node === Number(value)) ||
-            (currentAnimation.type === 'enqueue' && currentAnimation.node === Number(value))
-          );
-          return (
-            <motion.g
-              key={value}
-              initial={{ x: x, y: y}}
-              animate={{ x: x, y: y }}
-              transition={{ duration: speed / 1000, ease: "linear" }}
-            >
-              <circle cx={0} cy={0} r={nodeRadius} className={`${fillColor} stroke-white stroke-1 translate-y-4 `} />
-              <text x={0} y={5} textAnchor="middle" className="bg-gradient-text text-transparent bg-clip-text text-sm translate-y-4">{value}</text>
-              {showArrow && (
-                <motion.text
-                  x={0}
-                  y={20}
-                  textAnchor="middle"
-                  className="text-white text-xl translate-y-5"
-                  initial={{ opacity: 0, y: -35 }}
-                  animate={{ opacity: 1, y: -25 }}
-                  transition={{ duration: 0.5, repeat: Infinity, repeatType: "reverse" }}
-                >
-                  &#x2193;
-                </motion.text>
-              )}
-            </motion.g>
-          );
-        })}
-      </svg>
-    );
-  };
-
-  const renderVisualization = () => {
-    if (algorithmType === 'Sorting' || algorithmType === 'Array' || algorithmType === 'Searching') {
-      return renderArrayVisualization();
-    } else if (algorithmType === 'Graph') {
-      return renderGraphVisualization();
-    } else if (algorithmType === 'Tree') {
-      return renderTreeVisualization();
-    }
-    return <p className="bg-gradient-text text-transparent bg-clip-text">Select an algorithm to see its visualization.</p>;
-  };
+  { renderTreeVisualization({data, output, animations, currentStep, algorithmType, speed, algorithm}) }
 
   return (
     <div className="flex-1 bg-gray-900 p-4 rounded-lg shadow-md">
       <h2 className="text-2xl font-semibold mb-4 bg-gradient-text text-transparent bg-clip-text">Visualization Area</h2>
       <div className="mb-4">
-        {renderVisualization()}
+        {renderVisualization({ data, output, animations, currentStep, algorithmType, speed, algorithm, renderGraphVisualization, renderArrayVisualization })}
       </div>
       <div className="bg-gray-800 p-3 rounded-md">
         <h3 className="text-xl font-semibold mb-2">Algorithm Output:</h3>
@@ -465,3 +346,125 @@ const VisualizationArea = ({ data, output, animations, currentStep, algorithmTyp
 };
 
 export default VisualizationArea;
+
+
+
+const renderTreeVisualization = ({ data, output, animations, currentStep, algorithmType, speed, algorithm }) => {
+  if (!data || !data.value) {
+    return <p className="bg-gradient-text text-transparent bg-clip-text">No tree data to visualize. Please input data in a specific format (e.g., {"{value: 1, left: {value: 2}, right: {value: 3}}"}).</p>;
+  }
+
+  const nodePositions = {};
+  const nodeRadius = 15;
+  const levelHeight = 80;
+  const horizontalSpacing = 40;
+
+  const treeSvgRef = useRef(null);
+  const [treeContainerWidth, setTreeContainerWidth] = useState(0);
+
+  useEffect(() => {
+    if (treeSvgRef.current) {
+      setTreeContainerWidth(treeSvgRef.current.clientWidth);
+    }
+  }, [data, speed]);
+
+  const layoutTree = (node, x, y, level, siblingOffset) => {
+    if (!node) return null;
+
+    const leftChildPos = layoutTree(node.left, x - siblingOffset, y + levelHeight, level + 1, siblingOffset / 2);
+    const rightChildPos = layoutTree(node.right, x + siblingOffset, y + levelHeight, level + 1, siblingOffset / 2);
+
+    nodePositions[node.value] = { x, y, level, nodeRef: node };
+
+    return { x, y, nodeRef: node };
+  };
+
+  // Calculate initial centerX dynamically
+  const initialCenterX = treeContainerWidth / 2;
+  layoutTree(data, initialCenterX, 30, 0, 100);
+
+  const currentAnimation = animations && animations[currentStep];
+  const visitedNodes = new Set();
+  const enqueuedNodes = new Set();
+
+  if (currentAnimation) {
+    if (currentAnimation.type === 'visit') {
+      visitedNodes.add(currentAnimation.node);
+    } else if (currentAnimation.type === 'enqueue') {
+      enqueuedNodes.add(currentAnimation.node);
+    }
+  }
+
+  return (
+    <svg ref={treeSvgRef} width="100%" height="400" className="bg-gray-700 w-full rounded-md mx-auto">
+      <motion.g>
+        {Object.values(nodePositions).map(({ x, y, nodeRef }) => {
+          const edges = [];
+          if (nodeRef.left && nodePositions[nodeRef.left.value]) {
+            const childPos = nodePositions[nodeRef.left.value];
+            edges.push(
+              <line key={`${nodeRef.value}-${nodeRef.left.value}`} x1={x} y1={y + nodeRadius} x2={childPos.x} y2={childPos.y - nodeRadius}
+                className="stroke-gray-400 stroke-2 translate-y-4" />
+            );
+          }
+          if (nodeRef.right && nodePositions[nodeRef.right.value]) {
+            const childPos = nodePositions[nodeRef.right.value];
+            edges.push(
+              <line key={`${nodeRef.value}-${nodeRef.right.value}`} x1={x} y1={y + nodeRadius} x2={childPos.x} y2={childPos.y - nodeRadius}
+                className="stroke-gray-400 stroke-2 translate-y-4" />
+            );
+          }
+          return edges;
+        })}
+      </motion.g>
+
+      {Object.entries(nodePositions).map(([value, { x, y }]) => {
+        let fillColor = 'fill-blue-500';
+        if (visitedNodes.has(Number(value))) {
+          fillColor = 'fill-yellow-500';
+        } else if (enqueuedNodes.has(Number(value))) {
+          fillColor = 'fill-purple-500';
+        }
+        const showArrow = currentAnimation && (
+          (currentAnimation.type === 'visit' && currentAnimation.node === Number(value)) ||
+          (currentAnimation.type === 'enqueue' && currentAnimation.node === Number(value))
+        );
+        return (
+          <motion.g
+            key={value}
+            initial={{ x: x, y: y }}
+            animate={{ x: x, y: y }}
+            transition={{ duration: speed / 1000, ease: "linear" }}
+          >
+            <circle cx={0} cy={0} r={nodeRadius} className={`${fillColor} stroke-white stroke-1 translate-y-4 `} />
+            <text x={0} y={5} textAnchor="middle" className="bg-gradient-text text-transparent bg-clip-text text-sm translate-y-4">{value}</text>
+            {showArrow && (
+              <motion.text
+                x={0}
+                y={20}
+                textAnchor="middle"
+                className="text-white text-xl translate-y-5"
+                initial={{ opacity: 0, y: -35 }}
+                animate={{ opacity: 1, y: -25 }}
+                transition={{ duration: 0.5, repeat: Infinity, repeatType: "reverse" }}
+              >
+                &#x2193;
+              </motion.text>
+            )}
+          </motion.g>
+        );
+      })}
+    </svg>
+  );
+};
+
+const renderVisualization = ({ data, output, animations, currentStep, algorithmType, speed, algorithm, renderGraphVisualization, renderArrayVisualization }) => {
+  if (algorithmType === 'Sorting' || algorithmType === 'Array' || algorithmType === 'Searching') {
+    return renderArrayVisualization();
+  } else if (algorithmType === 'Graph') {
+    return renderGraphVisualization();
+  } else if (algorithmType === 'Tree') {
+    return renderTreeVisualization({data, output, animations, currentStep, algorithmType, speed, algorithm});
+  }
+  return <p className="bg-gradient-text text-transparent bg-clip-text">Select an algorithm to see its visualization.</p>;
+};
