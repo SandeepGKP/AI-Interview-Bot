@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 
 import TreeVisualization from "./TreeVisualization";
-import RenderVisualization from "./renderVisualization";
+import RenderVisualization from "./RenderVisualization";
 
 // ✅ Make this a real component (capitalized)
 const ArrayVisualization = ({ data, animations, currentStep, algorithmType, speed, algorithm }) => {
