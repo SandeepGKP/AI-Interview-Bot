@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 
-import renderTreeVisualization from './treeVisualization';
-import renderVisualization from './renderVisualization';
+import TreeVisualization from './treeVisualization';
+import RenderVisualization from './renderVisualization';
 
 const VisualizationArea = ({ data, output, animations, currentStep, algorithmType, speed, algorithm }) => {
 
@@ -332,13 +332,13 @@ const VisualizationArea = ({ data, output, animations, currentStep, algorithmTyp
       </svg>
     );
   };
-  { renderTreeVisualization({data, output, animations, currentStep, algorithmType, speed, algorithm}) }
+  { TreeVisualization({data, output, animations, currentStep, algorithmType, speed, algorithm}) }
 
   return (
     <div className="flex-1 bg-gray-900 p-4 rounded-lg shadow-md">
       <h2 className="text-2xl font-semibold mb-4 bg-gradient-text text-transparent bg-clip-text">Visualization Area</h2>
       <div className="mb-4">
-        {renderVisualization({ data, output, animations, currentStep, algorithmType, speed, algorithm, renderGraphVisualization, renderArrayVisualization })}
+        {RenderVisualization({ data, output, animations, currentStep, algorithmType, speed, algorithm, renderGraphVisualization, renderArrayVisualization })}
       </div>
       <div className="bg-gray-800 p-3 rounded-md">
         <h3 className="text-xl font-semibold mb-2">Algorithm Output:</h3>
