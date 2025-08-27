@@ -332,13 +332,33 @@ const VisualizationArea = ({ data, output, animations, currentStep, algorithmTyp
       </svg>
     );
   };
-  { TreeVisualization({data, output, animations, currentStep, algorithmType, speed, algorithm}) }
+  <TreeVisualization
+    data={data}
+    output={output}
+    animations={animations}
+    currentStep={currentStep}
+    algorithmType={algorithmType}
+    speed={speed}
+    algorithm={algorithm}
+  />
+
 
   return (
     <div className="flex-1 bg-gray-900 p-4 rounded-lg shadow-md">
       <h2 className="text-2xl font-semibold mb-4 bg-gradient-text text-transparent bg-clip-text">Visualization Area</h2>
       <div className="mb-4">
-        {RenderVisualization({ data, output, animations, currentStep, algorithmType, speed, algorithm, renderGraphVisualization, renderArrayVisualization })}
+        <RenderVisualization
+          data={data}
+          output={output}
+          animations={animations}
+          currentStep={currentStep}
+          algorithmType={algorithmType}
+          speed={speed}
+          algorithm={algorithm}
+          renderGraphVisualization={renderGraphVisualization}
+          renderArrayVisualization={renderArrayVisualization}
+        />
+
       </div>
       <div className="bg-gray-800 p-3 rounded-md">
         <h3 className="text-xl font-semibold mb-2">Algorithm Output:</h3>
