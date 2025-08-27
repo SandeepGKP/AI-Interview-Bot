@@ -310,12 +310,13 @@ const Visualizer = () => {
     <div className="flex h-screen bg-gray-900 text-white">
       <Sidebar onSelectAlgorithm={handleAlgorithmSelect} />
       <div className="flex-1 flex h-full flex-col p-4 overflow-y-scroll">
-        <h1 className="text-3xl font-bold mb-4">
+        {/* <h1 className="text-3xl font-bold mb-4">
           <span className="hidden sm:inline font-bold opacity-200 leading-tight text-transparent bg-clip-text 
-             bg-[radial-gradient(circle_at_center,_#93C5FD,_#A5B4FC,_#C084FC,_#F472B6,_#1F2937)]" > {t('algorithm_visualizer')}</span></h1>
+             bg-[radial-gradient(circle_at_center,_#93C5FD,_#A5B4FC,_#C084FC,_#F472B6,_#1F2937)]" > {t('algorithm_visualizer')}</span></h1> */}
         {selectedAlgorithm ? (
           <div>
-            <p className="text-xl mb-4">Selected Algorithm: {selectedAlgorithm}</p>
+            <p className="text-3xl sm:inline font-serif opacity-200 leading-tight text-transparent bg-clip-text 
+             bg-[radial-gradient(circle_at_center,_#93C5FD,_#A5B4FC,_#C084FC,_#F472B6,_#1F2937)]">Selected Algorithm: {selectedAlgorithm}</p>
             <InputForm onSubmit={handleInputSubmit} algorithmType={getAlgorithmCategory(selectedAlgorithm)} />
             <ControlPanel
               onRunAlgorithm={handleRunAlgorithm}

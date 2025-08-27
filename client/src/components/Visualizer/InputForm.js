@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 // import { toast } from 'react-toastify';
 
@@ -17,8 +17,14 @@ const InputForm = ({ onSubmit, algorithmType }) => {
     }
   };
 
+
+  useEffect(() => {
+    setInputValue(""); 
+  }, [algorithmType]); 
+
+  
   return (
-    <form onSubmit={handleSubmit} className="bg-gray-800 p-4 rounded-lg shadow-md mb-4">
+    <form onSubmit={handleSubmit} className="bg-gray-800 p-4 rounded-lg shadow-md mb-4 mt-5">
       <label htmlFor="inputData" className="block text-white text-sm font-bold mb-2">
         {t('input_data_label')}
       </label>

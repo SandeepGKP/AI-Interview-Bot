@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 
 // import TreeVisualization from './TreeVisualization';
 import RenderVisualization from './RenderVisualizations';
+// import MergeSortVisualizationComponent from './MergeSortVisualizationComponent'; // Import the new component
 
 const ArrayVisualizationComponent = React.memo(({ data, output, animations, currentStep, algorithmType, speed, algorithm }) => {
   const svgRef = useRef(null);
@@ -360,21 +361,32 @@ const VisualizationArea = ({ data, output, animations, currentStep, algorithmTyp
     );
   };
 
+  // const renderMergeSortVisualization = () => {
+  //   return (
+  //     <MergeSortVisualizationComponent
+  //       array={data}
+  //       speed={speed}
+  //     />
+  //   );
+  // };
+
   return (
     <div className="flex-1 bg-gray-900 p-4 rounded-lg shadow-md">
       <h2 className="text-2xl font-semibold mb-4 bg-gradient-text text-transparent bg-clip-text">Visualization Area</h2>
       <div className="mb-4">
-        <RenderVisualization
-          data={data}
-          output={output}
-          animations={animations}
-          currentStep={currentStep}
-          algorithmType={algorithmType}
-          speed={speed}
-          algorithm={algorithm}
-          renderGraphVisualization={renderGraphVisualization}
-          renderArrayVisualization={renderArrayVisualization}
-        />
+        { (
+          <RenderVisualization
+            data={data}
+            output={output}
+            animations={animations}
+            currentStep={currentStep}
+            algorithmType={algorithmType}
+            speed={speed}
+            algorithm={algorithm}
+            renderGraphVisualization={renderGraphVisualization}
+            renderArrayVisualization={renderArrayVisualization}
+          />
+        )}
       </div>
       <div className="bg-gray-800 p-3 rounded-md">
         <h3 className="text-xl font-semibold mb-2">Algorithm Output:</h3>

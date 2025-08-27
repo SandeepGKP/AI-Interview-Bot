@@ -13,6 +13,7 @@ import CandidateDetails from './components/CandidateDetails';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Visualizer from './components/Visualizer/Visualizer';
+import Gallery from './components/Gallery';
 
 function App() {
   return (
@@ -80,6 +81,11 @@ function MainContent() {
           <Route path="/visualizer" element={
             <motion.div initial="initial" animate="in" exit="out" variants={pageVariants} transition={pageTransition}>
               <Visualizer />
+            </motion.div>
+          } />
+          <Route path="/gallery" element={
+            <motion.div initial="initial" animate="in" exit="out" variants={pageVariants} transition={pageTransition}>
+              <Gallery />
             </motion.div>
           } />
         </Routes>

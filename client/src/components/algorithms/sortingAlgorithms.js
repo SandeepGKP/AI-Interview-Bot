@@ -106,58 +106,156 @@ export const insertionSort = (arr) => {
 
 export const mergeSort = (arr) => {
   const animations = [];
-  let array = [...arr]; // This array will be modified in place to reflect merges
+  const mainArray = [...arr]; // The array that will eventually be sorted
+  const auxiliaryArray = [...arr]; // An auxiliary array for merging operations
 
-  const merge = (arr1, arr2) => {
-    let result = [];
-    let i = 0;
-    let j = 0;
+  // Initial state of the array
+  animations.push({ type: 'initial', array: JSON.parse(JSON.stringify(mainArray)), algorithm: 'Merge Sort' });
 
-    while (i < arr1.length && j < arr2.length) {
-      if (arr1[i].value < arr2[j].value) {
-        result.push(arr1[i]);
-        i++;
-      } else {
-        result.push(arr2[j]);
-        j++;
-      }
-    }
-    while (i < arr1.length) {
-      result.push(arr1[i]);
+  mergeSortHelper(mainArray, 0, mainArray.length - 1, auxiliaryArray, animations, 0); // Start with depth 0
+
+  // Final state of the array
+  animations.push({ type: 'final', array: JSON.parse(JSON.stringify(mainArray)), algorithm: 'Merge Sort' });
+
+  return { sortedArray: mainArray, animations: animations };
+};
+
+function mergeSortHelper(mainArray, startIdx, endIdx, auxiliaryArray, animations, depth) {
+  if (startIdx === endIdx) {
+    return;
+  }
+
+  const midIdx = Math.floor((startIdx + endIdx) / 2);
+
+  // Animation for splitting the array segment
+  animations.push({
+    type: 'split',
+    startIdx,
+    endIdx,
+    midIdx,
+    depth, // Add depth for visualization levels
+    array: JSON.parse(JSON.stringify(mainArray)),
+    leftSegment: JSON.parse(JSON.stringify(mainArray.slice(startIdx, midIdx + 1))),
+    rightSegment: JSON.parse(JSON.stringify(mainArray.slice(midIdx + 1, endIdx + 1))),
+  });
+
+  // Recursively sort the left half, copying data from auxiliary to main
+  mergeSortHelper(auxiliaryArray, startIdx, midIdx, mainArray, animations, depth + 1);
+  // Recursively sort the right half, copying data from auxiliary to main
+  mergeSortHelper(auxiliaryArray, midIdx + 1, endIdx, mainArray, animations, depth + 1);
+
+  // Merge the two sorted halves, copying data from main to auxiliary
+  doMerge(mainArray, startIdx, midIdx, endIdx, auxiliaryArray, animations, depth); // Pass depth to doMerge as well
+}
+
+function doMerge(mainArray, startIdx, midIdx, endIdx, auxiliaryArray, animations, depth) {
+  let k = startIdx; // Pointer for the mainArray (where merged elements are placed)
+  let i = startIdx; // Pointer for the left half of the auxiliaryArray
+  let j = midIdx + 1; // Pointer for the right half of the auxiliaryArray
+
+  // Animation to show the two subarrays ready for merging
+  animations.push({
+    type: 'readyToMerge',
+    startIdx,
+    midIdx,
+    endIdx,
+    depth, // Add depth
+    array: JSON.parse(JSON.stringify(auxiliaryArray)),
+    leftSegment: JSON.parse(JSON.stringify(auxiliaryArray.slice(startIdx, midIdx + 1))),
+    rightSegment: JSON.parse(JSON.stringify(auxiliaryArray.slice(midIdx + 1, endIdx + 1))),
+  });
+
+  // Animation for starting the merge process
+  animations.push({
+    type: 'startMerge',
+    startIdx,
+    midIdx,
+    endIdx,
+    depth, // Add depth
+    array: JSON.parse(JSON.stringify(auxiliaryArray)),
+  });
+
+  while (i <= midIdx && j <= endIdx) {
+    // Animation for comparing two elements
+    animations.push({
+      type: 'compare',
+      indices: [i, j], // Indices in the auxiliary array being compared
+      depth, // Add depth
+      array: JSON.parse(JSON.stringify(auxiliaryArray)),
+      mainArrayIndex: k, // The index in the main array where the element will be placed
+    });
+
+    if (auxiliaryArray[i].value <= auxiliaryArray[j].value) {
+      // Animation for placing an element from the left half into the main array
+      animations.push({
+        type: 'place',
+        index: k, // Index in the main array
+        value: auxiliaryArray[i].value,
+        sourceIndex: i, // Index in the auxiliary array
+        depth, // Add depth
+        array: JSON.parse(JSON.stringify(mainArray)), // State of main array before this placement
+        auxArray: JSON.parse(JSON.stringify(auxiliaryArray)), // State of auxiliary array
+      });
+      mainArray[k] = auxiliaryArray[i];
       i++;
-    }
-    while (j < arr2.length) {
-      result.push(arr2[j]);
+    } else {
+      // Animation for placing an element from the right half into the main array
+      animations.push({
+        type: 'place',
+        index: k,
+        value: auxiliaryArray[j].value,
+        sourceIndex: j,
+        depth, // Add depth
+        array: JSON.parse(JSON.stringify(mainArray)),
+        auxArray: JSON.parse(JSON.stringify(auxiliaryArray)),
+      });
+      mainArray[k] = auxiliaryArray[j];
       j++;
     }
-    return result;
-  };
+    k++;
+  }
 
-  const mergeSortRecursive = (arrToSort, startIdx, endIdx) => {
-    if (arrToSort.length <= 1) return arrToSort;
+  // Copy remaining elements from the left half, if any
+  while (i <= midIdx) {
+    animations.push({
+      type: 'place',
+      index: k,
+      value: auxiliaryArray[i].value,
+      sourceIndex: i,
+      depth, // Add depth
+      array: JSON.parse(JSON.stringify(mainArray)),
+      auxArray: JSON.parse(JSON.stringify(auxiliaryArray)),
+    });
+    mainArray[k] = auxiliaryArray[i];
+    i++;
+    k++;
+  }
 
-    const mid = Math.floor(arrToSort.length / 2);
-    const left = arrToSort.slice(0, mid);
-    const right = arrToSort.slice(mid);
+  // Copy remaining elements from the right half, if any
+  while (j <= endIdx) {
+    animations.push({
+      type: 'place',
+      index: k,
+      value: auxiliaryArray[j].value,
+      sourceIndex: j,
+      depth, // Add depth
+      array: JSON.parse(JSON.stringify(mainArray)),
+      auxArray: JSON.parse(JSON.stringify(auxiliaryArray)),
+    });
+    mainArray[k] = auxiliaryArray[j];
+    j++;
+    k++;
+  }
 
-    const sortedLeft = mergeSortRecursive(left, startIdx, startIdx + left.length - 1);
-    const sortedRight = mergeSortRecursive(right, startIdx + left.length, endIdx);
-
-    const merged = merge(sortedLeft, sortedRight);
-
-    // Simulate the merge step for visualization
-    let currentIdx = startIdx;
-    for (let k = 0; k < merged.length; k++) {
-      array[currentIdx + k] = merged[k]; // Update the global array
-      animations.push({ type: 'merge', index: currentIdx + k, value: merged[k].value, array: [...array] });
-    }
-
-    return merged;
-  };
-
-  const sortedArray = mergeSortRecursive(array, 0, array.length - 1);
-  return { sortedArray: array, animations: animations };
-};
+  // Animation for the end of the merge operation, showing the merged segment in the main array
+  animations.push({
+    type: 'endMerge',
+    startIdx,
+    endIdx,
+    depth, // Add depth
+    array: JSON.parse(JSON.stringify(mainArray)),
+  });
+}
 
 export const quickSort = (arr) => {
   const animations = [];
