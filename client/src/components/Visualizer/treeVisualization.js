@@ -2,7 +2,7 @@ import React ,{ useState ,useEffect,useRef, memo} from "react";
 
 import { motion } from 'framer-motion';
 
-const TreeVisualization = memo(({ data, output, animations, currentStep, algorithmType, speed, algorithm }) => {
+const TreeVisualization = ({ data, output, animations, currentStep, algorithmType, speed, algorithm }) => {
   if (!data || !data.value) {
     return <p className="bg-gradient-text text-transparent bg-clip-text">No tree data to visualize. Please input data in a specific format (e.g., {"{value: 1, left: {value: 2}, right: {value: 3}}"}).</p>;
   }
@@ -109,6 +109,6 @@ const TreeVisualization = memo(({ data, output, animations, currentStep, algorit
       })}
     </svg>
   );
-});
+};
 
-export default TreeVisualization;
+export default memo(TreeVisualization);
