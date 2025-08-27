@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 
-import TreeVisualization from './treeVisualization';
-import RenderVisualization from './renderVisualization';
+import TreeVisualization from './TreeVisualization';
+import RenderVisualization from './RenderVisualization';
 
 const VisualizationArea = ({ data, output, animations, currentStep, algorithmType, speed, algorithm }) => {
 
@@ -332,6 +332,15 @@ const VisualizationArea = ({ data, output, animations, currentStep, algorithmTyp
       </svg>
     );
   };
+  <TreeVisualization
+    data={data}
+    output={output}
+    animations={animations}
+    currentStep={currentStep}
+    algorithmType={algorithmType}
+    speed={speed}
+    algorithm={algorithm}
+  />
 
 
   return (
