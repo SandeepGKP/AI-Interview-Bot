@@ -314,7 +314,7 @@ const GraphVisualizationComponent = React.memo(({ data, output, animations, curr
             {showArrow && (
               <motion.text
                 x={0}
-                y={-25}
+                // y={-25}
                 textAnchor="middle"
                 className="text-white text-xl"
                 initial={{ opacity: 0, y: -35 }}
