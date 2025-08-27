@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+// import { toast } from 'react-toastify';
 
 const InputForm = ({ onSubmit, algorithmType }) => {
   const { t } = useTranslation();
@@ -13,7 +14,6 @@ const InputForm = ({ onSubmit, algorithmType }) => {
       onSubmit({ arrayInput: inputValue, target: targetValue });
     } else {
       onSubmit(inputValue);
-
     }
   };
 

@@ -40,6 +40,8 @@ const Sidebar = ({ onSelectAlgorithm }) => {
       <h2 className="mb-6"><span className="text-purple-300  text-6xl sm:text-3xl  opacity-200 leading-tight text-transparent bg-clip-text 
              bg-[radial-gradient(circle_at_center,#F87171,#FBBF24,#34D399,#3B82F6,#A78BFA)]">🧠AlgoViz</span></h2>
 
+      {/* <h1>Gallery</h1> */}
+
       {Object.entries(algorithms).map(([category, algs]) => (
         <div key={category} className="mb-4 ml-10 ">
 
