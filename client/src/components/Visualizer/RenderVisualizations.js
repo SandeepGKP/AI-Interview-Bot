@@ -1,6 +1,7 @@
-import TreeVisualization from "./TreeVisualization";
+import React from 'react';
+import TreeVisualizations from "./TreeVisualizations";
 
-const RenderVisualization = ({
+const RenderVisualization = React.memo(({
   data,
   output,
   animations,
@@ -17,7 +18,7 @@ const RenderVisualization = ({
     return renderGraphVisualization();
   } else if (algorithmType === "Tree") {
     return (
-      <TreeVisualization
+      <TreeVisualizations
         data={data}
         output={output}
         animations={animations}
@@ -33,6 +34,6 @@ const RenderVisualization = ({
       Select an algorithm to see its visualization.
     </p>
   );
-};
+});
 
 export default RenderVisualization;
