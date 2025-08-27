@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 
-import TreeVisualization from './TreeVisualization';
-import RenderVisualization from './RenderVisualization';
+import TreeVisualization from './treeVisualization';
+import RenderVisualization from './renderVisualization';
 
 const VisualizationArea = ({ data, output, animations, currentStep, algorithmType, speed, algorithm }) => {
 

@@ -1,4 +1,4 @@
-import TreeVisualization from "./TreeVisualization";
+import TreeVisualization from "./treeVisualization";
 
 const RenderVisualization = ({
   data,
