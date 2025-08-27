@@ -27,7 +27,7 @@ const Visualizer = () => {
   const [animations, setAnimations] = useState([]);
   const [currentStep, setCurrentStep] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [speed, setSpeed] = useState(500); // milliseconds
+  const [speed, setSpeed] = useState(1500); // milliseconds
   const [finalSortedData, setFinalSortedData] = useState([]); // New state to store the final sorted array
   const timeoutRef = useRef(null);
 

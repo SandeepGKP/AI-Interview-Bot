@@ -1,7 +1,8 @@
-import React from 'react';
+import React ,{ useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 
 const VisualizationArea = ({ data, output, animations, currentStep, algorithmType, speed,algorithm }) => {
+  
   const renderArrayVisualization = () => {
     if (!data || data.length === 0) {
       return <p>No data to visualize. Please input data and run an algorithm.</p>;
@@ -32,10 +33,10 @@ const VisualizationArea = ({ data, output, animations, currentStep, algorithmTyp
     const numNodes = arrayToVisualize.length;
     const fixedGap = 20;
 
-    const svgRef = React.useRef(null);
-    const [actualContainerWidth, setActualContainerWidth] = React.useState(0);
+    const svgRef = useRef(null);
+    const [actualContainerWidth, setActualContainerWidth] = useState(0);
 
-    React.useEffect(() => {
+    useEffect(() => {
       if (svgRef.current) {
         setActualContainerWidth(svgRef.current.clientWidth);
       }
@@ -339,10 +340,10 @@ const VisualizationArea = ({ data, output, animations, currentStep, algorithmTyp
     const levelHeight = 80;
     const horizontalSpacing = 40;
 
-    const treeSvgRef = React.useRef(null);
-    const [treeContainerWidth, setTreeContainerWidth] = React.useState(0);
+    const treeSvgRef = useRef(null);
+    const [treeContainerWidth, setTreeContainerWidth] = useState(0);
 
-    React.useEffect(() => {
+    useEffect(() => {
       if (treeSvgRef.current) {
         setTreeContainerWidth(treeSvgRef.current.clientWidth);
       }
@@ -377,6 +378,7 @@ const VisualizationArea = ({ data, output, animations, currentStep, algorithmTyp
 
     return (
       <svg ref={treeSvgRef} width="100%" height="400" className="bg-gray-700 w-full rounded-md mx-auto">
+        <motion.g>
         {Object.values(nodePositions).map(({ x, y, nodeRef }) => {
           const edges = [];
           if (nodeRef.left && nodePositions[nodeRef.left.value]) {
@@ -395,6 +397,7 @@ const VisualizationArea = ({ data, output, animations, currentStep, algorithmTyp
           }
           return edges;
         })}
+        </motion.g>
 
         {Object.entries(nodePositions).map(([value, { x, y }]) => {
           let fillColor = 'fill-blue-500';
