@@ -14,12 +14,15 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Visualizer from './components/Visualizer/Visualizer';
 import Gallery from './components/Gallery';
+import About from './components/About'; // Import the new About component
+import Footer from './components/Footer'; // Prepare to import the Footer component
 
 function App() {
   return (
     <Router>
       <MainContent />
       <ToastContainer />
+      <Footer /> {/* Add the Footer component here */}
     </Router>
   );
 }
@@ -86,6 +89,11 @@ function MainContent() {
           <Route path="/gallery" element={
             <motion.div initial="initial" animate="in" exit="out" variants={pageVariants} transition={pageTransition}>
               <Gallery />
+            </motion.div>
+          } />
+          <Route path="/about" element={ /* Add the new About route */
+            <motion.div initial="initial" animate="in" exit="out" variants={pageVariants} transition={pageTransition}>
+              <About />
             </motion.div>
           } />
         </Routes>

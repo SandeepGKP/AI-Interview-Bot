@@ -1001,18 +1001,18 @@ const Gallery = () => {
       <div className="space-y-12">
         {Object.keys(algorithms).map((category) => (
           <div key={category}>
-            <h2 className="text-3xl font-serif capitalize mb-6">{category.replace(/([A-Z])/g, ' $1').trim()}</h2>
-            <div className="grid grid-cols-2 gap-8 ">
+            <div className="flex flex-col mx-auto w-8/12">
+              <h2 className="text-3xl font-serif capitalize mb-5">{category.replace(/([A-Z])/g, ' $1').trim()}</h2>
               {algorithms[category].map((algo) => (
                 <div
                   key={algo.name}
-                  className={`relative bg-gray-800 rounded-xl p-6 shadow-xl transition-all duration-300 ease-in-out
+                  className={`relative bg-gray-800 mb-4 rounded-xl p-6 shadow-xl transition-all duration-300 ease-in-out
                     transform hover:-translate-y-2 hover:shadow-2xl
                     ${algo.name === 'Brainstorming Layout' ? 'bg-gradient-to-br from-purple-700 to-indigo-700 hover:from-purple-600 hover:to-indigo-600 border-2 border-purple-400' : 'hover:bg-gray-700'}
                   `}
                 >
                   <h3 className="text-2xl font-serif mb-2 text-white">{algo.name}</h3>
-                  <p className="bg-gray-900 text-gray-300 mb-4 text-sm whitespace-pre-line max-h-40  font-serif  overflow-y-auto pr-2 rounded-md p-4 [word-spacing:0.1rem]">{algo.description}</p>
+                  <p className="bg-gray-900 text-gray-300 mb-4 text-md whitespace-pre-line max-h-80  font-serif  overflow-y-auto pr-2 rounded-md p-4 [word-spacing:0.1rem]">{algo.description}</p>
 
                   <div className="mt-4">
                     <p className="text-lg font-semibold text-gray-200">
@@ -1036,7 +1036,7 @@ const Gallery = () => {
                     </select>
                     {algo.code && algo.code[selectedLanguage] && (
 
-                      <pre className="bg-gray-900 p-4 rounded-md text-xs overflow-x-auto mt-2 max-h-40">
+                      <pre className="bg-gray-900 p-4 rounded-md text-md font-serif overflow-x-auto mt-2 max-h-80">
                         <code>{algo.code[selectedLanguage]}</code>
                       </pre>
                     )}

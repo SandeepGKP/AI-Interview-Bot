@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { AppBar, Toolbar, Typography, Button, Box, IconButton, Avatar, Menu } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { VideoCall, Dashboard, Home, Assessment, AccountCircle, Notifications, PhotoCamera, Delete } from '@mui/icons-material';
+import { VideoCall, Dashboard, Home, Info , Assessment, AccountCircle, Notifications, PhotoCamera, Delete } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { MenuItem, Select, FormControl, InputLabel } from '@mui/material';
 import i18n from '../i18n';
@@ -64,17 +64,6 @@ const Header = () => {
         <Box sx={{ display: 'flex', gap: { xs: 1, sm: 2 }, alignItems: 'center' }}>
           <Button
             color="inherit"
-            // onClick={() => navigate('')}
-            sx={{
-              // fontWeight: location.pathname === '' ? 'bold' : 'normal',
-              // color: location.pathname === '/' ? '#1976d2' : 'inherit',
-               display: { xs: 'none', sm: 'inline-flex' }
-            }}
-          >
-            {t('About')}
-          </Button>
-          <Button
-            color="inherit"
             startIcon={<Home />}
             onClick={() => navigate('/')}
             sx={{
@@ -109,6 +98,21 @@ const Header = () => {
               <AccountCircle />
             )}
           </IconButton>
+
+                    <Button
+            color="inherit"
+            startIcon={<Info />}
+            onClick={() => navigate('/about')}
+            sx={{
+              fontWeight: location.pathname === '/about' ? 'bold' : 'normal',
+              color: location.pathname === '/about' ? '#1976d2' : 'inherit',
+               display: { xs: 'none', sm: 'inline-flex' }
+            }}
+          >
+            {t('About')}
+          </Button>  
+
+          
           <Menu
             anchorEl={anchorEl}
             open={Boolean(anchorEl)}

@@ -78,6 +78,7 @@ const ArrayVisualizationComponent = React.memo(({ data, output, animations, curr
         const value = item.value;
         const id = item.id;
         let fillColor = 'fill-blue-500';
+        let opacity = 1; // Default opacity
 
         const isAnimationComplete = (animations && currentStep >= animations.length - 1);
 
@@ -97,31 +98,52 @@ const ArrayVisualizationComponent = React.memo(({ data, output, animations, curr
             } else if (currentAnimation.type === 'insert' && currentAnimation.insertedIndex === index) {
               fillColor = 'fill-red-500'; // Element being inserted
             }
-          } else {
+          } else { // This 'else' block handles non-sorting algorithms, including searching
+            if (algorithmType === 'Searching' && algorithm === 'Binary Search' && currentAnimation.type === 'window') {
+              const [low, high] = currentAnimation.indices;
+              if (index < low || index > high) {
+                fillColor = 'fill-gray-700'; // Faded color for out-of-search-space nodes
+                opacity = 0.4; // Reduced opacity
+              } else {
+                fillColor = 'fill-blue-500'; // Default color for in-search-space nodes
+              }
+            }
+
+            // Apply specific animation colors on top of the base color, ensuring full opacity
             if (currentAnimation.type === 'compare') {
               if (currentAnimation.indices && currentAnimation.indices.includes(index)) {
                 fillColor = 'fill-yellow-500';
+                opacity = 1;
               } else if (currentAnimation.index === index) {
                 fillColor = 'fill-yellow-500';
+                opacity = 1;
               }
             } else if (currentAnimation.type === 'swap' && currentAnimation.indices && currentAnimation.indices.includes(index)) {
               fillColor = 'fill-red-500';
+              opacity = 1;
             } else if (currentAnimation.type === 'shift' && currentAnimation.indices && currentAnimation.indices.includes(index)) {
               fillColor = 'fill-orange-500';
+              opacity = 1;
             } else if (currentAnimation.type === 'insert' && currentAnimation.index === index) {
               fillColor = 'fill-green-500';
+              opacity = 1;
             } else if (currentAnimation.type === 'merge' && currentAnimation.index === index) {
               fillColor = 'fill-purple-500';
+              opacity = 1;
             } else if (currentAnimation.type === 'process' && currentAnimation.index === index) {
               fillColor = 'fill-indigo-500';
+              opacity = 1;
             } else if (currentAnimation.type === 'found') {
               if (currentAnimation.indices && currentAnimation.indices.includes(index)) {
                 fillColor = 'fill-green-500';
+                opacity = 1;
               } else if (currentAnimation.index === index) {
                 fillColor = 'fill-green-500';
+                opacity = 1;
               }
             } else if (currentAnimation.type === 'window' && currentAnimation.indices && index >= currentAnimation.indices[0] && index <= currentAnimation.indices[1]) {
-              fillColor = 'fill-teal-500';
+              fillColor = 'fill-teal-500'; // Active window color
+              opacity = 1;
             }
           }
         }
@@ -142,16 +164,37 @@ const ArrayVisualizationComponent = React.memo(({ data, output, animations, curr
         return (
           <motion.g
             key={id}
-            initial={{ x: cx }}
-            animate={{ x: cx }}
-            transition={{ duration: speed / 1000, ease: "linear" }}
+            initial={{ x: cx, y: 0 }} // Initial y position
+            animate={{
+              x: cx,
+              y: (currentAnimation && currentAnimation.type === 'found' && currentAnimation.indices && currentAnimation.indices.includes(index)) ||
+                 (currentAnimation && currentAnimation.type === 'found' && currentAnimation.index === index)
+                 ? [0, -10, 0, -5, 0] // Bounce animation for found element
+                 : (isAnimationComplete && algorithmType === 'Sorting') // Bounce animation for all nodes after sorting is complete
+                   ? [0, -10, 0, -5, 0]
+                   : 0
+            }}
+            transition={{
+              duration: (currentAnimation && currentAnimation.type === 'found' && currentAnimation.indices && currentAnimation.indices.includes(index)) ||
+                        (currentAnimation && currentAnimation.type === 'found' && currentAnimation.index === index)
+                        ? 0.8 // Bounce duration for found element
+                        : (isAnimationComplete && algorithmType === 'Sorting')
+                          ? 0.8 // Bounce duration for sorted elements
+                          : speed / 1000,
+              ease: "linear",
+              repeat: (currentAnimation && currentAnimation.type === 'found' && currentAnimation.indices && currentAnimation.indices.includes(index)) ||
+                      (currentAnimation && currentAnimation.type === 'found' && currentAnimation.index === index) ||
+                      (isAnimationComplete && algorithmType === 'Sorting')
+                      ? 1 // Repeat bounce indefinitely for found or sorted elements
+                      : 0
+            }}
           >
             <circle
               cx={0}
               cy={startY}
               r={nodeRadius}
               className={`${fillColor} stroke-white stroke-1`}
-              style={{ transition: `fill 0.1s linear` }}
+              style={{ transition: `fill 0.1s linear`, opacity: opacity }} // Apply opacity here
             />
             <text
               x={0}
@@ -167,9 +210,10 @@ const ArrayVisualizationComponent = React.memo(({ data, output, animations, curr
                 // y={startY - nodeRadius - 10}
                 textAnchor="middle"
                 className="text-white text-xl"
-                initial={{ opacity: 0, y: startY - nodeRadius - 10 }}
+                initial={{ opacity: 1, y: startY - nodeRadius - 10 }}
                 animate={{ opacity: 1, y: startY - nodeRadius - 10 }}
-                transition={{ duration: 0.3, repeat: Infinity, repeatType: "reverse" }}
+                transition={{ duration: 5.0, repeat: Infinity, repeatType: "reverse" }} 
+                // {/* Increased duration for smoother arrow movement */}
               >
                 &#x2193;
               </motion.text>
@@ -203,9 +247,10 @@ const ArrayVisualizationComponent = React.memo(({ data, output, animations, curr
             // y={-25}
             textAnchor="middle"
             className="text-white text-xl"
-            initial={{ opacity: 0, y: -40 }}
+            initial={{ opacity: 1, y: -40 }}
             animate={{ opacity: 1, y: -20 }}
-            transition={{ duration: 0.4, repeat: Infinity, repeatType: "reverse", ease: "easeOut" }}
+            transition={{ duration: 5.0, repeat: Infinity, repeatType: "reverse", ease: "easeOut" }}
+            //  {/* Increased duration for smoother arrow movement */}
           >
             &#x2193; {/* Downward arrow character */}
           </motion.text>
@@ -308,7 +353,7 @@ const GraphVisualizationComponent = React.memo(({ data, output, animations, curr
             key={node}
             initial={{ x: x, y: y }}
             animate={{ x: x, y: y }}
-            transition={{ duration: speed / 1000, ease: "linear" }}
+            transition={{ duration: speed / 2000, ease: "linear" }}
           >
             <circle cx={0} cy={0} r="15" className={`${fillColor} stroke-white stroke-1`} />
             <text x={0} y={5} textAnchor="middle" className="bg-gradient-text text-transparent bg-clip-text text-sm">{node}</text>
@@ -320,7 +365,7 @@ const GraphVisualizationComponent = React.memo(({ data, output, animations, curr
                 className="text-white text-xl"
                 initial={{ opacity: 0, y: -35 }}
                 animate={{ opacity: 1, y: -25 }}
-                transition={{ duration: 0.5, repeat: Infinity, repeatType: "reverse" }}
+                transition={{ duration: 10, repeat: Infinity, repeatType: "reverse" }}
               >
                 &#x2193;
               </motion.text>
