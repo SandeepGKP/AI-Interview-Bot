@@ -25,7 +25,7 @@ const InputForm = ({ onSubmit, algorithmType }) => {
   
   return (
     <form onSubmit={handleSubmit} className="bg-gray-800 p-4 rounded-lg shadow-md mb-4 mt-5">
-      <label htmlFor="inputData" className="block text-white text-sm font-bold mb-2">
+      <label htmlFor="inputData" className="block text-white text-sm font-serif mb-2">
         {t('input_data_label')}
       </label>
       <input
@@ -66,18 +66,18 @@ const InputForm = ({ onSubmit, algorithmType }) => {
       )}
 
       {algorithmType === 'Tree' && (
-        <p className="text-gray-400 text-sm mb-4">
+        <p className="text-gray-400 text-sm mb-4 font-serif">
           Expected input format for Tree algorithms: JSON string representing a tree structure.
           <br />
           Example: `{"{ \"value\": 1, \"left\": {\"value\": 2}, \"right\": {\"value\": 3} }"}`
         </p>
       )}
-
       <button
         type="submit"
-        className="mt-4 bg-blue-600 hover:bg-blue-700 text-black font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline bg-[radial-gradient(circle_at_center,_#93C5FD,_#A5B4FC,_#C084FC,_#F472B6,_#1F2937)]"
+        className="bg-blue-100 outline-red-300 hover:bg-blue-300 text-white font-serif py-2 px-4 rounded-3xl focus:outline-none focus:shadow-outline"
       >
-        {t('set_input')}
+       <span className="hidden sm:inline font-bold opacity-200 leading-tight text-transparent bg-clip-text 
+             bg-[radial-gradient(circle_at_center,_#B71C1C,_#E65100,_#880E4F,_#BF360C,_#4A148C)]" > {t('set_input')}</span>
       </button>
     </form>
   );

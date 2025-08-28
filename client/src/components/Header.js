@@ -64,6 +64,17 @@ const Header = () => {
         <Box sx={{ display: 'flex', gap: { xs: 1, sm: 2 }, alignItems: 'center' }}>
           <Button
             color="inherit"
+            // onClick={() => navigate('')}
+            sx={{
+              // fontWeight: location.pathname === '' ? 'bold' : 'normal',
+              // color: location.pathname === '/' ? '#1976d2' : 'inherit',
+               display: { xs: 'none', sm: 'inline-flex' }
+            }}
+          >
+            {t('About')}
+          </Button>
+          <Button
+            color="inherit"
             startIcon={<Home />}
             onClick={() => navigate('/')}
             sx={{
