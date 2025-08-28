@@ -185,7 +185,7 @@ const ArrayVisualizationComponent = React.memo(({ data, output, animations, curr
               repeat: (currentAnimation && currentAnimation.type === 'found' && currentAnimation.indices && currentAnimation.indices.includes(index)) ||
                       (currentAnimation && currentAnimation.type === 'found' && currentAnimation.index === index) ||
                       (isAnimationComplete && algorithmType === 'Sorting')
-                      ? 1 // Repeat bounce indefinitely for found or sorted elements
+                      ? 1 // Repeat bounce 1 second for found or sorted elements
                       : 0
             }}
           >
