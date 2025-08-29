@@ -109,7 +109,7 @@ const Header = () => {
                display: { xs: 'none', sm: 'inline-flex' }
             }}
           >
-            {t('About')}
+            {t('about')}
           </Button>  
 
           

@@ -46,6 +46,7 @@ const Visualizer = () => {
   const [selectedAlgorithm, setSelectedAlgorithm] = useState(location.state?.selectedAlgorithm || null);
   const [inputData, setInputData] = useState('');
   const [targetValue, setTargetValue] = useState(''); // New state for target value
+  const [sortOrder, setSortOrder] = useState('increasing'); // New state for sort order
   const [visualizationData, setVisualizationData] = useState([]);
   const [algorithmOutput, setAlgorithmOutput] = useState('');
   const [animations, setAnimations] = useState([]);
@@ -99,7 +100,12 @@ const Visualizer = () => {
       setInputData(data.arrayInput);
       setTargetValue(data.target);
       data.target ? toast.success('Input data saved') : toast.success('Please give input data to proceed');
-    } else if (algorithmCategory === 'Graph' || algorithmCategory === 'Tree') {
+    } else if (algorithmCategory === 'Sorting') {
+      setInputData(data.arrayInput);
+      setSortOrder(data.sortOrder);
+      data.arrayInput ? toast.success('Input data saved') : toast.success('Please give input data to proceed');
+    }
+    else if (algorithmCategory === 'Graph' || algorithmCategory === 'Tree') {
       setInputData(data); // data is already a parsed object
       data ? toast.success('Input data saved') : toast.success('Please give input data to proceed');
     } else {
@@ -202,20 +208,20 @@ const Visualizer = () => {
 
     switch (selectedAlgorithm) {
       case 'Bubble Sort':
-        ({ sortedArray: result, animations: generatedAnimations } = sortingAlgorithms.bubbleSort(processedData));
+        ({ sortedArray: result, animations: generatedAnimations } = sortingAlgorithms.bubbleSort(processedData, sortOrder));
 
         break;
       case 'Selection Sort':
-        ({ sortedArray: result, animations: generatedAnimations } = sortingAlgorithms.selectionSort(processedData));
+        ({ sortedArray: result, animations: generatedAnimations } = sortingAlgorithms.selectionSort(processedData, sortOrder));
         break;
       case 'Insertion Sort':
-        ({ sortedArray: result, animations: generatedAnimations } = sortingAlgorithms.insertionSort(processedData));
+        ({ sortedArray: result, animations: generatedAnimations } = sortingAlgorithms.insertionSort(processedData, sortOrder));
         break;
       case 'Merge Sort':
-        ({ sortedArray: result, animations: generatedAnimations } = sortingAlgorithms.mergeSort(processedData));
+        ({ sortedArray: result, animations: generatedAnimations } = sortingAlgorithms.mergeSort(processedData, sortOrder));
         break;
       case 'Quick Sort':
-        ({ sortedArray: result, animations: generatedAnimations } = sortingAlgorithms.quickSort(processedData));
+        ({ sortedArray: result, animations: generatedAnimations } = sortingAlgorithms.quickSort(processedData, sortOrder));
         break;
       case 'Kadane\'s Algorithm':
         ({ result, animations: generatedAnimations } = arrayAlgorithms.kadanesAlgorithm(processedData));

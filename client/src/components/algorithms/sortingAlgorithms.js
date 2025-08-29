@@ -1,4 +1,4 @@
-export const bubbleSort = (arr) => {
+export const bubbleSort = (arr, sortOrder = 'increasing') => {
   const n = arr.length;
   const animations = [];
 
@@ -7,7 +7,8 @@ export const bubbleSort = (arr) => {
   for (let i = 0; i < n - 1; i++) {
     for (let j = 0; j < n - 1 - i; j++) {
       animations.push({ type: 'compare', indices: [j, j + 1], array: [...array] });
-      if (array[j].value > array[j + 1].value) {
+      const shouldSwap = sortOrder === 'increasing' ? array[j].value > array[j + 1].value : array[j].value < array[j + 1].value;
+      if (shouldSwap) {
         [array[j], array[j + 1]] = [array[j + 1], array[j]];
         animations.push({ type: 'swap', indices: [j, j + 1], array: [...array] });
       }
@@ -16,28 +17,29 @@ export const bubbleSort = (arr) => {
   return { sortedArray: array, animations: animations };
 };
 
-export const selectionSort = (arr) => {
+export const selectionSort = (arr, sortOrder = 'increasing') => {
   const n = arr.length;
   const animations = [];
   let array = [...arr];
 
   for (let i = 0; i < n - 1; i++) {
-    let minIdx = i;
+    let extremumIdx = i; // Renamed from minIdx to be more general for min/max
     for (let j = i + 1; j < n; j++) {
-      animations.push({ type: 'compare', indices: [minIdx, j], array: [...array] });
-      if (array[j].value < array[minIdx].value) {
-        minIdx = j;
+      animations.push({ type: 'compare', indices: [extremumIdx, j], array: [...array] });
+      const shouldUpdateExtremum = sortOrder === 'increasing' ? array[j].value < array[extremumIdx].value : array[j].value > array[extremumIdx].value;
+      if (shouldUpdateExtremum) {
+        extremumIdx = j;
       }
     }
-    if (minIdx !== i) {
-      [array[i], array[minIdx]] = [array[minIdx], array[i]];
-      animations.push({ type: 'swap', indices: [i, minIdx], array: [...array] });
+    if (extremumIdx !== i) {
+      [array[i], array[extremumIdx]] = [array[extremumIdx], array[i]];
+      animations.push({ type: 'swap', indices: [i, extremumIdx], array: [...array] });
     }
   }
   return { sortedArray: array, animations: animations };
 };
 
-export const insertionSort = (arr) => {
+export const insertionSort = (arr, sortOrder = 'increasing') => {
   const n = arr.length;
   const animations = [];
   let array = [...arr]; // Use a copy to modify
@@ -61,7 +63,9 @@ export const insertionSort = (arr) => {
       algorithm: 'Insertion Sort'
     });
 
-    while (j >= 0 && array[j].value > currentElement.value) {
+    const comparisonCondition = (val1, val2) => sortOrder === 'increasing' ? val1 > val2 : val1 < val2;
+
+    while (j >= 0 && comparisonCondition(array[j].value, currentElement.value)) {
       // Animation step: Compare array[j] and currentElement
       animations.push({
         type: 'compare',
@@ -104,7 +108,7 @@ export const insertionSort = (arr) => {
   return { sortedArray: array, animations: animations };
 };
 
-export const mergeSort = (arr) => {
+export const mergeSort = (arr, sortOrder = 'increasing') => {
   const animations = [];
   const mainArray = [...arr]; // The array that will eventually be sorted
   const auxiliaryArray = [...arr]; // An auxiliary array for merging operations
@@ -112,7 +116,7 @@ export const mergeSort = (arr) => {
   // Initial state of the array
   animations.push({ type: 'initial', array: JSON.parse(JSON.stringify(mainArray)), algorithm: 'Merge Sort' });
 
-  mergeSortHelper(mainArray, 0, mainArray.length - 1, auxiliaryArray, animations, 0); // Start with depth 0
+  mergeSortHelper(mainArray, 0, mainArray.length - 1, auxiliaryArray, animations, 0, sortOrder); // Start with depth 0
 
   // Final state of the array
   animations.push({ type: 'final', array: JSON.parse(JSON.stringify(mainArray)), algorithm: 'Merge Sort' });
@@ -120,7 +124,7 @@ export const mergeSort = (arr) => {
   return { sortedArray: mainArray, animations: animations };
 };
 
-function mergeSortHelper(mainArray, startIdx, endIdx, auxiliaryArray, animations, depth) {
+function mergeSortHelper(mainArray, startIdx, endIdx, auxiliaryArray, animations, depth, sortOrder) {
   if (startIdx === endIdx) {
     return;
   }
@@ -140,15 +144,15 @@ function mergeSortHelper(mainArray, startIdx, endIdx, auxiliaryArray, animations
   });
 
   // Recursively sort the left half, copying data from auxiliary to main
-  mergeSortHelper(auxiliaryArray, startIdx, midIdx, mainArray, animations, depth + 1);
+  mergeSortHelper(auxiliaryArray, startIdx, midIdx, mainArray, animations, depth + 1, sortOrder);
   // Recursively sort the right half, copying data from auxiliary to main
-  mergeSortHelper(auxiliaryArray, midIdx + 1, endIdx, mainArray, animations, depth + 1);
+  mergeSortHelper(auxiliaryArray, midIdx + 1, endIdx, mainArray, animations, depth + 1, sortOrder);
 
   // Merge the two sorted halves, copying data from main to auxiliary
-  doMerge(mainArray, startIdx, midIdx, endIdx, auxiliaryArray, animations, depth); // Pass depth to doMerge as well
+  doMerge(mainArray, startIdx, midIdx, endIdx, auxiliaryArray, animations, depth, sortOrder); // Pass depth to doMerge as well
 }
 
-function doMerge(mainArray, startIdx, midIdx, endIdx, auxiliaryArray, animations, depth) {
+function doMerge(mainArray, startIdx, midIdx, endIdx, auxiliaryArray, animations, depth, sortOrder) {
   let k = startIdx; // Pointer for the mainArray (where merged elements are placed)
   let i = startIdx; // Pointer for the left half of the auxiliaryArray
   let j = midIdx + 1; // Pointer for the right half of the auxiliaryArray
@@ -185,7 +189,9 @@ function doMerge(mainArray, startIdx, midIdx, endIdx, auxiliaryArray, animations
       mainArrayIndex: k, // The index in the main array where the element will be placed
     });
 
-    if (auxiliaryArray[i].value <= auxiliaryArray[j].value) {
+    const shouldPlaceLeft = sortOrder === 'increasing' ? auxiliaryArray[i].value <= auxiliaryArray[j].value : auxiliaryArray[i].value >= auxiliaryArray[j].value;
+
+    if (shouldPlaceLeft) {
       // Animation for placing an element from the left half into the main array
       animations.push({
         type: 'place',
@@ -257,7 +263,7 @@ function doMerge(mainArray, startIdx, midIdx, endIdx, auxiliaryArray, animations
   });
 }
 
-export const quickSort = (arr) => {
+export const quickSort = (arr, sortOrder = 'increasing') => {
   const animations = [];
   let array = [...arr];
 
@@ -267,7 +273,8 @@ export const quickSort = (arr) => {
 
     for (let j = low; j <= high - 1; j++) {
       animations.push({ type: 'compare', indices: [j, high], array: [...arrToPartition] });
-      if (arrToPartition[j].value < pivot) {
+      const shouldSwap = sortOrder === 'increasing' ? arrToPartition[j].value < pivot : arrToPartition[j].value > pivot;
+      if (shouldSwap) {
         i++;
         [arrToPartition[i], arrToPartition[j]] = [arrToPartition[j], arrToPartition[i]];
         animations.push({ type: 'swap', indices: [i, j], array: [...arrToPartition] });

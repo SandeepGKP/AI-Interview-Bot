@@ -6,13 +6,17 @@ const InputForm = ({ onSubmit, algorithmType }) => {
   const { t } = useTranslation();
   const [inputValue, setInputValue] = useState('');
   const [targetValue, setTargetValue] = useState('');
+  const [sortOrder, setSortOrder] = useState('increasing'); // Default to increasing
 
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (algorithmType === 'Searching') {
       onSubmit({ arrayInput: inputValue, target: targetValue });
-    } else if (algorithmType === 'Graph' || algorithmType === 'Tree') {
+    } else if (algorithmType === 'Sorting') {
+      onSubmit({ arrayInput: inputValue, sortOrder: sortOrder });
+    }
+    else if (algorithmType === 'Graph' || algorithmType === 'Tree') {
       try {
         const parsedValue = JSON.parse(inputValue);
         onSubmit(parsedValue);
@@ -29,7 +33,10 @@ const InputForm = ({ onSubmit, algorithmType }) => {
 
 
   useEffect(() => {
-    setInputValue(""); 
+    setInputValue("");
+    if (algorithmType === 'Sorting') {
+      setSortOrder('increasing'); // Reset sort order when algorithm type changes to Sorting
+    }
   }, [algorithmType]); 
 
   
@@ -47,6 +54,23 @@ const InputForm = ({ onSubmit, algorithmType }) => {
         placeholder={t('input_data_placeholder')}
         required
       />
+
+      {algorithmType === 'Sorting' && (
+        <>
+          <label htmlFor="sortOrder" className="block text-white text-sm font-serif mb-2">
+            {t('sort_order_label')}
+          </label>
+          <select
+            id="sortOrder"
+            value={sortOrder}
+            onChange={(e) => setSortOrder(e.target.value)}
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline bg-gray-700 border-gray-600 mb-4"
+          >
+            <option value="increasing">{t('increasing_order')}</option>
+            <option value="decreasing">{t('decreasing_order')}</option>
+          </select>
+        </>
+      )}
 
       {algorithmType === 'Searching' && (
         <>
@@ -79,7 +103,9 @@ const InputForm = ({ onSubmit, algorithmType }) => {
         <p className="text-gray-400 text-sm mb-4 font-serif">
           Expected input format for Tree algorithms: JSON string representing a tree structure.
           <br />
-          Example: `{"{ \"value\": 1, \"left\": {\"value\": 2}, \"right\": {\"value\": 3} }"}`
+          Example 1: `{"{ \"value\": 1, \"left\": {\"value\": 2}, \"right\": {\"value\": 3} }"}`
+          <br />
+          Example 2: (for multilevel tree):`{"{ \"value\": 1, \"left\": {\"value\": 2,\"left\": {\"value\": 4}, \"right\": {\"value\": 5}}, \"right\": {\"value\": 3} }"}`
         </p>
       )}
       <button

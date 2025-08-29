@@ -13,7 +13,7 @@ const ControlPanel = ({ onRunAlgorithm, onPlay, onPause, onStepForward, onStepBa
         className="bg-blue-100 outline-red-300 hover:bg-blue-300 text-white font-serif py-2 px-4 rounded-3xl focus:outline-none focus:shadow-outline"
       >
        <span className="hidden sm:inline font-bold opacity-200 leading-tight text-transparent bg-clip-text 
-             bg-[radial-gradient(circle_at_center,_#B71C1C,_#E65100,_#880E4F,_#BF360C,_#4A148C)]" > {t('run_algorithm')}</span>
+             bg-[radial-gradient(circle_at_center,_#B71C1C,_#E65100,_#880E4F,_#BF360C,_#4A148C)]" > {t('initiate_algorithm')}</span>
       </button>
 
       <button

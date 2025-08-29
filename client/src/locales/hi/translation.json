@@ -358,6 +358,7 @@
   "change_photo": "फोटो बदलें",
   "view_photo": "फोटो देखें",
   "no_photo_available": "कोई फोटो उपलब्ध नहीं है।",
+  
   "candidate_photo": "उम्मीदवार की फोटो",
   "edit_candidate": "उम्मीदवार संपादित करें",
   "edit_candidate_details": "उम्मीदवार विवरण संपादित करें",
@@ -390,11 +391,12 @@
   "enter_your_new_password": "अपना नया पासवर्ड दर्ज करें",
   "new_password": "नया पासवर्ड",
   "confirm_new_password": "नए पासवर्ड की पुष्टि करें",
-
-
+  "intiate_algorithm":"",
   "password_reset_successful": "पासवर्ड सफलतापूर्वक रीसेट किया गया। अब आप लॉगिन कर सकते हैं।",
+
   "failed_to_reset_password": "पासवर्ड रीसेट करने में विफल। कृपया पुनः प्रयास करें।",
   "resetting_password": "पासवर्ड रीसेट किया जा रहा है...",
+
   "invalid_or_expired_reset_token": "अमान्य या समाप्त हो चुका रीसेट टोकन। कृपया पुनः प्रयास करें।",
   "change_password": "पासवर्ड बदलें",     
   "current_password": "वर्तमान पासवर्ड",
@@ -440,10 +442,14 @@
   "target_value_placeholder": "उदा., 8 या C",
   "set_input": "इनपुट सेट करें",
   "run_algorithm": "एल्गोरिथम चलाएं",
+  "sort_order_label": "छँटाई क्रम:",
+  "increasing_order": "बढ़ते क्रम में",
+  "decreasing_order": "घटते क्रम में",
   "play": "चलाएं",
   "pause": "रोकें",
   "step_back": "पीछे जाएं",
   "step_forward": "आगे बढ़ें",
+  "initiate_algorithm":"कलन विधि शुरू करना",
   "speed": "गति:",
   "algoviz": "एल्गोविज़",
   "searching_category": "खोज",
@@ -472,5 +478,22 @@
   "level_order_traversal_alg": "लेवल ऑर्डर ट्रैवर्सल",
   "graph_input_format_unweighted": "उदाहरण: `{ \"A\": [\"B\", \"C\"], \"B\": [\"A\"], \"C\": [\"A\"] }` (भारहीन)",
   "graph_input_format_weighted": "उदाहरण: `{ \"A\": {\"B\": 1, \"C\": 5}, \"B\": {\"A\": 1}, \"C\": {\"A\": 5} }` (भारित)",
-  "tree_input_format": "उदाहरण: `{ \"value\": 1, \"left\": {\"value\": 2}, \"right\": {\"value\": 3} }`"
+  "tree_input_format": "उदाहरण: `{ \"value\": 1, \"left\": {\"value\": 2}, \"right\": {\"value\": 3} }`",
+  "notifications": "सूचनाएं",
+  "account": "खाता",
+  "tech_stack_used": "उपयोग की गई तकनीकें",
+  "tech_react": "रिएक्ट",
+  "tech_nodejs": "नोड.जेएस",
+  "tech_express": "एक्सप्रेस",
+  "tech_javascript": "जावास्क्रिप्ट",
+  "tech_tailwind": "टेलविंड",
+  "tech_html5": "एचटीएमएल5",
+  "tech_css3": "सीएसएस3",
+  "about_app_title": "इस ऐप के बारे में",
+  "about_app_description": "यह एआई-संचालित वीडियो इंटरव्यू बॉट स्वचालित वीडियो इंटरव्यू आयोजित करके भर्ती प्रक्रिया को सुव्यवस्थित करने के लिए डिज़ाइन किया गया है। यह उम्मीदवार के उत्तरों का विश्लेषण करने, तकनीकी कौशल का मूल्यांकन करने और सॉफ्ट स्किल्स का आकलन करने के लिए एआई का लाभ उठाता है, जिससे भर्तीकर्ताओं को व्यापक रिपोर्ट मिलती है। हमारा लक्ष्य भर्ती को अधिक कुशल, उद्देश्यपूर्ण और स्केलेबल बनाना है। और यह इंटरैक्टिव एल्गोरिथम विज़ुअलाइज़ेशन भी प्रदान करता है, जो उपयोगकर्ताओं को गतिशील एनिमेशन और सहज यूआई के माध्यम से जटिल अवधारणाओं को समझने में मदद करता है।",
+  "efficient": "कुशल",
+  "objective": "उद्देश्यपूर्ण",
+  "scalable": "स्केलेबल",
+  "about": "परिचय"
+   
 }
