@@ -15,6 +15,30 @@ import * as graphAlgorithms from '../algorithms/graphAlgorithms';
 import * as treeAlgorithms from '../algorithms/treeAlgorithms';
 import * as searchingAlgorithms from '../algorithms/searchingAlgorithms';
 
+// Helper class for Tree Node
+class TreeNode {
+  constructor(value) {
+    this.value = value;
+    this.left = null;
+    this.right = null;
+  }
+}
+
+// Helper function to build a tree from a plain object
+const buildTree = (obj) => {
+  if (!obj || typeof obj !== 'object' || obj.value === undefined) {
+    return null;
+  }
+  const node = new TreeNode(obj.value);
+  if (obj.left) {
+    node.left = buildTree(obj.left);
+  }
+  if (obj.right) {
+    node.right = buildTree(obj.right);
+  }
+  return node;
+};
+
 const Visualizer = () => {
   
   const {t}=useTranslation();
@@ -69,17 +93,18 @@ const Visualizer = () => {
   };
 
   const handleInputSubmit = (data) => {
-    // If data is an object (from searching input form), store both arrayInput and target
-    if (typeof data === 'object' && data !== null && 'arrayInput' in data && 'target' in data) {
+    const algorithmCategory = getAlgorithmCategory(selectedAlgorithm);
+
+    if (algorithmCategory === 'Searching') {
       setInputData(data.arrayInput);
-      // Store target separately or combine with inputData in a way that handleRunAlgorithm can use it
-      // For now, let's just update inputData and handle target extraction in handleRunAlgorithm
-      // This might need refinement if other algorithms also need multiple inputs
-      setTargetValue(data.target); // Assuming a new state for targetValue in Visualizer
-      {data.target ? toast.success('Input data saved') : toast.success('Please give input data to proceed');}
+      setTargetValue(data.target);
+      data.target ? toast.success('Input data saved') : toast.success('Please give input data to proceed');
+    } else if (algorithmCategory === 'Graph' || algorithmCategory === 'Tree') {
+      setInputData(data); // data is already a parsed object
+      data ? toast.success('Input data saved') : toast.success('Please give input data to proceed');
     } else {
       setInputData(data);
-      {data ? toast.success('Input data saved') : toast.success('Please give input data to proceed');}
+      data ? toast.success('Input data saved') : toast.success('Please give input data to proceed');
     }
   };
 
@@ -120,8 +145,8 @@ const Visualizer = () => {
           processedData = inputData.split(',').map((item, id) => ({ id, value: Number(item) })); // Treat as number array with unique IDs
         }
       } else if (algorithmCategory === 'Graph') {
-        // Assuming graph input is a JSON string representing an adjacency list
-        processedData = JSON.parse(inputData);
+        // inputData is already a parsed object
+        processedData = inputData;
         // Normalize graph input: ensure all neighbors are objects with a 'weight' property (even if undefined)
         for (const node in processedData) {
           if (Array.isArray(processedData[node])) { // If it's an array of neighbors (unweighted style)
@@ -140,8 +165,16 @@ const Visualizer = () => {
           }
         }
       } else if (algorithmCategory === 'Tree') {
-        // Assuming tree input is a JSON string representing a tree structure
-        processedData = JSON.parse(inputData);
+        // inputData is already a parsed object, convert it to a TreeNode structure
+        processedData = buildTree(inputData);
+        if (!processedData) {
+          setAlgorithmOutput('Error: Invalid tree input structure. Please ensure it has a "value" property at the root.');
+          setVisualizationData([]);
+          setAnimations([]);
+          setCurrentStep(0);
+          setIsPlaying(false);
+          return;
+        }
       } else if (algorithmCategory === 'Searching') {
         // Searching algorithms typically work on arrays of numbers or strings
         if (/[a-zA-Z]/.test(inputData)) {

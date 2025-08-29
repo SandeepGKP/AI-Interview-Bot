@@ -8,18 +8,28 @@ import RenderVisualization from './RenderVisualizations';
 const ArrayVisualizationComponent = React.memo(({ data, output, animations, currentStep, algorithmType, speed, algorithm }) => {
   const svgRef = useRef(null);
   const [actualContainerWidth, setActualContainerWidth] = useState(0);
+  const prevMidIndexRef = useRef(null); // Declare useRef unconditionally
+
+  const currentAnimation = animations && animations[currentStep];
+
+  // Calculate midIndex unconditionally
+  const midIndex = (algorithmType === 'Searching' && algorithm === 'Binary Search' && currentAnimation && (currentAnimation.type === 'compare' || currentAnimation.type === 'found'))
+    ? currentAnimation.index
+    : null;
 
   useEffect(() => {
     if (svgRef.current) {
       setActualContainerWidth(svgRef.current.clientWidth);
     }
-  }, [data, animations, currentStep, algorithmType, speed, algorithm]); // Added all props as dependencies to ensure effect runs when relevant props change
+    // Update prevMidIndexRef unconditionally, but only if midIndex is valid
+    if (midIndex !== null) {
+      prevMidIndexRef.current = midIndex;
+    }
+  }, [data, animations, currentStep, algorithmType, speed, algorithm, midIndex]); // Added midIndex as a dependency
 
   if (!data || data.length === 0) {
     return <p>No data to visualize. Please input data and run an algorithm.</p>;
   }
-
-  const currentAnimation = animations && animations[currentStep];
 
   let arrayToVisualize = data;
   let movingElement = null;
@@ -55,9 +65,21 @@ const ArrayVisualizationComponent = React.memo(({ data, output, animations, curr
   let cxPositions = [];
 
   if (numNodes > 0) {
-    const totalNodesDiameter = numNodes * (2 * nodeRadius);
-    const totalGapWidth = (numNodes - 1) * fixedGap;
-    const totalOccupiedWidth = totalNodesDiameter + totalGapWidth;
+    const minNodeDiameter = 2 * nodeRadius;
+    const minTotalNodesWidth = numNodes * minNodeDiameter;
+    const minTotalGapWidth = (numNodes - 1) * fixedGap;
+
+    let calculatedGap = fixedGap;
+
+    if (minTotalNodesWidth + minTotalGapWidth > actualContainerWidth) {
+      calculatedGap = Math.max(0, (actualContainerWidth - minTotalNodesWidth) / (numNodes - 1));
+      if (numNodes === 1) { // Handle single node case to avoid division by zero
+        calculatedGap = 0;
+      }
+    }
+
+    const effectiveNodeWidth = minNodeDiameter + calculatedGap;
+    const totalOccupiedWidth = numNodes * effectiveNodeWidth - calculatedGap;
 
     let currentStartX = (actualContainerWidth - totalOccupiedWidth) / 2;
 
@@ -66,12 +88,13 @@ const ArrayVisualizationComponent = React.memo(({ data, output, animations, curr
     }
 
     for (let i = 0; i < numNodes; i++) {
-      cxPositions.push(currentStartX + nodeRadius + i * (2 * nodeRadius + fixedGap));
+      cxPositions.push(currentStartX + nodeRadius + i * effectiveNodeWidth);
     }
   }
 
   return (
-    <svg ref={svgRef} width="100%" height={containerHeight} className="bg-gray-700 p-2 rounded-md relative">
+    
+    <svg ref={svgRef} height={containerHeight} className="bg-gray-700 p-2  rounded-md w-full relative">
       {arrayToVisualize.map((item, index) => {
         if (item.isGap) return null; // Do not render gap placeholders
 
@@ -256,6 +279,7 @@ const ArrayVisualizationComponent = React.memo(({ data, output, animations, curr
           </motion.text>
         </motion.g>
       )}
+      
     </svg>
   );
 });
@@ -273,36 +297,56 @@ const GraphVisualizationComponent = React.memo(({ data, output, animations, curr
   const nodesArray = Array.from(allNodes);
 
   const nodePositions = {};
-  const radius = 150;
-  const centerX = 200;
-  const centerY = 200;
+  const svgWidth = 600; // Increased width for better spacing
+  const svgHeight = 400; // Increased height
+  const centerX = svgWidth / 2;
+  const centerY = svgHeight / 2;
+  const nodeRadius = 20; // Radius of the node circles
+
+  // Calculate dynamic radius based on number of nodes to prevent overlap
+  const minRadius = 100;
+  const maxRadius = Math.min(centerX, centerY) - nodeRadius - 10; // Ensure nodes don't go out of bounds
+  const calculatedRadius = Math.max(minRadius, Math.min(maxRadius, nodesArray.length * 20)); // Adjust 20 as needed
 
   nodesArray.forEach((node, i) => {
     const angle = (i / nodesArray.length) * 2 * Math.PI;
     nodePositions[node] = {
-      x: centerX + radius * Math.cos(angle),
-      y: centerY + radius * Math.sin(angle),
+      x: centerX + calculatedRadius * Math.cos(angle),
+      y: centerY + calculatedRadius * Math.sin(angle),
     };
   });
 
-  const currentAnimation = animations && animations[currentStep];
   const visitedNodes = new Set();
   const activeEdges = new Set();
 
-  if (currentAnimation) {
-    if (currentAnimation.type === 'visit' || currentAnimation.type === 'enqueue') {
-      visitedNodes.add(currentAnimation.node);
-    } else if (currentAnimation.type === 'explore') {
-      activeEdges.add(`${currentAnimation.from}-${currentAnimation.to}`);
-      activeEdges.add(`${currentAnimation.to}-${currentAnimation.from}`);
-    } else if (currentAnimation.type === 'add_to_mst' || currentAnimation.type === 'process_edge') {
-      activeEdges.add(`${currentAnimation.edge.from}-${currentAnimation.edge.to}`);
-      activeEdges.add(`${currentAnimation.edge.to}-${currentAnimation.edge.from}`);
+  // Accumulate visited nodes and active edges up to the current step
+  for (let i = 0; i <= currentStep && i < animations.length; i++) {
+    const animation = animations[i];
+    if (animation.type === 'visit' || animation.type === 'enqueue' || animation.type === 'update_distance') {
+      visitedNodes.add(animation.node);
+    } else if (animation.type === 'explore') {
+      activeEdges.add(`${animation.from}-${animation.to}`);
+      activeEdges.add(`${animation.to}-${animation.from}`);
+    } else if (animation.type === 'add_to_mst' || animation.type === 'process_edge') {
+      activeEdges.add(`${animation.edge.from}-${animation.edge.to}`);
+      activeEdges.add(`${animation.edge.to}-${animation.edge.from}`);
     }
   }
 
+  const currentAnimation = animations && animations[currentStep]; // Still need currentAnimation for specific step highlights
+
   return (
-    <svg width="400" height="400" className="bg-gray-700 w-full rounded-md mx-auto">
+    <svg width={svgWidth} height={svgHeight} className="bg-gray-700 w-full rounded-md mx-auto">
+      <defs>
+        <marker id="arrowhead" markerWidth="10" markerHeight="7"
+          refX="8" refY="3.5" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="gray" />
+        </marker>
+        <marker id="arrowhead-active" markerWidth="10" markerHeight="7"
+          refX="8" refY="3.5" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="green" />
+        </marker>
+      </defs>
       {nodesArray.map(node =>
         data[node] ? Object.entries(data[node]).map(([neighbor, weight]) => {
           if (!nodePositions[node] || !nodePositions[neighbor]) return null;
@@ -314,17 +358,27 @@ const GraphVisualizationComponent = React.memo(({ data, output, animations, curr
 
           let strokeColor = 'stroke-gray-400';
           let strokeWidth = '2';
+          let markerId = 'url(#arrowhead)';
 
           const edgeKey = `${node}-${neighbor}`;
           if (activeEdges.has(edgeKey)) {
             strokeColor = 'stroke-green-400';
             strokeWidth = '3';
+            markerId = 'url(#arrowhead-active)';
           }
+
+          // Adjust line end to not overlap with arrowhead
+          const angle = Math.atan2(y2 - y1, x2 - x1);
+          const adjustedX2 = x2 - nodeRadius * Math.cos(angle);
+          const adjustedY2 = y2 - nodeRadius * Math.sin(angle);
+          const adjustedX1 = x1 + nodeRadius * Math.cos(angle);
+          const adjustedY1 = y1 + nodeRadius * Math.sin(angle);
+
 
           return (
             <g key={`${node}-${neighbor}`}>
-              <line x1={x1} y1={y1} x2={x2} y2={y2}
-                className={`${strokeColor} stroke-${strokeWidth}`} />
+              <line x1={adjustedX1} y1={adjustedY1} x2={adjustedX2} y2={adjustedY2}
+                className={`${strokeColor} stroke-${strokeWidth}`} markerEnd={markerId} />
               {weight !== undefined && (algorithmType === 'Dijkstra\'s Algorithm' || algorithmType === 'Prim\'s Algorithm' || algorithmType === 'Kruskal\'s Algorithm') && (
                 <text x={(x1 + x2) / 2} y={(y1 + y2) / 2 - 5} textAnchor="middle" className="bg-gradient-text text-transparent bg-clip-text text-xs">
                   {weight}
@@ -344,6 +398,13 @@ const GraphVisualizationComponent = React.memo(({ data, output, animations, curr
         } else if (currentAnimation && currentAnimation.type === 'enqueue' && currentAnimation.node === node) {
           fillColor = 'fill-purple-500';
         }
+        // Highlight nodes involved in active edges
+        if (currentAnimation && currentAnimation.type === 'explore' && (currentAnimation.from === node || currentAnimation.to === node)) {
+          fillColor = 'fill-orange-500';
+        } else if (currentAnimation && (currentAnimation.type === 'add_to_mst' || currentAnimation.type === 'process_edge') && (currentAnimation.edge.from === node || currentAnimation.edge.to === node)) {
+          fillColor = 'fill-orange-500';
+        }
+
         const showArrow = currentAnimation && (
           (currentAnimation.type === 'visit' && currentAnimation.node === node) ||
           (currentAnimation.type === 'enqueue' && currentAnimation.node === node)
@@ -355,17 +416,17 @@ const GraphVisualizationComponent = React.memo(({ data, output, animations, curr
             animate={{ x: x, y: y }}
             transition={{ duration: speed / 2000, ease: "linear" }}
           >
-            <circle cx={0} cy={0} r="15" className={`${fillColor} stroke-white stroke-1`} />
+            <circle cx={0} cy={0} r={nodeRadius} className={`${fillColor} stroke-white stroke-1`} />
             <text x={0} y={5} textAnchor="middle" className="bg-gradient-text text-transparent bg-clip-text text-sm">{node}</text>
             {showArrow && (
               <motion.text
                 x={0}
-                // y={-25}
+                y={-nodeRadius - 10} // Position arrow above the node
                 textAnchor="middle"
                 className="text-white text-xl"
-                initial={{ opacity: 0, y: -35 }}
-                animate={{ opacity: 1, y: -25 }}
-                transition={{ duration: 10, repeat: Infinity, repeatType: "reverse" }}
+                initial={{ opacity: 1, y: -nodeRadius - 10 }}
+                animate={{ opacity: 1, y: -nodeRadius - 20 }} // Slight bounce for arrow
+                transition={{ duration: 0.5, repeat: Infinity, repeatType: "reverse" }}
               >
                 &#x2193;
               </motion.text>
@@ -416,9 +477,9 @@ const VisualizationArea = ({ data, output, animations, currentStep, algorithmTyp
   // };
 
   return (
-    <div className="flex-1 bg-gray-900 p-4 rounded-lg shadow-md">
+    <div className="flex-col bg-gray-900 p-4 rounded-lg shadow-md ">
       <h2 className="text-2xl font-semibold mb-4 bg-gradient-text text-transparent bg-clip-text">Visualization Area</h2>
-      <div className="mb-4">
+      <div className="mb-4 w-full h-auto">
         { (
           <RenderVisualization
             data={data}

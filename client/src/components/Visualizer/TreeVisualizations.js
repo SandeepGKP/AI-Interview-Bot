@@ -73,14 +73,14 @@ const TreeVisualization = ({ data, output, animations, currentStep, algorithmTyp
 
       {Object.entries(nodePositions).map(([value, { x, y }]) => {
         let fillColor = 'fill-blue-500';
-        if (visitedNodes.has(Number(value))) {
+        if (visitedNodes.has(value)) {
           fillColor = 'fill-yellow-500';
-        } else if (enqueuedNodes.has(Number(value))) {
+        } else if (enqueuedNodes.has(value)) {
           fillColor = 'fill-purple-500';
         }
         const showArrow = currentAnimation && (
-          (currentAnimation.type === 'visit' && currentAnimation.node === Number(value)) ||
-          (currentAnimation.type === 'enqueue' && currentAnimation.node === Number(value))
+          (currentAnimation.type === 'visit' && currentAnimation.node === value) ||
+          (currentAnimation.type === 'enqueue' && currentAnimation.node === value)
         );
         return (
           <motion.g
@@ -97,7 +97,7 @@ const TreeVisualization = ({ data, output, animations, currentStep, algorithmTyp
                 y={20}
                 textAnchor="middle"
                 className="text-white text-xl translate-y-5"
-                initial={{ opacity: 0, y: -35 }}
+                initial={{ opacity: 1, y: -35 }}
                 animate={{ opacity: 1, y: -25 }}
                 transition={{ duration: 0.5, repeat: Infinity, repeatType: "reverse" }}
               >

@@ -107,9 +107,11 @@ export const primsAlgorithm = (graph) => {
   visited.add(startNode);
   animations.push({ type: 'visit_node', node: startNode });
 
-  for (const edge of graph[startNode]) {
-    edges.enqueue({ from: startNode, to: edge.neighbor, weight: edge.weight }, edge.weight);
-    animations.push({ type: 'add_edge_to_pq', edge: { from: startNode, to: edge.neighbor, weight: edge.weight } });
+  // Add all edges connected to the startNode to the priority queue
+  for (const neighbor in graph[startNode]) {
+    const weight = graph[startNode][neighbor];
+    edges.enqueue({ from: startNode, to: neighbor, weight: weight }, weight);
+    animations.push({ type: 'add_edge_to_pq', edge: { from: startNode, to: neighbor, weight: weight } });
   }
 
   while (!edges.isEmpty()) {
@@ -121,10 +123,12 @@ export const primsAlgorithm = (graph) => {
     mst.push({ from, to, weight });
     animations.push({ type: 'add_to_mst', edge: { from, to, weight } });
 
-    for (const edge of graph[to]) {
-      if (!visited.has(edge.neighbor)) {
-        edges.enqueue({ from: to, to: edge.neighbor, weight: edge.weight }, edge.weight);
-        animations.push({ type: 'add_edge_to_pq', edge: { from: to, to: edge.neighbor, weight: edge.weight } });
+    // Add all edges connected to the newly visited node 'to' to the priority queue
+    for (const neighbor in graph[to]) {
+      const edgeWeight = graph[to][neighbor];
+      if (!visited.has(neighbor)) {
+        edges.enqueue({ from: to, to: neighbor, weight: edgeWeight }, edgeWeight);
+        animations.push({ type: 'add_edge_to_pq', edge: { from: to, to: neighbor, weight: edgeWeight } });
       }
     }
   }

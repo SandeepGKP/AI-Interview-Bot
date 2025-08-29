@@ -12,7 +12,17 @@ const InputForm = ({ onSubmit, algorithmType }) => {
     e.preventDefault();
     if (algorithmType === 'Searching') {
       onSubmit({ arrayInput: inputValue, target: targetValue });
-    } else {
+    } else if (algorithmType === 'Graph' || algorithmType === 'Tree') {
+      try {
+        const parsedValue = JSON.parse(inputValue);
+        onSubmit(parsedValue);
+      } catch (error) {
+        alert('Invalid JSON input for ' + algorithmType + ' algorithm. Please check the format.');
+        // Optionally, you can use a toast notification here if toast is enabled
+        // toast.error('Invalid JSON input for ' + algorithmType + ' algorithm. Please check the format.');
+      }
+    }
+    else {
       onSubmit(inputValue);
     }
   };
