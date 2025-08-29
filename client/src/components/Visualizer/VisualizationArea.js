@@ -421,7 +421,7 @@ const GraphVisualizationComponent = React.memo(({ data, output, animations, curr
             {showArrow && (
               <motion.text
                 x={0}
-                y={-nodeRadius - 10} // Position arrow above the node
+                // y={-nodeRadius - 10} // Position arrow above the node
                 textAnchor="middle"
                 className="text-white text-xl"
                 initial={{ opacity: 1, y: -nodeRadius - 10 }}
