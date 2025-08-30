@@ -234,7 +234,9 @@ const CodingAssessmentRound = ({ onComplete, roleTitle, candidateName, sessionId
     setFeedback(''); // Clear previous feedback
 
     try {
-      const response = await fetch('https://ai-interview-bot-backend.onrender.com/api/submit-code-for-judging', { // Placeholder URL
+      // Use the same base URL as fetchCodingQuestion
+      const backendBaseUrl = 'https://ai-interview-bot-backend.onrender.com'; 
+      const response = await fetch(`${backendBaseUrl}/api/submit-code-for-judging`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
