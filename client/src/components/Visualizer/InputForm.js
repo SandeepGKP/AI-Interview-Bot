@@ -50,7 +50,7 @@ const InputForm = ({ onSubmit, algorithmType }) => {
         id="inputData"
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
-        className="shadow appearance-none border rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline bg-gray-700 border-gray-600 mb-4"
+        className="shadow appearance-none border rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline bg-gray-700 border-gray-600 mb-4 [word-spacing:0.5rem]"
         placeholder={t('input_data_placeholder')}
         required
       />

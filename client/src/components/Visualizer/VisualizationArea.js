@@ -336,13 +336,13 @@ const GraphVisualizationComponent = React.memo(({ data, output, animations, curr
           const x2 = nodePositions[neighbor].x;
           const y2 = nodePositions[neighbor].y;
 
-          let strokeColor = 'stroke-gray-400';
-          let strokeWidth = '2';
+          let strokeColor = 'stroke-gray-600';
+          let strokeWidth = '10';
 
           const edgeKey = `${node}-${neighbor}`;
           if (activeEdges.has(edgeKey)) {
-            strokeColor = 'stroke-green-400';
-            strokeWidth = '3';
+            strokeColor = 'stroke-green-600';
+            strokeWidth = '10';
           }
 
           return (
@@ -377,19 +377,19 @@ const GraphVisualizationComponent = React.memo(({ data, output, animations, curr
             key={node}
             initial={{ x: x, y: y }}
             animate={{ x: x, y: y }}
-            transition={{ duration: speed / 2000, ease: "linear" }}
+            transition={{ duration: speed / 1000, ease: "linear" }}
           >
             <circle cx={0} cy={0} r="15" className={`${fillColor} stroke-white stroke-1`} />
             <text x={0} y={5} textAnchor="middle" className="bg-gradient-text text-transparent bg-clip-text text-sm">{node}</text>
             {showArrow && (
               <motion.text
                 x={0}
-                // y={-25}
+                y={10}
                 textAnchor="middle"
                 className="text-white text-xl"
-                initial={{ opacity: 1, y: -35 }}
-                animate={{ opacity: 1, y: -25 }}
-                transition={{ duration: 10, repeat: Infinity, repeatType: "reverse" }}
+                initial={{ opacity: 1, y: -25 }}
+                animate={{ opacity: 1, y: -35 }}
+                transition={{ duration: 0.5, repeat: Infinity, repeatType: "reverse" }}
               >
                 &#x2193;
               </motion.text>

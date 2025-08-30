@@ -110,3 +110,8 @@
 .sparkle-border {
   animation: twinkle 1.2s ease-in-out infinite;
 }
+
+/* Add this to client/src/index.css */
+.bg-gray-700 line { /* Target lines within the graph SVG container */
+  stroke-width: 3px !important; /* Adjust this value (e.g., 2px, 6px, 8px) as needed */
+}
