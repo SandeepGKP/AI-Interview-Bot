@@ -23,6 +23,7 @@ const CodingAssessmentRound = ({ onComplete, roleTitle, candidateName, sessionId
   const [error, setError] = useState(null);
   const currentRoleTitle = roleTitle || 'Software Engineer'; // Use prop or default
   const [selectedLanguage, setSelectedLanguage] = useState('JavaScript'); // Default coding language
+  const [refreshKey, setRefreshKey] = useState(0); // New state to trigger question refresh
 
   // Video recording states and refs
   const videoRef = useRef(null);
@@ -160,7 +161,7 @@ const CodingAssessmentRound = ({ onComplete, roleTitle, candidateName, sessionId
     };
   }, [stream]);
 
-  const fetchCodingQuestion = useCallback(async () => {
+  const fetchCodingQuestion = useCallback(async (languageToFetch) => {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 120000); // 120 seconds timeout
     
@@ -181,7 +182,7 @@ const CodingAssessmentRound = ({ onComplete, roleTitle, candidateName, sessionId
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ roleTitle: currentRoleTitle, difficulty: 'medium', sessionId, language: selectedLanguage }),
+          body: JSON.stringify({ roleTitle: currentRoleTitle, difficulty: 'medium', sessionId, language: languageToFetch }), // Use languageToFetch
           signal: controller.signal,
         }
       );
@@ -214,11 +215,11 @@ const CodingAssessmentRound = ({ onComplete, roleTitle, candidateName, sessionId
       clearTimeout(timeoutId);
       setLoading(false);
     }
-  }, [currentRoleTitle, sessionId, t, selectedLanguage]);
+  }, [currentRoleTitle, sessionId, t]); // Removed selectedLanguage from dependencies
 
   useEffect(() => {
-    fetchCodingQuestion();
-  }, [fetchCodingQuestion]);
+    fetchCodingQuestion(selectedLanguage); // Pass selectedLanguage for initial fetch
+  }, [fetchCodingQuestion, refreshKey]); // Trigger fetch only on refreshKey change or initial mount
 
   const handleSubmit = () => {
     if (code.trim() === '' && !videoBlobUrl) {
@@ -371,7 +372,7 @@ const CodingAssessmentRound = ({ onComplete, roleTitle, candidateName, sessionId
       </div>
       <div className="fixed bottom-4 right-4 z-50 flex gap-4">
         <button
-          onClick={() => fetchCodingQuestion()}
+          onClick={() => setRefreshKey(prevKey => prevKey + 1)} // Increment refreshKey to trigger fetch
           className="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300 ease-in-out disabled:opacity-50"
           disabled={loading}
         >
