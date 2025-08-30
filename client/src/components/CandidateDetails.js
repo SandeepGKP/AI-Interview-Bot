@@ -44,7 +44,7 @@ const CandidateDetails = () => {
       setSession(res.data);
     } catch (err) {
       console.error('Error loading session:', err);
-      setError('Failed to load session.');
+      setError(t('failed_to_load_session'));
     } finally {
       setLoading(false);
     }
@@ -59,7 +59,7 @@ const CandidateDetails = () => {
       navigate(`/report/${session.id}`, { state: { report: res.data } });
     } catch (err) {
       console.error('Error generating report:', err);
-      setError(err.response?.data?.error || 'Failed to generate report.');
+      setError(err.response?.data?.error || t('failed_to_generate_report'));
     } finally {
       setReportLoading(false);
     }

@@ -514,6 +514,10 @@
   "scalable": "scalable",
   "algorithm_output":"Algorithm Output",
   "about":"About",
-  "robot_alt_text": "Robot"
-
+  "robot_alt_text": "Robot",
+  "run_operation":"Run Operation",
+  "stack_category":"Stack",
+  "queue_category":"Queue",
+  "stack_lifo_alg":"Stack Algorithm",
+  "queue_fifo_alg":"Queue Agorithm"
 }

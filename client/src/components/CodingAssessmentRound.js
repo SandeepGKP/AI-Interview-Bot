@@ -21,7 +21,7 @@ const CodingAssessmentRound = ({ onComplete, roleTitle, candidateName, sessionId
   const [feedback, setFeedback] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const currentRoleTitle = roleTitle || 'Software Engineer'; // Use prop or default
+  const currentRoleTitle = roleTitle || t('software_engineer'); // Use prop or default
   const [selectedLanguage, setSelectedLanguage] = useState('JavaScript'); // Default coding language
   const [refreshKey, setRefreshKey] = useState(0); // New state to trigger question refresh
 
@@ -101,9 +101,9 @@ const CodingAssessmentRound = ({ onComplete, roleTitle, candidateName, sessionId
       setCode(question.function_signature.signature + "\n    "); // signature + indent
     } else {
       // If the fetched signature doesn't match the selected language, set a generic placeholder
-      setCode(`// Write your ${selectedLanguage} code here\n`);
+      setCode(`// ${t('write_your_code_here_for_language', { language: selectedLanguage })}\n`);
     }
-  }, [question, selectedLanguage]);
+  }, [question, selectedLanguage, t]);
 
   const startRecording = async () => {
     setRecordedChunks([]); // Clear previous chunks
@@ -219,7 +219,7 @@ const CodingAssessmentRound = ({ onComplete, roleTitle, candidateName, sessionId
 
   useEffect(() => {
     fetchCodingQuestion(selectedLanguage); // Pass selectedLanguage for initial fetch
-  }, [fetchCodingQuestion, refreshKey]); // Trigger fetch only on refreshKey change or initial mount
+  }, [fetchCodingQuestion, refreshKey, selectedLanguage]); // Trigger fetch only on refreshKey change or initial mount
 
   const handleSubmit = () => {
     if (code.trim() === '' && !videoBlobUrl) {
@@ -289,9 +289,9 @@ const CodingAssessmentRound = ({ onComplete, roleTitle, candidateName, sessionId
                     <h4 className="font-semibold text-purple-200">{t('examples')}:</h4>
                     {question.examples.map((ex, i) => (
                       <div key={i} className="bg-gray-600 p-3 rounded-md mt-2">
-                        <p><strong>Input:</strong> {JSON.stringify(ex.input)}</p>
-                        <p><strong>Output:</strong> {JSON.stringify(ex.output)}</p>
-                        {ex.explanation && <p><strong>Explanation:</strong> {String(ex.explanation)}</p>}
+                        <p><strong>{t('input')}:</strong> {JSON.stringify(ex.input)}</p>
+                        <p><strong>{t('output')}:</strong> {JSON.stringify(ex.output)}</p>
+                        {ex.explanation && <p><strong>{t('explanation')}:</strong> {String(ex.explanation)}</p>}
                       </div>
                     ))}
                   </div>
@@ -312,10 +312,10 @@ const CodingAssessmentRound = ({ onComplete, roleTitle, candidateName, sessionId
             onChange={(e) => setSelectedLanguage(e.target.value)}
             disabled={loading}
           >
-            <option value="JavaScript">JavaScript</option>
-            <option value="Python">Python</option>
-            <option value="Java">Java</option>
-            <option value="C++">C++</option>
+            <option value="JavaScript">{t('javascript')}</option>
+            <option value="Python">{t('python')}</option>
+            <option value="Java">{t('java')}</option>
+            <option value="C++">{t('c++')}</option>
           </select>
         </div>
         <textarea

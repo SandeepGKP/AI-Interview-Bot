@@ -1,5 +1,8 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import TreeVisualizations from "./TreeVisualizations";
+import StackVisualization from "./StackVisualization"; // Import StackVisualization
+import QueueVisualization from "./QueueVisualization"; // Import QueueVisualization
 
 const RenderVisualization = React.memo(({
   data,
@@ -12,6 +15,7 @@ const RenderVisualization = React.memo(({
   renderGraphVisualization,
   renderArrayVisualization,
 }) => {
+  const { t } = useTranslation();
   if (algorithmType === "Sorting" || algorithmType === "Array" || algorithmType === "Searching") {
     return renderArrayVisualization();
   } else if (algorithmType === "Graph") {
@@ -28,10 +32,30 @@ const RenderVisualization = React.memo(({
         algorithm={algorithm}
       />
     );
+  } else if (algorithmType === "Stack") {
+    return (
+      <StackVisualization
+        data={data}
+        output={output}
+        animations={animations}
+        currentStep={currentStep}
+        speed={speed}
+      />
+    );
+  } else if (algorithmType === "Queue") {
+    return (
+      <QueueVisualization
+        data={data}
+        output={output}
+        animations={animations}
+        currentStep={currentStep}
+        speed={speed}
+      />
+    );
   }
   return (
     <p className="bg-gradient-text text-transparent bg-clip-text">
-      Select an algorithm to see its visualization.
+      {t('select_algorithm_for_visualization')}
     </p>
   );
 });

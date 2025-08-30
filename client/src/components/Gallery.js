@@ -984,27 +984,207 @@ void levelOrderTraversal(TreeNode* root, vector<int>& result) {
 }`
       }
     },
+  ],
+  stack: [
+    {
+      name: 'Stack (LIFO)',
+      description: `⚙ A Stack is a linear data structure that follows the Last In, First Out (LIFO) principle.
+      Operations:
+      1. Push: Adds an element to the top of the stack.
+      2. Pop: Removes the top element from the stack.
+      3. Peek: Returns the top element without removing it.
+      4. isEmpty: Checks if the stack is empty.`,
+      complexity: 'O(1) for Push, Pop, Peek',
+      code: {
+        javascript: `class Stack {
+  constructor() {
+    this.items = [];
+  }
+  push(element) {
+    this.items.push(element);
+  }
+  pop() {
+    if (this.items.length === 0) return "Underflow";
+    return this.items.pop();
+  }
+  peek() {
+    return this.items[this.items.length - 1];
+  }
+  isEmpty() {
+    return this.items.length === 0;
+  }
+}`,
+        python: `class Stack:
+    def __init__(self):
+        self.items = []
+    def push(self, element):
+        self.items.append(element)
+    def pop(self):
+        if not self.is_empty():
+            return self.items.pop()
+        return "Underflow"
+    def peek(self):
+        if not self.is_empty():
+            return self.items[-1]
+        return "Stack is empty"
+    def is_empty(self):
+        return len(self.items) == 0`,
+        cpp: `#include <iostream>
+#include <stack>
+#include <string>
+
+template <typename T>
+class Stack {
+private:
+    stack<T> s;
+public:
+    void push(T element) {
+        s.push(element);
+    }
+    T pop() {
+        if (s.empty()) {
+            throw runtime_error("Stack Underflow");
+        }
+        T topElement = s.top();
+        s.pop();
+        return topElement;
+    }
+    T peek() {
+        if (s.empty()) {
+            throw runtime_error("Stack is empty");
+        }
+        return s.top();
+    }
+    bool isEmpty() {
+        return s.empty();
+    }
+};`
+      }
+    }
+  ],
+  queue: [
+    {
+      name: 'Queue (FIFO)',
+      description: `⚙ A Queue is a linear data structure that follows the First In, First Out (FIFO) principle.
+      Operations:
+      1. Enqueue: Adds an element to the rear of the queue.
+      2. Dequeue: Removes the front element from the queue.
+      3. Peek: Returns the front element without removing it.
+      4. isEmpty: Checks if the queue is empty.`,
+      complexity: 'O(1) for Enqueue, Dequeue',
+      code: {
+        javascript: `class Queue {
+  constructor() {
+    this.items = [];
+  }
+  enqueue(element) {
+    this.items.push(element);
+  }
+  dequeue() {
+    if (this.items.length === 0) return "Underflow";
+    return this.items.shift();
+  }
+  peek() {
+    if (this.items.length === 0) return "Queue is empty";
+    return this.items[0];
+  }
+  isEmpty() {
+    return this.items.length === 0;
+  }
+}`,
+        python: `from collections import deque
+
+class Queue:
+    def __init__(self):
+        self.items = deque()
+    def enqueue(self, element):
+        self.items.append(element)
+    def dequeue(self):
+        if not self.is_empty():
+            return self.items.popleft()
+        return "Underflow"
+    def peek(self):
+        if not self.is_empty():
+            return self.items[0]
+        return "Queue is empty"
+    def is_empty(self):
+        return len(self.items) == 0`,
+        cpp: `#include <iostream>
+#include <queue>
+#include <string>
+
+template <typename T>
+class Queue {
+private:
+    queue<T> q;
+public:
+    void enqueue(T element) {
+        q.push(element);
+    }
+    T dequeue() {
+        if (q.empty()) {
+            throw runtime_error("Queue Underflow");
+        }
+        T frontElement = q.front();
+        q.pop();
+        return frontElement;
+    }
+    T peek() {
+        if (q.empty()) {
+            throw runtime_error("Queue is empty");
+        }
+        return q.front();
+    }
+    bool isEmpty() {
+        return q.empty();
+    }
+};`
+      }
+    }
   ]
 };
 
 const Gallery = () => {
   const [selectedLanguage, setSelectedLanguage] = useState('javascript');
+  const [searchTerm, setSearchTerm] = useState(''); // New state for search term
 
   const handleLanguageChange = (event) => {
     setSelectedLanguage(event.target.value);
   };
 
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value);
+  };
+
+  const filteredAlgorithms = Object.keys(algorithms).reduce((acc, category) => {
+    const filtered = algorithms[category].filter(algo =>
+      algo.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      algo.description.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    if (filtered.length > 0) {
+      acc[category] = filtered;
+    }
+    return acc;
+  }, {});
+
   return (
     <div className="min-h-screen bg-gray-900 text-white p-8">
-      <h1 className="text-5xl font-serif text-center mb-5">Algorithm Gallery</h1>
+      <h1 className="text-5xl font-serif text-center mb-5 p-5 text-transparent bg-clip-text bg-[radial-gradient(circle_at_center,#F87171,#FBBF24,#34D399,#3B82F6,#A78BFA)]">Algorithm Gallery</h1>
       <div className="flex justify-center mb-8">
+        <input
+          type="text"
+          placeholder="Search algorithms..."
+          value={searchTerm}
+          onChange={handleSearchChange}
+          className="w-full max-w-md p-3 rounded-lg bg-gray-800 border border-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+        />
       </div>
       <div className="space-y-12">
-        {Object.keys(algorithms).map((category) => (
+        {Object.keys(filteredAlgorithms).map((category) => (
           <div key={category}>
             <div className="flex flex-col mx-auto w-8/12">
               <h2 className="text-3xl font-serif capitalize mb-5">{category.replace(/([A-Z])/g, ' $1').trim()}</h2>
-              {algorithms[category].map((algo) => (
+              {filteredAlgorithms[category].map((algo) => (
                 <div
                   key={algo.name}
                   className={`relative bg-gray-800 mb-4 rounded-xl p-6 shadow-xl transition-all duration-300 ease-in-out

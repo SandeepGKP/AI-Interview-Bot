@@ -7,6 +7,8 @@ const InputForm = ({ onSubmit, algorithmType }) => {
   const [inputValue, setInputValue] = useState('');
   const [targetValue, setTargetValue] = useState('');
   const [sortOrder, setSortOrder] = useState('increasing'); // Default to increasing
+  const [operationType, setOperationType] = useState(''); // New state for Stack/Queue operation type
+  const [operationValue, setOperationValue] = useState(''); // New state for value to push/enqueue
 
 
   const handleSubmit = (e) => {
@@ -21,9 +23,18 @@ const InputForm = ({ onSubmit, algorithmType }) => {
         const parsedValue = JSON.parse(inputValue);
         onSubmit(parsedValue);
       } catch (error) {
-        alert('Invalid JSON input for ' + algorithmType + ' algorithm. Please check the format.');
+        alert(t('invalid_json_input_for_algorithm', { algorithmType: algorithmType }));
         // Optionally, you can use a toast notification here if toast is enabled
         // toast.error('Invalid JSON input for ' + algorithmType + ' algorithm. Please check the format.');
+      }
+    } else if (algorithmType === 'Stack' || algorithmType === 'Queue') {
+      try {
+        const parsedInitialValue = inputValue
+          ? inputValue.split(',').map((item, index) => ({ id: index, value: item.trim() }))
+          : [];
+        onSubmit({ initialData: parsedInitialValue, operationType, operationValue });
+      } catch (error) {
+        alert(t('invalid_input_for_initial_data'));
       }
     }
     else {
@@ -34,6 +45,9 @@ const InputForm = ({ onSubmit, algorithmType }) => {
 
   useEffect(() => {
     setInputValue("");
+    setTargetValue("");
+    setOperationType("");
+    setOperationValue("");
     if (algorithmType === 'Sorting') {
       setSortOrder('increasing'); // Reset sort order when algorithm type changes to Sorting
     }
@@ -42,18 +56,71 @@ const InputForm = ({ onSubmit, algorithmType }) => {
   
   return (
     <form onSubmit={handleSubmit} className="bg-gray-800 p-4 rounded-lg shadow-md mb-4 mt-5">
-      <label htmlFor="inputData" className="block text-white text-sm font-serif mb-2">
-        {t('input_data_label')}
-      </label>
-      <input
-        type="text"
-        id="inputData"
-        value={inputValue}
-        onChange={(e) => setInputValue(e.target.value)}
-        className="shadow appearance-none border rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline bg-gray-700 border-gray-600 mb-4 [word-spacing:0.5rem]"
-        placeholder={t('input_data_placeholder')}
-        required
-      />
+      {(algorithmType !== 'Stack' && algorithmType !== 'Queue') && (
+        <>
+          <label htmlFor="inputData" className="block text-white text-sm font-serif mb-2">
+            {t('input_data_label')} (Initial State)
+          </label>
+          <input
+            type="text"
+            id="inputData"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline bg-gray-700 border-gray-600 mb-4 [word-spacing:0.5rem]"
+            placeholder="Enter comma-separated values (e.g., 1,2,3)"
+          />
+        </>
+      )}
+
+      {(algorithmType === 'Stack' || algorithmType === 'Queue') && (
+        <>
+          <p className="mb-5 text-purple-300  text-6xl sm:text-3xl  opacity-200 leading-tight text-transparent bg-clip-text 
+             bg-[radial-gradient(circle_at_center,#F87171,#FBBF24,#34D399,#3B82F6,#A78BFA)]">Remember that the size of the {algorithmType} should not exceed 12.</p>
+          <label htmlFor="operationType" className="block text-white text-sm font-serif mb-2">
+            Operation
+          </label>
+          <select
+            id="operationType"
+            value={operationType}
+            onChange={(e) => setOperationType(e.target.value)}
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline bg-gray-700 border-gray-600 mb-4"
+            required
+          >
+            <option value="">Select Operation</option>
+            {algorithmType === 'Stack' && (
+              <>
+                <option value="push">Push</option>
+                <option value="pop">Pop</option>
+                <option value="peek">Peek</option>
+              </>
+            )}
+            {algorithmType === 'Queue' && (
+              <>
+                <option value="enqueue">Enqueue</option>
+                <option value="dequeue">Dequeue</option>
+                {/* <option value="peek">Peek</option> */}
+              </>
+            )}
+          </select>
+
+          {(operationType === 'push' || operationType === 'enqueue') && (
+            <>
+              <label htmlFor="operationValue" className="block text-white text-sm font-serif mb-2">
+                Value to {operationType}
+              </label>
+              <input
+                type="text"
+                id="operationValue"
+                value={operationValue}
+                onChange={(e) => setOperationValue(e.target.value)}
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline bg-gray-700 border-gray-600 mb-4"
+                placeholder="Enter value"
+                required
+              />
+            </>
+          )}
+        </>
+      )}
 
       {algorithmType === 'Sorting' && (
         <>

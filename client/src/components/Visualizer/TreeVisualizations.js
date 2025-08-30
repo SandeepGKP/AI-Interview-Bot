@@ -1,8 +1,9 @@
 import React ,{ useState ,useEffect,useRef, memo} from "react";
-
+import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 
 const TreeVisualization = ({ data, output, animations, currentStep, algorithmType, speed, algorithm }) => {
+  const { t } = useTranslation();
   const treeSvgRef = useRef(null);
   const [treeContainerWidth, setTreeContainerWidth] = useState(0);
 
@@ -13,7 +14,7 @@ const TreeVisualization = ({ data, output, animations, currentStep, algorithmTyp
   }, [data, speed]);
 
   if (!data || !data.value) {
-    return <p className="bg-gradient-text text-transparent bg-clip-text">No tree data to visualize. Please input data in a specific format (e.g., {"{value: 1, left: {value: 2}, right: {value: 3}}"}).</p>;
+    return <p className="bg-gradient-text text-transparent bg-clip-text">{t('no_tree_data_to_visualize')}</p>;
   }
 
   const nodePositions = {};

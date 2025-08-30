@@ -111,7 +111,7 @@ const Home = () => {
           <div className="lg:w-1/2 flex justify-center lg:justify-end mt-8 lg:mt-0 relative">
             <img
               src="/images/robot.png"
-              alt="Robot"
+              alt={t('robot_alt_text')}
               className="object-contain w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl animate-float"
               style={{
                 filter: 'drop-shadow(0px 0px 40px rgba(150, 0, 255, 0.8))',

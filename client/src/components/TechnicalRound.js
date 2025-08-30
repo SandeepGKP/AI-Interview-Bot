@@ -120,7 +120,7 @@ const TechnicalRound = ({ onComplete, roleTitle, candidateName, sessionId }) => 
       const response = await fetch('https://ai-interview-bot-backend.onrender.com/api/generate-interview', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ roleTitle: roleTitle || 'Software Engineer', roleDescription: 'Technical interview questions', existingSessionId: sessionId }),
+        body: JSON.stringify({ roleTitle: roleTitle || t('software_engineer'), roleDescription: t('technical_interview_questions'), existingSessionId: sessionId }),
         signal: controller.signal,
       });
 

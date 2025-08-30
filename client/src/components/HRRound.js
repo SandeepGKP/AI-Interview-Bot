@@ -9,7 +9,7 @@ const HRRound = ({ onComplete, roleTitle, candidateName, sessionId }) => {
   const [feedback, setFeedback] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const currentRoleTitle = roleTitle || 'Software Engineer';
+  const currentRoleTitle = roleTitle || t('software_engineer');
 
   // Video recording states and refs
   const videoRef = useRef(null);

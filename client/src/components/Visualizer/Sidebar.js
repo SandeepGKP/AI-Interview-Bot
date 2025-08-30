@@ -12,7 +12,9 @@ const Sidebar = ({ onSelectAlgorithm }) => {
     [t('searching_category')]: [t('binary_search_alg'), t('linear_search_alg')],
     [t('sorting_category')]: [t('bubble_sort_alg'), t('selection_sort_alg'), t('insertion_sort_alg'), t('quick_sort_alg')],
     [t('graph_category')]: [t('bfs_alg'), t('dfs_alg'), t('dijkstras_algorithm_alg'), t('prims_algorithm_alg'), t('kruskals_algorithm_alg')],
-    [t('tree_category')]: [t('preorder_traversal_alg'), t('inorder_traversal_alg'), t('postorder_traversal_alg'), t('level_order_traversal_alg')]
+    [t('tree_category')]: [t('preorder_traversal_alg'), t('inorder_traversal_alg'), t('postorder_traversal_alg'), t('level_order_traversal_alg')],
+    [t('stack_category')]: [t('stack_lifo_alg')], // New: Stack category
+    [t('queue_category')]: [t('queue_fifo_alg')] // New: Queue category
   };
 
   // Helper to get the original algorithm name for onSelectAlgorithm
@@ -33,7 +35,9 @@ const Sidebar = ({ onSelectAlgorithm }) => {
       [t('preorder_traversal_alg')]: 'Preorder Traversal',
       [t('inorder_traversal_alg')]: 'Inorder Traversal',
       [t('postorder_traversal_alg')]: 'Postorder Traversal',
-      [t('level_order_traversal_alg')]: 'Level Order Traversal'
+      [t('level_order_traversal_alg')]: 'Level Order Traversal',
+      [t('stack_lifo_alg')]: 'Stack (LIFO)', // New: Stack algorithm
+      [t('queue_fifo_alg')]: 'Queue (FIFO)' // New: Queue algorithm
     };
     return allAlgs[translatedAlgName] || translatedAlgName;
   };

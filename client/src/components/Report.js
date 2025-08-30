@@ -51,11 +51,11 @@ const Report = () => {
         setReport(res.data);
         console.log('Report fetched/generated successfully:', res.data.evaluation);
       } else {
-        setError('Failed to get report: No data received.');
+        setError(t('failed_to_get_report_no_data'));
       }
     } catch (err) {
       console.error('Error fetching/generating report:', err);
-      setError(err.response?.data?.error || 'Failed to get report.');
+      setError(err.response?.data?.error || t('failed_to_get_report'));
     } finally {
       setLoading(false);
     }

@@ -68,19 +68,19 @@ const Interview = () => {
   // Sample roles for quick start
   const sampleRoles = [
     {
-      title: 'Frontend Developer',
+      title: t('frontend_developer'),
       description:
-        'We are looking for a skilled Frontend Developer with experience in React, JavaScript, and modern web technologies. The candidate should have strong problem-solving skills and experience with responsive design.'
+        t('frontend_developer_description')
     },
     {
-      title: 'Data Scientist',
+      title: t('data_scientist'),
       description:
-        'Seeking a Data Scientist with expertise in Python, machine learning, and statistical analysis. Experience with TensorFlow, pandas, and data visualization tools is preferred.'
+        t('data_scientist_description')
     },
     {
-      title: 'Product Manager',
+      title: t('product_manager'),
       description:
-        'Looking for an experienced Product Manager to lead product strategy and development. Strong communication skills, experience with agile methodologies, and customer-focused mindset required.'
+        t('product_manager_description')
     }
   ];
 
@@ -134,7 +134,7 @@ const Interview = () => {
       try {
         const response = await axios.get(`https://ai-interview-bot-backend.onrender.com/api/session/${sessionId}`);
         const introduction = await fetchIntroduction(t);
-        setSession({ ...response.data, introduction, candidateName: response.data.candidateName || 'Candidate' }); // Ensure candidateName is set
+        setSession({ ...response.data, introduction, candidateName: response.data.candidateName || t('candidate') }); // Ensure candidateName is set
         setCurrentStage('introduction'); // If session loaded, go to introduction or first stage
       } catch (err) {
         console.error('Error loading session:', err);
@@ -395,10 +395,10 @@ const Interview = () => {
                             className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-full font-bold cursor-pointer"
                             onClick={() => fillSampleRole(role)}
                           >
-                            {t(role.title.toLowerCase().replace(/\s/g, '_'))}
+                            {role.title}
                           </button>
                           <p className="text-gray-400 mt-2">
-                            {t(`${role.title.toLowerCase().replace(/\s/g, '_')}_description`)}
+                            {role.description}
                           </p>
                           {index < sampleRoles.length - 1 && <hr className="my-4 border-gray-700" />}
                         </div>

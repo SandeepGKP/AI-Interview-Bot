@@ -106,7 +106,7 @@ const RecruiterDashboard = () => {
     } catch (err) {
       console.error('Error fetching candidates:', err);
       if (!mountedRef.current) return;
-      setError('Failed to load candidates. Please try again later.');
+      setError(t('failed_to_load_candidates'));
     } finally {
       if (mountedRef.current) setLoading(false);
     }
@@ -138,11 +138,11 @@ const RecruiterDashboard = () => {
         handleCloseDeleteDialog();
         setError('');
       }
-      toast.success(t('Candidate Deleted Successfully'));
+      toast.success(t('candidate_deleted_successfully'));
     } catch (err) {
       console.error('Error deleting candidate:', err);
       if (mountedRef.current) {
-        setError('Failed to delete candidate. Please try again.');
+        setError(t('failed_to_delete_candidate'));
       }
     } finally {
       if (mountedRef.current) setLoading(false);
@@ -399,8 +399,8 @@ const RecruiterDashboard = () => {
                               {openRow === candidate.id ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
                             </IconButton>
                           </TableCell>
-                          <TableCell>{candidate.name === 'Unknown Candidate' ? '' : candidate.name}</TableCell>
-                          <TableCell>{candidate.role}</TableCell>
+                          <TableCell>{candidate.name === 'Unknown Candidate' ? t('unknown_candidate') : candidate.name}</TableCell>
+                          <TableCell>{t(candidate.role.toLowerCase().replace(/\s/g, '_'))}</TableCell>
                           <TableCell>{candidate.date ? candidate.date.toLocaleString() : '—'}</TableCell>
                           <TableCell>
                             <Chip label={t(candidate.status)} color={candidate.status === 'active' ? 'primary' : 'default'} size="small" />
@@ -417,18 +417,18 @@ const RecruiterDashboard = () => {
                               <Box margin={2}>
                                 {(candidate.codingRoundSubmitted || candidate.technicalRoundSubmitted || candidate.hrRoundSubmitted) ? (
                                   <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1 }}>
-                                    {t('Interview Rounds')}
+                                    {t('interview_rounds')}
                                   </Typography>
                                 ) : (
                                   <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1 }}>
-                                    {t('No Interview Rounds Found')}
+                                    {t('no_interview_rounds_found')}
                                   </Typography>
                                 )}
                                 <Table size="small">
                                   <TableBody>
                                     {candidate.codingRoundSubmitted && (
                                       <TableRow>
-                                        <TableCell>{t('Coding Assessment')}</TableCell>
+                                        <TableCell>{t('coding_assessment')}</TableCell>
                                         <TableCell align="right">
                                           <Button
                                             variant="contained"
@@ -442,7 +442,7 @@ const RecruiterDashboard = () => {
                                     )}
                                     {candidate.technicalRoundSubmitted && (
                                       <TableRow>
-                                        <TableCell>{t('Technical Round')}</TableCell>
+                                        <TableCell>{t('technical_round')}</TableCell>
                                         <TableCell align="right">
                                           <Button
                                             variant="contained"
@@ -456,7 +456,7 @@ const RecruiterDashboard = () => {
                                     )}
                                     {candidate.hrRoundSubmitted && (
                                       <TableRow>
-                                        <TableCell>{t('HR Round')}</TableCell>
+                                        <TableCell>{t('hr_round')}</TableCell>
                                         <TableCell align="right">
                                           <Button
                                             variant="contained"

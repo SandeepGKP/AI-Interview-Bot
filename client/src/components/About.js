@@ -1,9 +1,11 @@
 import React from 'react';
 import { FaLinkedin, FaEnvelope, FaGithub, FaReact, FaNodeJs, FaHtml5, FaCss3Alt } from "react-icons/fa";
 import { SiMongodb, SiExpress, SiJavascript, SiTailwindcss, SiFirebase } from "react-icons/si";
+import { useTranslation } from 'react-i18next';
 
 // ✅ Footer Tech Stack
 const FooterTechStack = () => {
+  const { t } = useTranslation();
   const techs = [
     { name: "React", icon: <FaReact className="text-sky-400" size={36} />, link: "https://react.dev/" },
     { name: "Node.js", icon: <FaNodeJs className="text-green-600" size={36} />, link: "https://nodejs.org/" },
@@ -17,7 +19,7 @@ const FooterTechStack = () => {
   return (
     <div className="bg-gradient-to-b from-gray-900 to-black py-12  mt-16 rounded-t-2xl shadow-inner justify-items-center overflow-x-visible">
       <h2 className="text-center text-gray-200 text-2xl font-bold mb-10 tracking-wide">
-        ⚡ Tech Stack Used
+        {t('tech_stack_used')}
       </h2>
       <div className="flex gap-4 justify-items-center px-2">
         {techs.map((tech, i) => (
@@ -40,22 +42,21 @@ const FooterTechStack = () => {
 
 // ✅ About Section
 const About = () => {
+  const { t } = useTranslation();
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-950 via-black to-gray-900 text-white flex flex-col items-center justify-center px-6 py-16">
       <div className="max-w-3xl text-center">
         <h1 className="text-5xl font-extrabold bg-gradient-to-r from-pink-500 to-purple-400 bg-clip-text text-transparent drop-shadow-lg mb-6">
-          About This App
+          {t('about_this_app')}
         </h1>
         <p className="text-lg text-gray-300 leading-relaxed mb-10">
-          This <span className="text-pink-400 font-semibold">AI-Powered Video Interview Bot</span> is designed to
-          streamline the hiring process by conducting automated video interviews.
-          It leverages <span className="text-yellow-300 font-semibold">AI</span> to analyze candidate responses, 
-          evaluate technical skills, and assess soft skills, providing recruiters with 
-          <span className="text-green-400 font-semibold"> comprehensive reports</span>. 
-          Our goal is to make recruitment more <span className="text-purple-400 font-semibold">efficient</span>, 
-          <span className="text-blue-400 font-semibold"> objective</span>, and 
-          <span className="text-pink-400 font-semibold"> scalable</span>.
-          And it also provides interactive algorithm visualizations, helping users understand complex concepts through dynamic animations and intuitive UI.
+          {t('about_description_part1')} <span className="text-pink-400 font-semibold">{t('ai_powered_video_interview_bot')}</span> {t('about_description_part2')}
+          {t('about_description_part3')} <span className="text-yellow-300 font-semibold">{t('ai')}</span> {t('about_description_part4')}
+          <span className="text-green-400 font-semibold">{t('comprehensive_reports')}</span>. 
+          {t('about_description_part5')} <span className="text-purple-400 font-semibold">{t('efficient')}</span>, 
+          <span className="text-blue-400 font-semibold">{t('objective')}</span>, {t('and')}
+          <span className="text-pink-400 font-semibold">{t('scalable')}</span>.
+          {t('about_description_part6')}
         </p>
 
         {/* Social Links */}

@@ -28,7 +28,7 @@ const ArrayVisualizationComponent = React.memo(({ data, output, animations, curr
   }, [data, animations, currentStep, algorithmType, speed, algorithm, midIndex]); // Added midIndex as a dependency
 
   if (!data || data.length === 0) {
-    return <p>No data to visualize. Please input data and run an algorithm.</p>;
+    return <p>{t('no_data_to_visualize_array')}</p>;
   }
 
   let arrayToVisualize = data;
@@ -285,8 +285,9 @@ const ArrayVisualizationComponent = React.memo(({ data, output, animations, curr
 });
 
 const GraphVisualizationComponent = React.memo(({ data, output, animations, currentStep, algorithmType, speed, algorithm }) => {
+  const { t } = useTranslation();
   if (!data || Object.keys(data).length === 0) {
-    return <p className="bg-gradient-text text-transparent bg-clip-text">No graph data to visualize. Please input data in adjacency list format (e.g., {"{A: ['B', 'C'], B: ['A'], C: ['A']}"}) and run an algorithm.</p>;
+    return <p className="bg-gradient-text text-transparent bg-clip-text">{t('no_graph_data_to_visualize')}</p>;
   }
 
   const allNodes = new Set();
@@ -442,7 +443,7 @@ const VisualizationArea = ({ data, output, animations, currentStep, algorithmTyp
 
   return (
     <div className="flex-col bg-gray-900 p-4 rounded-lg shadow-md ">
-      <h2 className="text-2xl font-semibold mb-4 bg-gradient-text text-transparent bg-clip-text">Visualization Area</h2>
+      <h2 className="text-2xl font-semibold mb-4 bg-gradient-text text-transparent bg-clip-text">{t('visualization_area')}</h2>
       <div className="mb-4 w-full h-auto">
         { (
           <RenderVisualization
