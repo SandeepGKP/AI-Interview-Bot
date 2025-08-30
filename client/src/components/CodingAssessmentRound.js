@@ -21,8 +21,6 @@ const CodingAssessmentRound = ({ onComplete, roleTitle, candidateName, sessionId
   const [feedback, setFeedback] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [submissionResult, setSubmissionResult] = useState(null); // New state for judge API results
-  const [isSubmitting, setIsSubmitting] = useState(false); // New state for submission loading
   const currentRoleTitle = roleTitle || 'Software Engineer'; // Use prop or default
   const [selectedLanguage, setSelectedLanguage] = useState('JavaScript'); // Default coding language
   const [refreshKey, setRefreshKey] = useState(0); // New state to trigger question refresh
@@ -223,50 +221,14 @@ const CodingAssessmentRound = ({ onComplete, roleTitle, candidateName, sessionId
     fetchCodingQuestion(selectedLanguage); // Pass selectedLanguage for initial fetch
   }, [fetchCodingQuestion, refreshKey]); // Trigger fetch only on refreshKey change or initial mount
 
-  const handleSubmit = async () => {
-    if (code.trim() === '') {
-      setFeedback(t('please_write_some_code_before_submitting'));
+  const handleSubmit = () => {
+    if (code.trim() === '' && !videoBlobUrl) {
+      setFeedback(t('please_write_some_code_or_record_a_video_before_submitting'));
       return;
     }
-
-    setIsSubmitting(true);
-    setSubmissionResult(null); // Clear previous results
-    setFeedback(''); // Clear previous feedback
-
-    try {
-      // Use the same base URL as fetchCodingQuestion
-      const backendBaseUrl = 'https://ai-interview-bot-backend.onrender.com'; 
-      const response = await fetch(`${backendBaseUrl}/api/submit-code-for-judging`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          code,
-          language: selectedLanguage,
-          questionId: question.title, // Using title as a placeholder ID
-          testCases: question.test_cases,
-          functionSignature: question.function_signature,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const result = await response.json();
-      setSubmissionResult(result);
-      setFeedback(t('code_submitted_for_assessment'));
-
-      // Optionally, if the assessment is complete and you want to move to the next round
-      // if (onComplete && result.status === 'completed') {
-      //   onComplete({ code, video: videoBlobUrl, submitted: true, assessmentResult: result });
-      // }
-
-    } catch (err) {
-      console.error('Failed to submit code:', err);
-      setFeedback(t('failed_to_submit_code_for_assessment'));
-      setError(err.message);
-    } finally {
-      setIsSubmitting(false);
+    setFeedback(t('code_and_or_video_submitted_successfully_moving_to_the_next_round'));
+    if (onComplete) {
+      onComplete({ code, video: videoBlobUrl, submitted: true });
     }
   };
 
@@ -402,34 +364,6 @@ const CodingAssessmentRound = ({ onComplete, roleTitle, candidateName, sessionId
           </div>
         )}
 
-        {isSubmitting && (
-          <div className="mt-6 p-4 bg-blue-800 text-blue-200 rounded-lg border border-blue-700">
-            <p>{t('submitting_code_and_running_tests')}</p>
-          </div>
-        )}
-
-        {submissionResult && (
-          <div className="mt-6 p-4 bg-green-800 text-green-200 rounded-lg border border-green-700">
-            <h4 className="text-lg font-semibold text-green-100 mb-2">{t('assessment_results')}:</h4>
-            <p><strong>{t('status')}:</strong> {submissionResult.status}</p>
-            {submissionResult.message && <p><strong>{t('message')}:</strong> {submissionResult.message}</p>}
-            {submissionResult.executionTime && <p><strong>{t('execution_time')}:</strong> {submissionResult.executionTime} ms</p>}
-            {submissionResult.memoryUsage && <p><strong>{t('memory_usage')}:</strong> {submissionResult.memoryUsage} KB</p>}
-            {submissionResult.testResults && (
-              <div className="mt-2">
-                <h5 className="font-semibold text-green-100">{t('test_cases')}:</h5>
-                <ul className="list-disc list-inside pl-4">
-                  {submissionResult.testResults.map((test, index) => (
-                    <li key={index} className={test.passed ? 'text-green-300' : 'text-red-300'}>
-                      {t('test')} {index + 1}: {test.passed ? t('passed') : t('failed')} - {test.message}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
-        )}
-
         {feedback && (
           <div className="mt-6 p-4 bg-purple-800 text-purple-200 rounded-lg border border-purple-700">
             <p>{feedback}</p>
@@ -447,9 +381,9 @@ const CodingAssessmentRound = ({ onComplete, roleTitle, candidateName, sessionId
         <button
           onClick={handleSubmit}
           className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300 ease-in-out disabled:opacity-50"
-          disabled={loading || isSubmitting || code.trim() === ''}
+          disabled={loading || (!code.trim() && !videoBlobUrl)}
         >
-          {isSubmitting ? t('submitting') : t('submit_code')}
+          {t('submit')}
         </button>
       </div>
     </motion.div>
