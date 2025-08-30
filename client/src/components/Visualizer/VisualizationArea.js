@@ -6,6 +6,7 @@ import RenderVisualization from './RenderVisualizations';
 // import MergeSortVisualizationComponent from './MergeSortVisualizationComponent'; // Import the new component
 
 const ArrayVisualizationComponent = React.memo(({ data, output, animations, currentStep, algorithmType, speed, algorithm }) => {
+  const {t}=useTranslation();
   const svgRef = useRef(null);
   const [actualContainerWidth, setActualContainerWidth] = useState(0);
   const prevMidIndexRef = useRef(null); // Declare useRef unconditionally
