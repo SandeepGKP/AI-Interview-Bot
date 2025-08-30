@@ -596,4 +596,112 @@ router.post('/generate-hr-questions', async (req, res, next) => {
   }
 });
 
+/*
+ * POST /api/submit-code-for-judging
+ * Receives code, language, and test cases, then simulates a judge API response.
+ */
+router.post('/submit-code-for-judging', async (req, res) => {
+  const { code, language, questionId, testCases, functionSignature } = req.body;
+
+  if (!code || !language || !testCases || !functionSignature) {
+    return res.status(400).json({ error: 'Code, language, question ID, test cases, and function signature are required.' });
+  }
+
+  let submissionResult = {
+    status: 'Accepted',
+    message: 'All test cases passed!',
+    executionTime: 0,
+    memoryUsage: 0,
+    testResults: [],
+  };
+
+  let totalExecutionTime = 0;
+  let maxMemoryUsage = 0;
+
+  for (const [index, testCase] of testCases.entries()) {
+    const { input, expected_output } = testCase;
+    let testPassed = false;
+    let testMessage = 'Test case failed.';
+    let currentExecutionTime = 0;
+    let currentMemoryUsage = 0; // Placeholder for memory usage
+
+    try {
+      // Simulate execution based on language
+      // This is a very basic simulation and would need a proper sandbox/executor for real judging
+      let actualOutput;
+      const startTime = process.hrtime.bigint();
+
+      if (language === 'JavaScript') {
+        // For JavaScript, we'll try to execute the function
+        // This is highly insecure and should NEVER be done in a production environment without a sandbox
+        const functionNameMatch = functionSignature.signature.match(/function\s+(\w+)\s*\(/);
+        const functionName = functionNameMatch ? functionNameMatch[1] : 'fn'; // Default to 'fn'
+
+        // Create a dynamic function to execute the submitted code
+        const dynamicFunction = new Function('input', 'code', `
+          ${code}
+          try {
+            return ${functionName}(input);
+          } catch (e) {
+            throw new Error('Runtime Error: ' + e.message);
+          }
+        `);
+        actualOutput = dynamicFunction(input, code); // Pass input to the function
+      } else if (language === 'Python') {
+        // Python execution simulation (very basic, just compares input/output)
+        // In a real scenario, you'd send this to a Python executor
+        actualOutput = `Simulated output for Python with input: ${JSON.stringify(input)}`;
+        if (JSON.stringify(input) === JSON.stringify(expected_output)) { // Simple check for demo
+          actualOutput = expected_output;
+        }
+      } else {
+        actualOutput = `Simulated output for ${language}`;
+      }
+
+      const endTime = process.hrtime.bigint();
+      currentExecutionTime = Number(endTime - startTime) / 1_000_000; // Convert nanoseconds to milliseconds
+      totalExecutionTime += currentExecutionTime;
+
+      // Basic comparison for demonstration
+      if (JSON.stringify(actualOutput) === JSON.stringify(expected_output)) {
+        testPassed = true;
+        testMessage = 'Test case passed.';
+      } else {
+        testMessage = `Expected: ${JSON.stringify(expected_output)}, Got: ${JSON.stringify(actualOutput)}`;
+        submissionResult.status = 'Wrong Answer';
+        submissionResult.message = 'Some test cases failed.';
+      }
+
+    } catch (e) {
+      console.error(`Error executing code for test case ${index + 1}:`, e);
+      testMessage = `Runtime Error: ${e.message}`;
+      testPassed = false;
+      submissionResult.status = 'Runtime Error';
+      submissionResult.message = 'Code encountered a runtime error.';
+    }
+
+    // Simulate memory usage (random for now)
+    currentMemoryUsage = Math.floor(Math.random() * (5000 - 1000 + 1)) + 1000; // 1MB to 5MB
+    if (currentMemoryUsage > maxMemoryUsage) {
+      maxMemoryUsage = currentMemoryUsage;
+    }
+
+    submissionResult.testResults.push({
+      testCase: index + 1,
+      input: input,
+      expectedOutput: expected_output,
+      actualOutput: actualOutput,
+      passed: testPassed,
+      message: testMessage,
+      executionTime: currentExecutionTime,
+      memoryUsage: currentMemoryUsage,
+    });
+  }
+
+  submissionResult.executionTime = parseFloat(totalExecutionTime.toFixed(2));
+  submissionResult.memoryUsage = maxMemoryUsage; // Report max memory usage
+
+  res.json(submissionResult);
+});
+
 module.exports = router;
