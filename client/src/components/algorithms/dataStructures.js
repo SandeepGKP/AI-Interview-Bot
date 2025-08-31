@@ -1,11 +1,8 @@
 // client/src/components/algorithms/dataStructures.js
 import { toast } from 'react-toastify';
-import { useTranslation } from 'react-i18next'; // Import useTranslation
-
 const MAX_SIZE = 12; // Define max size for stack and queue
 
-export const stackOperations = (initialData, operationType, operationValue) => {
-  const { t } = useTranslation(); // Initialize useTranslation
+export const stackOperations = (t, initialData, operationType, operationValue) => {
   const animations = [];
   let stack = initialData.map(item => ({ ...item })); // Create a deep copy to avoid mutation
 
@@ -65,8 +62,7 @@ export const stackOperations = (initialData, operationType, operationValue) => {
   return { finalStack: stack, animations };
 };
 
-export const queueOperations = (initialData, operationType, operationValue) => {
-  const { t } = useTranslation(); // Initialize useTranslation
+export const queueOperations = (t, initialData, operationType, operationValue) => {
   const animations = [];
   let queue = initialData.map(item => ({ ...item })); // Create a deep copy
 

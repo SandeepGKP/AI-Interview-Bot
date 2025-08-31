@@ -222,10 +222,10 @@ const Visualizer = () => {
         let operationResult;
 
         if (algorithmCategory === 'Stack') {
-          operationResult = dataStructures.stackOperations(currentStructure, operationType, operationValue);
+          operationResult = dataStructures.stackOperations(t, currentStructure, operationType, operationValue);
           result = operationResult.finalStack;
         } else { // Queue
-          operationResult = dataStructures.queueOperations(currentStructure, operationType, operationValue);
+          operationResult = dataStructures.queueOperations(t, currentStructure, operationType, operationValue);
           result = operationResult.finalQueue;
         }
         generatedAnimations = operationResult.animations;

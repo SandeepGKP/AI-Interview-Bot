@@ -46,17 +46,11 @@ const About = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-950 via-black to-gray-900 text-white flex flex-col items-center justify-center px-6 py-16">
       <div className="max-w-3xl text-center">
-        <h1 className="text-5xl font-extrabold bg-gradient-to-r from-pink-500 to-purple-400 bg-clip-text text-transparent drop-shadow-lg mb-6">
-          {t('about_this_app')}
+        <h1 className="text-5xl font-serif bg-gradient-to-r from-pink-500 to-purple-400 bg-clip-text text-transparent drop-shadow-lg mb-6">
+          {t('About this App')}
         </h1>
-        <p className="text-lg text-gray-300 leading-relaxed mb-10">
-          {t('about_description_part1')} <span className="text-pink-400 font-semibold">{t('ai_powered_video_interview_bot')}</span> {t('about_description_part2')}
-          {t('about_description_part3')} <span className="text-yellow-300 font-semibold">{t('ai')}</span> {t('about_description_part4')}
-          <span className="text-green-400 font-semibold">{t('comprehensive_reports')}</span>. 
-          {t('about_description_part5')} <span className="text-purple-400 font-semibold">{t('efficient')}</span>, 
-          <span className="text-blue-400 font-semibold">{t('objective')}</span>, {t('and')}
-          <span className="text-pink-400 font-semibold">{t('scalable')}</span>.
-          {t('about_description_part6')}
+        <p className="text-lg text-gray-300 leading-relaxed mb-10 font-serif">
+          {t('about_app_description')}
         </p>
 
         {/* Social Links */}
