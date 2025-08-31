@@ -59,7 +59,7 @@ const InputForm = ({ onSubmit, algorithmType }) => {
       {(algorithmType !== 'Stack' && algorithmType !== 'Queue') && (
         <>
           <label htmlFor="inputData" className="block text-white text-sm font-serif mb-2">
-            {t('input_data_label')} (Initial State)
+            {t('input_data_label')}
           </label>
           <input
             type="text"

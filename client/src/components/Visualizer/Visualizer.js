@@ -354,7 +354,7 @@ const Visualizer = () => {
         formattedOutput = JSON.stringify(result, null, 2);
       }
 
-      setAlgorithmOutput(t('output_for_algorithm', { algorithm: selectedAlgorithm, output: formattedOutput }));
+      setAlgorithmOutput(formattedOutput);
       if (selectedAlgorithm === 'Binary Search') {
         setVisualizationData(processedData); // processedData is already mapped for Binary Search
       } else if (algorithmCategory === 'Sorting' || algorithmCategory === 'Array' || algorithmCategory === 'Searching' || algorithmCategory === 'Stack' || algorithmCategory === 'Queue') { // Added Stack and Queue
