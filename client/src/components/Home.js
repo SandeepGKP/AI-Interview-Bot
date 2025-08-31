@@ -48,7 +48,7 @@ const Home = () => {
         <div className="relative flex flex-col lg:flex-row items-center justify-between bg-gradient-to-br from-purple-800 to-indigo-900 p-6 sm:p-8 rounded-lg overflow-hidden shadow-2xl">
           <div className="lg:w-2/3 z-10 text-center lg:text-left">
             <h2
-              className="text-3xl sm:text-4xl lg:text-5xl font-bold mt-2 leading-tight text-transparent bg-clip-text 
+              className="text-3xl sm:text-4xl lg:text-5xl font-bold mt-2 p-5 leading-tight text-transparent bg-clip-text 
              bg-[radial-gradient(circle_at_center,_#F87171,_#FBBF24,_#34D399,_#3B82F6,_#A78BFA)]"
               style={{ fontFamily: "'Rubik Wet Paint', cursive" }}
             >

@@ -75,9 +75,9 @@ const InputForm = ({ onSubmit, algorithmType }) => {
       {(algorithmType === 'Stack' || algorithmType === 'Queue') && (
         <>
           <p className="mb-5 text-purple-300  text-6xl sm:text-3xl  opacity-200 leading-tight text-transparent bg-clip-text 
-             bg-[radial-gradient(circle_at_center,#F87171,#FBBF24,#34D399,#3B82F6,#A78BFA)]">Remember that the size of the {algorithmType} should not exceed 12.</p>
+             bg-[radial-gradient(circle_at_center,#F87171,#FBBF24,#34D399,#3B82F6,#A78BFA)]">{t('remember_size_limit', { algorithmType: algorithmType })}</p>
           <label htmlFor="operationType" className="block text-white text-sm font-serif mb-2">
-            Operation
+            {t('operation')}
           </label>
           <select
             id="operationType"
@@ -86,18 +86,18 @@ const InputForm = ({ onSubmit, algorithmType }) => {
             className="shadow appearance-none border rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline bg-gray-700 border-gray-600 mb-4"
             required
           >
-            <option value="">Select Operation</option>
+            <option value="">{t('select_operation')}</option>
             {algorithmType === 'Stack' && (
               <>
-                <option value="push">Push</option>
-                <option value="pop">Pop</option>
-                <option value="peek">Peek</option>
+                <option value="push">{t('push')}</option>
+                <option value="pop">{t('pop')}</option>
+                <option value="peek">{t('peek')}</option>
               </>
             )}
             {algorithmType === 'Queue' && (
               <>
-                <option value="enqueue">Enqueue</option>
-                <option value="dequeue">Dequeue</option>
+                <option value="enqueue">{t('enqueue')}</option>
+                <option value="dequeue">{t('dequeue')}</option>
                 {/* <option value="peek">Peek</option> */}
               </>
             )}
@@ -106,7 +106,7 @@ const InputForm = ({ onSubmit, algorithmType }) => {
           {(operationType === 'push' || operationType === 'enqueue') && (
             <>
               <label htmlFor="operationValue" className="block text-white text-sm font-serif mb-2">
-                Value to {operationType}
+                {t('value_to_operate', { operationType: operationType })}
               </label>
               <input
                 type="text"
@@ -114,7 +114,7 @@ const InputForm = ({ onSubmit, algorithmType }) => {
                 value={operationValue}
                 onChange={(e) => setOperationValue(e.target.value)}
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline bg-gray-700 border-gray-600 mb-4"
-                placeholder="Enter value"
+                placeholder={t('enter_value')}
                 required
               />
             </>
@@ -158,21 +158,21 @@ const InputForm = ({ onSubmit, algorithmType }) => {
 
       {algorithmType === 'Graph' && (
         <p className="text-gray-400 text-sm mb-4">
-          Expected input format for Graph algorithms: JSON string representing an adjacency list.
+          {t('graph_input_format_description')}
           <br />
-          Example: `{"{ \"A\": [\"B\", \"C\"], \"B\": [\"A\"], \"C\": [\"A\"] }"}` (unweighted)
+          {t('graph_input_example_unweighted')} `{"{ \"A\": [\"B\", \"C\"], \"B\": [\"A\"], \"C\": [\"A\"] }"}`
           <br />
-          Example: `{"{ \"A\": {\"B\": 1, \"C\": 5}, \"B\": {\"A\": 1}, \"C\": {\"A\": 5} }"}` (weighted)
+          {t('graph_input_example_weighted')} `{"{ \"A\": {\"B\": 1, \"C\": 5}, \"B\": {\"A\": 1}, \"C\": {\"A\": 5} }"}`
         </p>
       )}
 
       {algorithmType === 'Tree' && (
         <p className="text-gray-400 text-sm mb-4 font-serif">
-          Expected input format for Tree algorithms: JSON string representing a tree structure.
+          {t('tree_input_format_description')}
           <br />
-          Example 1: `{"{ \"value\": 1, \"left\": {\"value\": 2}, \"right\": {\"value\": 3} }"}`
+          {t('tree_input_example_1')} `{"{ \"value\": 1, \"left\": {\"value\": 2}, \"right\": {\"value\": 3} }"}`
           <br />
-          Example 2: (for multilevel tree):`{"{ \"value\": 1, \"left\": {\"value\": 2,\"left\": {\"value\": 4}, \"right\": {\"value\": 5}}, \"right\": {\"value\": 3} }"}`
+          {t('tree_input_example_2')} `{"{ \"value\": 1, \"left\": {\"value\": 2,\"left\": {\"value\": 4}, \"right\": {\"value\": 5}}, \"right\": {\"value\": 3} }"}`
         </p>
       )}
       <button

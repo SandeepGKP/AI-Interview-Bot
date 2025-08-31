@@ -1,8 +1,9 @@
 // client/src/App.js
-import React from 'react';
-
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
+import i18n from './i18n'; // Import i18n
+import { useTranslation } from 'react-i18next'; // Import useTranslation
 // Components
 import Home from './components/Home';
 import Interview from './components/Interview';
@@ -18,6 +19,14 @@ import About from './components/About'; // Import the new About component
 import Footer from './components/Footer'; // Prepare to import the Footer component
 
 function App() {
+  const { i18n } = useTranslation(); // Initialize useTranslation
+
+  useEffect(() => {
+    // You can set the language based on user preferences or browser settings
+    // For now, let's keep it simple and use 'en' as default or detect from browser
+    // i18n.changeLanguage('en'); 
+  }, []);
+
   return (
     <Router>
       <MainContent />
@@ -29,6 +38,7 @@ function App() {
 
 function MainContent() {
   const location = useLocation();
+  const { t } = useTranslation(); // Initialize useTranslation for content translation
 
   const pageVariants = {
     initial: {

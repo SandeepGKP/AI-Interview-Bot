@@ -47,7 +47,7 @@ const ArrayVisualizationComponent = React.memo(({ data, output, animations, curr
   }
 
   if (!arrayToVisualize || arrayToVisualize.length === 0) {
-    return <p>No data to visualize. Please input data and run an algorithm.</p>;
+    return <p>{t('no_data_to_visualize_input_run_algorithm')}</p>;
   }
 
   const nodeRadius = 20;

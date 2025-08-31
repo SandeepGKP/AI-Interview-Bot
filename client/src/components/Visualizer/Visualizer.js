@@ -106,25 +106,25 @@ const Visualizer = () => {
     if (algorithmCategory === 'Searching') {
       setInputData(data.arrayInput);
       setTargetValue(data.target);
-      data.target ? toast.success('Input data saved') : toast.success('Please give input data to proceed');
+      data.target ? toast.success(t('input_data_saved')) : toast.success(t('please_give_input_data_to_proceed'));
     } else if (algorithmCategory === 'Sorting') {
       setInputData(data.arrayInput);
       setSortOrder(data.sortOrder);
-      data.arrayInput ? toast.success('Input data saved') : toast.success('Please give input data to proceed');
+      data.arrayInput ? toast.success(t('input_data_saved')) : toast.success(t('please_give_input_data_to_proceed'));
     }
     else if (algorithmCategory === 'Graph' || algorithmCategory === 'Tree') {
       setInputData(data); // data is already a parsed object
-      data ? toast.success('Input data saved') : toast.success('Please give input data to proceed');
+      data ? toast.success(t('input_data_saved')) : toast.success(t('please_give_input_data_to_proceed'));
     } else if (algorithmCategory === 'Stack' || algorithmCategory === 'Queue') {
       // For Stack and Queue, initialData might be empty now, as per user request
       setInputData(data.initialData || []); // Ensure it's an empty array if no initial input
       setOperationType(data.operationType);
       setOperationValue(data.operationValue);
-      data.operationType ? toast.success('Operation saved') : toast.success('Please select an operation to proceed');
+      data.operationType ? toast.success(t('operation_saved')) : toast.success(t('please_select_operation_to_proceed'));
     }
     else {
       setInputData(data);
-      data ? toast.success('Input data saved') : toast.success('Please give input data to proceed');
+      data ? toast.success(t('input_data_saved')) : toast.success(t('please_give_input_data_to_proceed'));
     }
   };
 

@@ -1,7 +1,9 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next'; // Import useTranslation
 
 const QueueVisualization = React.memo(({ data, animations, currentStep, speed }) => {
+  const { t } = useTranslation(); // Initialize useTranslation
   const queue = data || [];
   const nodeWidth = 80;
   const nodeHeight = 30;
@@ -26,7 +28,7 @@ const QueueVisualization = React.memo(({ data, animations, currentStep, speed })
             textAnchor="middle"
             className="text-yellow-300 text-sm font-bold"
           >
-            FRONT
+            {t('front')}
           </text>
           <text
             x={startX + (queue.length - 1) * nodeWidth + nodeWidth / 2}
@@ -34,7 +36,7 @@ const QueueVisualization = React.memo(({ data, animations, currentStep, speed })
             textAnchor="middle"
             className="text-yellow-300 text-sm font-bold"
           >
-            REAR
+            {t('rear')}
           </text>
         </>
       )}
