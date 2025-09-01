@@ -28,7 +28,7 @@ const StackVisualization = React.memo(({ data, animations, currentStep, speed })
           textAnchor="start"
           className="text-yellow-300 text-sm font-bold"
         >
-          {t('top')}
+          {t('Top/Peek')}
         </text>
       )}
 

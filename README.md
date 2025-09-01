@@ -3,6 +3,7 @@
 This project is an AI-powered video interview bot designed to streamline the recruitment process by automating initial candidate screenings.
 
 ## Documentation
+This section provides detailed insights into the project's architecture, technologies, and implementation specifics.
 
 ### Tech Stack Used
 
@@ -29,6 +30,10 @@ The project is divided into a backend (server) and a frontend (client).
 *   **Chart.js & react-chartjs-2**: For creating charts and data visualizations in reports.
 *   **Tailwind CSS**: (Development) A utility-first CSS framework for styling.
 *   **Autoprefixer & PostCSS**: (Development) For processing CSS.
+
+### Data Structure and Algorithm Visualizations is also embedded to get more clear idea how to searching, sorting, graph, tree, stack and queue work
+
+The frontend includes a dedicated section for visualizing various data structures and algorithms. This feature allows users to interactively understand the step-by-step execution of algorithms like sorting, searching, and operations on data structures such as stacks, queues, and trees. It serves as an educational tool to enhance comprehension of complex computational concepts.
 
 ### Prompt Design Approach for LLM Usage
 
