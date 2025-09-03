@@ -47,6 +47,6 @@ app.use((err, req, res, next) => {
     .json({ error: 'Something went wrong!', details: err.message });
 });
 
-app.listen(process.env.PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+app.listen(process.env.PORT || 5001, () => {
+  console.log(`🚀 Server running on port ${process.env.PORT}`);
 });
