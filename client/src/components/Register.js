@@ -55,7 +55,7 @@ const Register = () => {
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
       toast.success('Registration successful!');
-      navigate('/recruiter');
+      navigate('/');
     } catch (error) {
       console.error('Google registration error:', error);
       toast.error('Google registration failed');
@@ -97,7 +97,7 @@ const Register = () => {
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
       toast.success('Registration successful!');
-      navigate('/recruiter'); // Redirect after registration
+      navigate('/'); // Redirect after registration
     } catch (error) {
       console.error('Registration error:', error);
       toast.error(error.response?.data?.message || 'Registration failed');

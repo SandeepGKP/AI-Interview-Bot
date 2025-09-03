@@ -43,7 +43,7 @@ const Login = () => {
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
       toast.success('Login successful!');
-      navigate('/recruiter');
+      navigate('/');
     } catch (error) {
       console.error('Google login error:', error);
       toast.error('Google login failed');
@@ -73,7 +73,7 @@ const Login = () => {
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
       toast.success('Login successful!');
-      navigate('/recruiter'); // Redirect after login
+      navigate('/'); // Redirect after login
     } catch (error) {
       console.error('Login error:', error);
       toast.error(error.response?.data?.message || 'Login failed');

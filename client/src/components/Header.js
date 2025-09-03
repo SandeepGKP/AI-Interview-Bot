@@ -186,8 +186,8 @@ const Header = () => {
               sx={{
                 border: '1px solid rgba(255,255,255,0.3)',
                 borderRadius: '8px',
-                px: 3,
-                ml: 2
+                px:1,
+                ml: 0
               }}
             >
               Logout
