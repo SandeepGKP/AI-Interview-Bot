@@ -8,7 +8,7 @@ const apiRoutes = require('./routes/api');
 const authRoutes = require('./routes/auth');
 
 const app = express();
-const PORT = config.port;
+// const PORT = config.port;
 
 // CORS configuration
 const corsOptions = {
@@ -47,6 +47,6 @@ app.use((err, req, res, next) => {
     .json({ error: 'Something went wrong!', details: err.message });
 });
 
-app.listen(PORT, () => {
+app.listen(process.env.PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
