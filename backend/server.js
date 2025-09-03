@@ -2,8 +2,10 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const passport = require('passport');
 const config = require('./config');
 const apiRoutes = require('./routes/api');
+const authRoutes = require('./routes/auth');
 
 const app = express();
 const PORT = config.port;
@@ -25,8 +27,12 @@ app.use(express.json());
 app.use(express.static('public'));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+// Initialize Passport.js
+app.use(passport.initialize());
+
 // API Routes
 app.use('/api', apiRoutes);
+app.use('/auth', authRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

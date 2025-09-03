@@ -5,6 +5,8 @@ import InputForm from './InputForm';
 import ControlPanel from './ControlPanel';
 import VisualizationArea from './VisualizationArea';
 import { useTranslation } from 'react-i18next';
+import MenuIcon from '@mui/icons-material/Menu'; // Import MenuIcon
+import CloseIcon from '@mui/icons-material/Close'; // Import CloseIcon
 
 import { toast } from 'react-toastify';
 
@@ -58,6 +60,7 @@ const Visualizer = () => {
   const [speed, setSpeed] = useState(1500); // milliseconds
   const [finalSortedData, setFinalSortedData] = useState([]); // New state to store the final sorted array
   const timeoutRef = useRef(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // State for sidebar visibility
 
 
   useEffect(() => {
@@ -401,16 +404,37 @@ const Visualizer = () => {
     setSpeed(newSpeed);
   };
 
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
   return (
-    <div className="flex h-screen bg-gray-900 text-white">
-      <Sidebar onSelectAlgorithm={handleAlgorithmSelect} />
-      <div className="flex-1 flex h-full flex-col p-4 overflow-y-scroll">
-        {/* <h1 className="text-3xl font-bold mb-4">
-          <span className="hidden sm:inline font-bold opacity-200 leading-tight text-transparent bg-clip-text 
-             bg-[radial-gradient(circle_at_center,_#93C5FD,_#A5B4FC,_#C084FC,_#F472B6,_#1F2937)]" > {t('algorithm_visualizer')}</span></h1> */}
+    <div className="flex flex-col lg:flex-row h-screen bg-gray-900 text-white">
+      {/* Sidebar for larger screens, hidden on smaller screens */}
+      <div className="hidden lg:block">
+        <Sidebar onSelectAlgorithm={handleAlgorithmSelect} />
+      </div>
+      {/* Sidebar for smaller screens, shown as an overlay */}
+      <div className={`fixed inset-y-0 left-0 z-40 w-64 bg-gray-800 transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:hidden transition-transform duration-300 ease-in-out`}>
+        <Sidebar onSelectAlgorithm={handleAlgorithmSelect} toggleSidebar={toggleSidebar} />
+      </div>
+      {/* Overlay when sidebar is open on small screens */}
+      {isSidebarOpen && <div className="fixed inset-0 bg-black opacity-50 z-30 lg:hidden" onClick={toggleSidebar}></div>}
+
+      <div className="flex-1 flex h-full flex-col p-4 overflow-y-auto">
+        <div className="flex items-center mb-4 lg:hidden">
+          <button className="text-white p-2 mr-4" onClick={toggleSidebar}>
+            <MenuIcon />
+          </button>
+          <h1 className="text-xl font-bold">
+            <span className="opacity-200 leading-tight text-transparent bg-clip-text 
+             bg-[radial-gradient(circle_at_center,_#93C5FD,_#A5B4FC,_#C084FC,_#F472B6,_#1F2937)]" > {t('algorithm_visualizer')}</span>
+          </h1>
+        </div>
+
         {selectedAlgorithm ? (
           <div>
-            <p className="text-3xl sm:inline font-serif opacity-200 leading-tight text-transparent bg-clip-text 
+            <p className="text-2xl sm:text-3xl font-serif opacity-200 leading-tight text-transparent bg-clip-text 
              bg-[radial-gradient(circle_at_center,_#93C5FD,_#A5B4FC,_#C084FC,_#F472B6,_#1F2937)]">{t('selected_algorithm')}: {selectedAlgorithm}</p>
             <InputForm onSubmit={handleInputSubmit} algorithmType={getAlgorithmCategory(selectedAlgorithm)} />
             <ControlPanel

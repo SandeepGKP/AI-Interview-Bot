@@ -57,11 +57,11 @@ const Header = () => {
         <IconButton edge="start" color="inherit" aria-label="menu" sx={{ mr: 2 }} onClick={() => navigate('/')}>
           <VideoCall sx={{ color: '#1976d2' }} />
         </IconButton>
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontWeight: 'bold' ,color:"blue", display: { xs: 'none', sm: 'block' } }}>
+        <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontWeight: 'bold', color: "blue", fontSize: { xs: '1rem', sm: '1.25rem' } }}>
           {t('header_title')}
         </Typography>
         
-        <Box sx={{ display: 'flex', gap: { xs: 1, sm: 2 }, alignItems: 'center' }}>
+        <Box sx={{ display: 'flex', gap: { xs: 0.5, sm: 2 }, alignItems: 'center' }}>
           <Button
             color="inherit"
             startIcon={<Home />}
@@ -69,10 +69,13 @@ const Header = () => {
             sx={{
               fontWeight: location.pathname === '/' ? 'bold' : 'normal',
               color: location.pathname === '/' ? '#1976d2' : 'inherit',
-               display: { xs: 'none', sm: 'inline-flex' }
+              fontSize: { xs: '0.75rem', sm: 'inherit' }, // Smaller font on xs
+              minWidth: { xs: 'auto', sm: '64px' }, // Adjust minWidth for smaller screens
+              padding: { xs: '4px 8px', sm: '6px 16px' } // Adjust padding
             }}
           >
-            {t('home')}
+            <span className="hidden sm:inline">{t('home')}</span>
+            <span className="sm:hidden">Home</span>
           </Button>
           
           <Button
@@ -82,35 +85,41 @@ const Header = () => {
             sx={{
               fontWeight: location.pathname === '/recruiter' ? 'bold' : 'normal',
               color: location.pathname === '/recruiter' ? '#1976d2' : 'inherit',
-              display: { xs: 'none', sm: 'inline-flex' }
+              fontSize: { xs: '0.75rem', sm: 'inherit' },
+              minWidth: { xs: 'auto', sm: '64px' },
+              padding: { xs: '4px 8px', sm: '6px 16px' }
             }}
           >
-            {t('Dashboard')}
+            <span className="hidden sm:inline">{t('Dashboard')}</span>
+            <span className="sm:hidden">Dash</span>
           </Button>
-          <IconButton color="inherit" aria-label="notifications">
-            <Notifications />
+          <IconButton color="inherit" aria-label="notifications" sx={{ padding: { xs: '4px', sm: '8px' } }}>
+            <Notifications sx={{ fontSize: { xs: '1.25rem', sm: '1.5rem' } }} />
           </IconButton>
           
-          <IconButton color="inherit" aria-label="account" onClick={handleMenuOpen}>
+          <IconButton color="inherit" aria-label="account" onClick={handleMenuOpen} sx={{ padding: { xs: '4px', sm: '8px' } }}>
             {profilePhoto ? (
-              <Avatar src={profilePhoto} alt="Profile" sx={{ width: 32, height: 32 }} />
+              <Avatar src={profilePhoto} alt="Profile" sx={{ width: { xs: 28, sm: 32 }, height: { xs: 28, sm: 32 } }} />
             ) : (
-              <AccountCircle />
+              <AccountCircle sx={{ fontSize: { xs: '1.5rem', sm: '1.75rem' } }} />
             )}
           </IconButton>
 
-                    <Button
+          <Button
             color="inherit"
             startIcon={<Info />}
             onClick={() => navigate('/about')}
             sx={{
               fontWeight: location.pathname === '/about' ? 'bold' : 'normal',
               color: location.pathname === '/about' ? '#1976d2' : 'inherit',
-               display: { xs: 'none', sm: 'inline-flex' }
+              fontSize: { xs: '0.75rem', sm: 'inherit' },
+              minWidth: { xs: 'auto', sm: '64px' },
+              padding: { xs: '4px 8px', sm: '6px 16px' }
             }}
           >
-            {t('about')}
-          </Button>  
+            <span className="hidden sm:inline">{t('about')}</span>
+            <span className="sm:hidden">About</span>
+          </Button>
 
           
           <Menu
@@ -134,6 +143,56 @@ const Header = () => {
               </MenuItem>
             )}
           </Menu>
+
+          {!localStorage.getItem('token') ? (
+            <>
+              <Button
+                color="inherit"
+                onClick={() => navigate('/login')}
+                sx={{
+                  fontWeight: 'bold',
+                  border: '1px solid rgba(255,255,255,0.3)',
+                  borderRadius: '8px',
+                  px: 3,
+                  ml: 2,
+                  mr: 1
+                }}
+              >
+                Login
+              </Button>
+              <Button
+                color="inherit"
+                variant="contained"
+                onClick={() => navigate('/register')}
+                sx={{
+                  backgroundColor: '#1976d2',
+                  borderRadius: '8px',
+                  px: 3,
+                  ml: 1
+                }}
+              >
+                Register
+              </Button>
+            </>
+          ) : (
+            <Button
+              color="inherit"
+              onClick={() => {
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                navigate('/');
+                window.location.reload(); // Refresh to reset authentication state
+              }}
+              sx={{
+                border: '1px solid rgba(255,255,255,0.3)',
+                borderRadius: '8px',
+                px: 3,
+                ml: 2
+              }}
+            >
+              Logout
+            </Button>
+          )}
 
           <FormControl variant="outlined" size="small" sx={{ minWidth: 120, ml: 2 }}>
             <InputLabel id="language-select-label" sx={{ color: 'inherit' }}>Select Language</InputLabel>

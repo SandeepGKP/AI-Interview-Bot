@@ -74,7 +74,7 @@ const InputForm = ({ onSubmit, algorithmType }) => {
 
       {(algorithmType === 'Stack' || algorithmType === 'Queue') && (
         <>
-          <p className="mb-5 text-purple-300  text-6xl sm:text-3xl  opacity-200 leading-tight text-transparent bg-clip-text 
+          <p className="mb-5 text-purple-300 text-xl sm:text-3xl opacity-200 leading-tight text-transparent bg-clip-text 
              bg-[radial-gradient(circle_at_center,#F87171,#FBBF24,#34D399,#3B82F6,#A78BFA)]">{t('remember_size_limit', { algorithmType: algorithmType })}</p>
           <label htmlFor="operationType" className="block text-white text-sm font-serif mb-2">
             {t('operation')}
@@ -157,7 +157,7 @@ const InputForm = ({ onSubmit, algorithmType }) => {
       )}
 
       {algorithmType === 'Graph' && (
-        <p className="text-gray-400 text-sm mb-4">
+        <p className="text-gray-400 text-xs sm:text-sm mb-4">
           {t('graph_input_format_description')}
           <br />
           {t('graph_input_example_unweighted')} `{"{ \"A\": [\"B\", \"C\"], \"B\": [\"A\"], \"C\": [\"A\"] }"}`
@@ -167,7 +167,7 @@ const InputForm = ({ onSubmit, algorithmType }) => {
       )}
 
       {algorithmType === 'Tree' && (
-        <p className="text-gray-400 text-sm mb-4 font-serif">
+        <p className="text-gray-400 text-xs sm:text-sm mb-4 font-serif">
           {t('tree_input_format_description')}
           <br />
           {t('tree_input_example_1')} `{"{ \"value\": 1, \"left\": {\"value\": 2}, \"right\": {\"value\": 3} }"}`
@@ -181,6 +181,8 @@ const InputForm = ({ onSubmit, algorithmType }) => {
       >
        <span className="hidden sm:inline font-bold opacity-200 leading-tight text-transparent bg-clip-text 
              bg-[radial-gradient(circle_at_center,_#B71C1C,_#E65100,_#880E4F,_#BF360C,_#4A148C)]" > {t('set_input')}</span>
+       <span className="sm:hidden font-bold opacity-200 leading-tight text-transparent bg-clip-text 
+             bg-[radial-gradient(circle_at_center,_#B71C1C,_#E65100,_#880E4F,_#BF360C,_#4A148C)]" > Set</span>
       </button>
     </form>
   );

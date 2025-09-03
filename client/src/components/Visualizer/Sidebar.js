@@ -2,8 +2,9 @@ import { Button } from '@mui/material';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import CloseIcon from '@mui/icons-material/Close'; // Import CloseIcon
 
-const Sidebar = ({ onSelectAlgorithm }) => {
+const Sidebar = ({ onSelectAlgorithm, toggleSidebar }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [openCategory, setOpenCategory] = useState(null); // State to manage open/closed categories
@@ -46,50 +47,67 @@ const Sidebar = ({ onSelectAlgorithm }) => {
     setOpenCategory(openCategory === category ? null : category);
   };
 
+  const handleAlgorithmClick = (alg) => {
+    onSelectAlgorithm(getOriginalAlgorithmName(alg));
+    if (toggleSidebar) { // Close sidebar if toggleSidebar function is provided (for small screens)
+      toggleSidebar();
+    }
+  };
+
   return (
-    <div className="w-25 overflow-y-scroll bg-gray-800 p-4 h-full">
-      <h2 className="mb-6"><span className="text-purple-300  text-6xl sm:text-3xl  opacity-200 leading-tight text-transparent bg-clip-text 
-             bg-[radial-gradient(circle_at_center,#F87171,#FBBF24,#34D399,#3B82F6,#A78BFA)]">🧠AlgoViz</span></h2>
+    <div className="w-full lg:w-64 overflow-y-auto bg-gray-800 p-4 h-full flex flex-col">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-xl lg:text-2xl font-bold">
+          <span className="text-purple-300 opacity-200 leading-tight text-transparent bg-clip-text 
+             bg-[radial-gradient(circle_at_center,#F87171,#FBBF24,#34D399,#3B82F6,#A78BFA)]">🧠AlgoViz</span>
+        </h2>
+        {toggleSidebar && ( // Show close button only on small screens when sidebar is an overlay
+          <button onClick={toggleSidebar} className="text-white lg:hidden">
+            <CloseIcon />
+          </button>
+        )}
+      </div>
 
       <Button
         variant="outlined"
-        sx={{ ml: 5, borderRadius: 2 ,mb:2}}
-        onClick={() => navigate('/gallery')}
+        sx={{ mb: 2, borderRadius: 2, width: 'fit-content', mx: 'auto' }}
+        onClick={() => { navigate('/gallery'); if (toggleSidebar) toggleSidebar(); }}
       >
-        <span className=" hidden sm:inline font-bold opacity-200 leading-tight text-transparent bg-clip-text 
+        <span className="font-bold opacity-200 leading-tight text-transparent bg-clip-text 
              bg-[radial-gradient(circle_at_center,#F87171,#FBBF24,#34D399,#3B82F6,#A78BFA)]">{t('Gallery')}</span>
       </Button>
 
-
-      {Object.entries(algorithms).map(([category, algs]) => (
-        <div key={category} className="mb-4 ml-10 ">
-          <button
-            onClick={() => toggleCategory(category)}
-            className="w-full text-left focus:outline-none"
-          >
-            <h3 className="text-xl font-serif mb-2 flex items-center">
-              <span className="text-3xl sm:text-4xl lg:text-xl font-bold mt-2 leading-tight text-transparent bg-clip-text 
+      <div className="flex-1"> {/* This div will allow the categories to scroll if needed */}
+        {Object.entries(algorithms).map(([category, algs]) => (
+          <div key={category} className="mb-4">
+            <button
+              onClick={() => toggleCategory(category)}
+              className="w-full text-left focus:outline-none"
+            >
+              <h3 className="text-lg font-serif mb-2 flex items-center">
+                <span className="text-purple-300 opacity-200 leading-tight text-transparent bg-clip-text 
              bg-[radial-gradient(circle_at_center,_#F87171,_#FBBF24,_#34D399,_#3B82F6,_#A78BFA)]">{category}</span>
-              <span className="ml-2 text-purple-300">{openCategory === category ? '▲' : '▼'}</span>
-            </h3>
-          </button>
-          {openCategory === category && (
-            <ul className="ml-4">
-              {algs.map((alg) => (
-                <li key={alg} className="mb-1">
-                  <button
-                    onClick={() => onSelectAlgorithm(getOriginalAlgorithmName(alg))}
-                    className="text-blue-400 hover:text-blue-200 focus:outline-none"
-                  >
-                    <span className="text-purple-300 hover:text-blue-600 text-xl sm:text-xl m-6 opacity-200 leading-tight text-transparent bg-clip-text 
+                <span className="ml-2 text-purple-300">{openCategory === category ? '▲' : '▼'}</span>
+              </h3>
+            </button>
+            {openCategory === category && (
+              <ul className="ml-4">
+                {algs.map((alg) => (
+                  <li key={alg} className="mb-1">
+                    <button
+                      onClick={() => handleAlgorithmClick(alg)}
+                      className="text-blue-400 hover:text-blue-200 focus:outline-none"
+                    >
+                      <span className="text-purple-300 hover:text-blue-600 text-base opacity-200 leading-tight text-transparent bg-clip-text 
              bg-[radial-gradient(circle_at_center,#F87171,#FBBF24,#34D399,#3B82F6,#A78BFA)]">{alg}</span>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      ))}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

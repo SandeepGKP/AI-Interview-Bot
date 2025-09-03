@@ -11,6 +11,8 @@ import RecruiterDashboard from './components/RecruiterDashboard';
 import Report from './components/Report';
 import Header from './components/Header';
 import CandidateDetails from './components/CandidateDetails';
+import Login from './components/Login';
+import Register from './components/Register';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Visualizer from './components/Visualizer/Visualizer';
@@ -24,12 +26,12 @@ function App() {
   useEffect(() => {
     // You can set the language based on user preferences or browser settings
     // For now, let's keep it simple and use 'en' as default or detect from browser
-    // i18n.changeLanguage('en'); 
+    // i18n.changeLanguage('en');
   }, []);
 
   return (
     <Router>
-      <MainContent />
+      <AuthGuard />
       <ToastContainer />
       <Footer /> {/* Add the Footer component here */}
     </Router>
@@ -71,6 +73,16 @@ function MainContent() {
               <Home />
             </motion.div>
           } />
+          <Route path="/login" element={
+            <motion.div initial="initial" animate="in" exit="out" variants={pageVariants} transition={pageTransition}>
+              <Login />
+            </motion.div>
+          } />
+          <Route path="/register" element={
+            <motion.div initial="initial" animate="in" exit="out" variants={pageVariants} transition={pageTransition}>
+              <Register />
+            </motion.div>
+          } />
           <Route path="/interview/:sessionId?" element={
             <motion.div initial="initial" animate="in" exit="out" variants={pageVariants} transition={pageTransition}>
               <Interview />
@@ -110,6 +122,24 @@ function MainContent() {
       </AnimatePresence>
     </div>
   );
+}
+
+function AuthGuard() {
+  const location = useLocation();
+  const isAuthenticated = !!localStorage.getItem('token');
+
+  // If user is not authenticated and not on login/register page, redirect to login
+  if (!isAuthenticated && location.pathname !== '/login' && location.pathname !== '/register') {
+    return <Login />;
+  }
+
+  // If user is authenticated and on login/register page, redirect to home
+  if (isAuthenticated && (location.pathname === '/login' || location.pathname === '/register')) {
+    return <MainContent />;
+  }
+
+  // Show main content for authenticated users or allow login/register for unauthenticated users
+  return <MainContent />;
 }
 
 export default App;

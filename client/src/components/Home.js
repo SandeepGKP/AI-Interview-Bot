@@ -7,6 +7,7 @@ import TypewriterEffect from './TypewriterEffect'; // Import the new component
 import Button from '@mui/material/Button';
 import GradientBarCard from './BarChart';
 import Sidebar from './Visualizer/Sidebar'; // Import Sidebar
+import MenuIcon from '@mui/icons-material/Menu'; // Import MenuIcon
 
 const Home = () => {
   const { t } = useTranslation();
@@ -19,6 +20,7 @@ const Home = () => {
   const [totalQuestions, setTotalQuestions] = useState(0);
   const [showIntro, setShowIntro] = useState(0);
   const [sessionId, setSessionId] = useState(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // State for sidebar visibility
 
   const navigate = useNavigate();
 
@@ -28,14 +30,33 @@ const Home = () => {
 
   const handleSelectAlgorithm = (algorithm) => {
     navigate('/visualizer', { state: { selectedAlgorithm: algorithm } });
+    setIsSidebarOpen(false); // Close sidebar after selection on small screens
+  };
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
   };
 
   return (
-    <div className="h-screen text-white flex" style={{ background: 'linear-gradient(135deg, #2a004a 0%, #000000 100%)' }}>
-      <Sidebar onSelectAlgorithm={handleSelectAlgorithm} />
+    <div className="min-h-screen text-white flex flex-col lg:flex-row" style={{ background: 'linear-gradient(135deg, #2a004a 0%, #000000 100%)' }}>
+      {/* Sidebar for larger screens, hidden on smaller screens */}
+      <div className="hidden lg:block">
+        <Sidebar onSelectAlgorithm={handleSelectAlgorithm} />
+      </div>
+      {/* Sidebar for smaller screens, shown as an overlay */}
+      <div className={`fixed inset-y-0 left-0 z-40 w-64 bg-gray-800 transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:hidden transition-transform duration-300 ease-in-out`}>
+        <Sidebar onSelectAlgorithm={handleSelectAlgorithm} toggleSidebar={toggleSidebar} />
+      </div>
+      {/* Overlay when sidebar is open on small screens */}
+      {isSidebarOpen && <div className="fixed inset-0 bg-black opacity-50 z-30 lg:hidden" onClick={toggleSidebar}></div>}
+
       {/* Main Content */}
-      <main className="flex-1 overflow-y-scroll container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="flex-1 overflow-y-auto container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col sm:flex-row justify-between items-center mb-8">
+          {/* Menu button for small screens */}
+          <button className="lg:hidden text-white p-2 mr-4" onClick={toggleSidebar}>
+            <MenuIcon />
+          </button>
           <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-0"></h1>
           <Button id="sparkle-border"  variant="outlined" sx={{ mr: 1, borderRadius: 2, }} onClick={handleStartInterview}>
             <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
