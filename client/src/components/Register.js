@@ -168,7 +168,7 @@ const Register = () => {
           </Button>
         </Box>
 
-        <Divider sx={{ my: 2 }}>OR</Divider>
+        {/* <Divider sx={{ my: 2 }}>OR</Divider>
 
         <Button
           fullWidth
@@ -179,7 +179,7 @@ const Register = () => {
           sx={{ mb: 2 }}
         >
           Register with Google
-        </Button>
+        </Button> */}
 
         <Typography variant="body2" align="center">
           Already have an account?{' '}

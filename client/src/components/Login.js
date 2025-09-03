@@ -15,8 +15,10 @@ const Login = () => {
   useEffect(() => {
     const initializeGoogleSignIn = () => {
       if (window.google && window.google.accounts && window.google.accounts.id) {
+        const googleClientId = process.env.REACT_APP_GOOGLE_CLIENT_ID;
+        console.log('Google Client ID:', googleClientId); // Added for debugging
         window.google.accounts.id.initialize({
-          client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID,
+          client_id: googleClientId,
           callback: handleGoogleResponse,
         });
       }
@@ -121,7 +123,7 @@ const Login = () => {
           </Button>
         </Box>
 
-        <Divider sx={{ my: 2 }}>OR</Divider>
+        {/* <Divider sx={{ my: 2 }}>OR</Divider>
 
         <Button
           fullWidth
@@ -132,7 +134,7 @@ const Login = () => {
           sx={{ mb: 2 }}
         >
           Login with Google
-        </Button>
+        </Button> */}
 
         <Typography variant="body2" align="center">
           Don't have an account?{' '}
