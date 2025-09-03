@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { AppBar, Toolbar, Typography, Button, Box, IconButton, Avatar, Menu } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { VideoCall, Dashboard, Home, Info , Assessment, AccountCircle, Notifications, PhotoCamera, Delete } from '@mui/icons-material';
+import { VideoCall, Dashboard, Home, Info, Assessment, AccountCircle, Notifications, PhotoCamera, Delete } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { MenuItem, Select, FormControl, InputLabel } from '@mui/material';
 import i18n from '../i18n';
@@ -60,7 +60,7 @@ const Header = () => {
         <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontWeight: 'bold', color: "blue", fontSize: { xs: '1rem', sm: '1.25rem' } }}>
           {t('header_title')}
         </Typography>
-        
+
         <Box sx={{ display: 'flex', gap: { xs: 0.5, sm: 2 }, alignItems: 'center' }}>
           <Button
             color="inherit"
@@ -77,7 +77,7 @@ const Header = () => {
             <span className="hidden sm:inline">{t('home')}</span>
             <span className="sm:hidden">Home</span>
           </Button>
-          
+
           <Button
             color="inherit"
             startIcon={<Dashboard />}
@@ -96,7 +96,7 @@ const Header = () => {
           <IconButton color="inherit" aria-label="notifications" sx={{ padding: { xs: '4px', sm: '8px' } }}>
             <Notifications sx={{ fontSize: { xs: '1.25rem', sm: '1.5rem' } }} />
           </IconButton>
-          
+
           <IconButton color="inherit" aria-label="account" onClick={handleMenuOpen} sx={{ padding: { xs: '4px', sm: '8px' } }}>
             {profilePhoto ? (
               <Avatar src={profilePhoto} alt="Profile" sx={{ width: { xs: 28, sm: 32 }, height: { xs: 28, sm: 32 } }} />
@@ -121,7 +121,7 @@ const Header = () => {
             <span className="sm:hidden">About</span>
           </Button>
 
-          
+
           <Menu
             anchorEl={anchorEl}
             open={Boolean(anchorEl)}
@@ -153,8 +153,8 @@ const Header = () => {
                   fontWeight: 'bold',
                   border: '1px solid rgba(255,255,255,0.3)',
                   borderRadius: '8px',
-                  px: 3,
-                  ml: 2,
+                  px: 1,
+                  ml: 1,
                   mr: 1
                 }}
               >
@@ -165,10 +165,10 @@ const Header = () => {
                 variant="contained"
                 onClick={() => navigate('/register')}
                 sx={{
-                  backgroundColor: '#1976d2',
+                  border: '1px solid rgba(255,255,255,0.3)',
                   borderRadius: '8px',
-                  px: 3,
-                  ml: 1
+                  px: 0,
+                  ml: 0
                 }}
               >
                 Register
@@ -186,7 +186,7 @@ const Header = () => {
               sx={{
                 border: '1px solid rgba(255,255,255,0.3)',
                 borderRadius: '8px',
-                px:1,
+                px: 0,
                 ml: 0
               }}
             >
@@ -205,7 +205,7 @@ const Header = () => {
             >
               {Object.keys(i18n.options.resources).map((lang) => (
                 <MenuItem key={lang} value={lang}>
-              {t(`language.${lang}`)}
+                  {t(`language.${lang}`)}
                 </MenuItem>
               ))}
             </Select>
