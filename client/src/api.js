@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create axios instance with default configuration
 const api = axios.create({
-  baseURL: 'http://localhost:5001',
+  baseURL: 'https://ai-interview-bot-backend.onrender.com',
   headers: {
     'Content-Type': 'application/json',
   },
