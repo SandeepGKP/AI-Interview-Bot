@@ -11,8 +11,8 @@ import PlayCircleFilledWhiteIcon from '@mui/icons-material/PlayCircleFilledWhite
 const ControlPanel = ({ algorithmType, onRunAlgorithm, onPlay, onPause, onStepForward, onStepBack, onSpeedChange, isPlaying, speed }) => {
   const { t } = useTranslation();
 
-  const buttonClasses = "flex-1 sm:flex-none bg-blue-100 outline-red-300 hover:bg-blue-300 text-white font-serif py-2 px-2 sm:px-4 rounded-3xl focus:outline-none focus:shadow-outline text-sm sm:text-base";
-  const playPauseButtonClasses = "flex-1 sm:flex-none text-white font-serif py-2 px-2 sm:px-4 rounded-3xl focus:outline-none focus:shadow-outline disabled:opacity-50 text-sm sm:text-base";
+  const buttonClasses = "flex-1 sm:flex-none bg-white outline-red-300 hover:bg-gray-200 text-black font-serif py-2 px-2 sm:px-4 rounded-3xl focus:outline-none focus:shadow-outline text-sm sm:text-base";
+  const playPauseButtonClasses = "flex-1 sm:flex-none text-black font-serif py-2 px-2 sm:px-4 rounded-3xl focus:outline-none focus:shadow-outline disabled:opacity-50 text-sm sm:text-base";
   const iconClasses = "text-lg sm:text-xl";
 
   return (
@@ -26,7 +26,7 @@ const ControlPanel = ({ algorithmType, onRunAlgorithm, onPlay, onPause, onStepFo
           <PlayCircleFilledWhiteIcon className={iconClasses} />
           <span className="ml-1 hidden sm:inline font-bold opacity-200 leading-tight text-transparent bg-clip-text 
          bg-[radial-gradient(circle_at_center,_#B71C1C,_#E65100,_#880E4F,_#BF360C,_#4A148C)]">
-            {t('run_operation')}
+            {/* {t('run_operation')} */}
           </span>
           <span className="ml-1 sm:hidden font-bold opacity-200 leading-tight text-transparent bg-clip-text 
          bg-[radial-gradient(circle_at_center,_#B71C1C,_#E65100,_#880E4F,_#BF360C,_#4A148C)]">
@@ -42,7 +42,7 @@ const ControlPanel = ({ algorithmType, onRunAlgorithm, onPlay, onPause, onStepFo
             <PlayCircleFilledWhiteIcon className={iconClasses} />
             <span className="ml-1 hidden sm:inline font-bold opacity-200 leading-tight text-transparent bg-clip-text 
            bg-[radial-gradient(circle_at_center,_#B71C1C,_#E65100,_#880E4F,_#BF360C,_#4A148C)]">
-              {t('initiate_algorithm')}
+              {/* {t('initiate_algorithm')} */}
             </span>
             <span className="ml-1 sm:hidden font-bold opacity-200 leading-tight text-transparent bg-clip-text 
            bg-[radial-gradient(circle_at_center,_#B71C1C,_#E65100,_#880E4F,_#BF360C,_#4A148C)]">
@@ -51,14 +51,14 @@ const ControlPanel = ({ algorithmType, onRunAlgorithm, onPlay, onPause, onStepFo
           </button>
 
           <button
-            onClick={onPlay}
-            disabled={isPlaying}
-            className={`${playPauseButtonClasses} bg-green-200 hover:bg-green-300`}
-          >
+          onClick={onPlay}
+          disabled={isPlaying}
+          className={`${playPauseButtonClasses} bg-white hover:bg-gray-200`}
+        >
             <PlayArrowIcon className={iconClasses} />
             <span className="ml-1 hidden sm:inline font-bold opacity-200 leading-tight text-transparent bg-clip-text 
            bg-[radial-gradient(circle_at_center,_#B71C1C,_#E65100,_#880E4F,_#BF360C,_#4A148C)]">
-              {t('play')}
+              {/* {t('play')} */}
             </span>
             <span className="ml-1 sm:hidden font-bold opacity-200 leading-tight text-transparent bg-clip-text 
            bg-[radial-gradient(circle_at_center,_#B71C1C,_#E65100,_#880E4F,_#BF360C,_#4A148C)]">
@@ -67,14 +67,14 @@ const ControlPanel = ({ algorithmType, onRunAlgorithm, onPlay, onPause, onStepFo
           </button>
 
           <button
-            onClick={onPause}
-            disabled={!isPlaying}
-            className={`${playPauseButtonClasses} bg-yellow-200 hover:bg-yellow-300`}
-          >
+          onClick={onPause}
+          disabled={!isPlaying}
+          className={`${playPauseButtonClasses} bg-white hover:bg-gray-200`}
+        >
             <PauseIcon className={iconClasses} />
             <span className="ml-1 hidden sm:inline font-bold opacity-200 leading-tight text-transparent bg-clip-text 
            bg-[radial-gradient(circle_at_center,_#B71C1C,_#E65100,_#880E4F,_#BF360C,_#4A148C)]">
-              {t('pause')}
+              {/* {t('pause')} */}
             </span>
             <span className="ml-1 sm:hidden font-bold opacity-200 leading-tight text-transparent bg-clip-text 
            bg-[radial-gradient(circle_at_center,_#B71C1C,_#E65100,_#880E4F,_#BF360C,_#4A148C)]">
@@ -89,7 +89,7 @@ const ControlPanel = ({ algorithmType, onRunAlgorithm, onPlay, onPause, onStepFo
             <FastRewindIcon className={iconClasses} />
             <span className="ml-1 hidden sm:inline font-bold opacity-200 leading-tight text-transparent bg-clip-text 
            bg-[radial-gradient(circle_at_center,_#B71C1C,_#E65100,_#880E4F,_#BF360C,_#4A148C)]">
-              {t('step_back')}
+              {/* {t('step_back')} */}
             </span>
             <span className="ml-1 sm:hidden font-bold opacity-200 leading-tight text-transparent bg-clip-text 
            bg-[radial-gradient(circle_at_center,_#B71C1C,_#E65100,_#880E4F,_#BF360C,_#4A148C)]">
@@ -104,7 +104,7 @@ const ControlPanel = ({ algorithmType, onRunAlgorithm, onPlay, onPause, onStepFo
             <FastForwardIcon className={iconClasses} />
             <span className="ml-1 hidden sm:inline font-bold opacity-200 leading-tight text-transparent bg-clip-text 
            bg-[radial-gradient(circle_at_center,_#B71C1C,_#E65100,_#880E4F,_#BF360C,_#4A148C)]">
-              {t('step_forward')}
+              {/* {t('step_forward')} */}
             </span>
             <span className="ml-1 sm:hidden font-bold opacity-200 leading-tight text-transparent bg-clip-text 
            bg-[radial-gradient(circle_at_center,_#B71C1C,_#E65100,_#880E4F,_#BF360C,_#4A148C)]">

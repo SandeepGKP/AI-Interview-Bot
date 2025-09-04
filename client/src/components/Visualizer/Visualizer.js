@@ -390,13 +390,13 @@ const Visualizer = () => {
 
   const handleStepForward = () => {
     setIsPlaying(false); // Pause playback when stepping forward manually
-    toast.success(t('algorithm_moved_forward'));
+    // toast.success(t('algorithm_moved_forward'));
     setCurrentStep((prevStep) => Math.min(prevStep + 1, animations.length));
   };
 
   const handleStepBack = () => {
     setIsPlaying(false);
-    toast.success(t('algorithm_moved_backward'));
+    // toast.success(t('algorithm_moved_backward'));
     setCurrentStep((prevStep) => Math.max(prevStep - 1, 0));
   };
 
