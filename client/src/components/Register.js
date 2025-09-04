@@ -28,7 +28,7 @@ const Register = () => {
     const initializeGoogleSignIn = () => {
       if (window.google && window.google.accounts && window.google.accounts.id) {
         window.google.accounts.id.initialize({
-          client_id: '391396385416-uln6f3fm08sroip00nvd7klt237bqo0b.apps.googleusercontent.com',
+          client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID,
           callback: handleGoogleResponse,
         });
       }
@@ -168,7 +168,7 @@ const Register = () => {
           </Button>
         </Box>
 
-        {/* <Divider sx={{ my: 2 }}>OR</Divider>
+        <Divider sx={{ my: 2 }}>OR</Divider>
 
         <Button
           fullWidth
@@ -179,7 +179,7 @@ const Register = () => {
           sx={{ mb: 2 }}
         >
           Register with Google
-        </Button> */}
+        </Button>
 
         <Typography variant="body2" align="center">
           Already have an account?{' '}

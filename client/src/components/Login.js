@@ -123,7 +123,7 @@ const Login = () => {
           </Button>
         </Box>
 
-        {/* <Divider sx={{ my: 2 }}>OR</Divider>
+        <Divider sx={{ my: 2 }}>OR</Divider>
 
         <Button
           fullWidth
@@ -134,7 +134,7 @@ const Login = () => {
           sx={{ mb: 2 }}
         >
           Login with Google
-        </Button> */}
+        </Button>
 
         <Typography variant="body2" align="center">
           Don't have an account?{' '}
