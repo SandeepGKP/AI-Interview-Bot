@@ -529,7 +529,9 @@
   "python": "Python",
   "java": "Java",
   "c++": "C++",
-
+  "login":"Login",
+  "register":"Register",
+  "logout":"logout",
   "stack_is_full_cannot_push": "Stack is full, cannot push!",
   "stack_is_now_full": "Stack is now full!",
   "stack_is_now_empty": "Stack is now empty!",

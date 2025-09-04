@@ -506,5 +506,8 @@
   "algorithm_stopped": "Algorithme arrêté.",
   "algorithm_moved_forward": "L'algorithme a avancé.",
   "algorithm_moved_backward": "L'algorithme a reculé.",
-  "select_algorithm_from_sidebar": "Sélectionnez un algorithme dans la barre latérale pour commencer la visualisation."
+  "select_algorithm_from_sidebar": "Sélectionnez un algorithme dans la barre latérale pour commencer la visualisation.",
+  "logout": "Se déconnecter",
+  "login": "Se connecter",
+  "register": "S'inscrire"
 }

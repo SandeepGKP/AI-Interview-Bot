@@ -97,7 +97,7 @@ const Register = () => {
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
       toast.success('Registration successful!');
-      navigate('/'); // Redirect after registration
+      navigate('/login'); // Redirect after registration
     } catch (error) {
       console.error('Registration error:', error);
       toast.error(error.response?.data?.message || 'Registration failed');

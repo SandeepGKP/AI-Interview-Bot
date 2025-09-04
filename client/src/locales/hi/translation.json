@@ -219,6 +219,7 @@
   "start_new_interview": "नया साक्षात्कार शुरू करें",
   "failed_to_load_interview_sessions": "साक्षात्कार सत्र लोड करने में विफल। कृपया बाद में पुनः प्रयास करें।",
   "logout": "लॉग आउट",
+  "register": "पंजीकरण करें",
   "login": "लॉग इन",
   "login_to_your_account": "अपने खाते में लॉग इन करें",
   "email": "ईमेल",

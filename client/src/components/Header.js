@@ -118,7 +118,7 @@ const Header = () => {
             }}
           >
             <span className="hidden sm:inline">{t('about')}</span>
-            <span className="sm:hidden">About</span>
+            <span className="sm:hidden">{t('about')}</span>
           </Button>
 
 
@@ -158,7 +158,7 @@ const Header = () => {
                   mr: 1
                 }}
               >
-                Login
+                {t('login')}
               </Button>
               <Button
                 color="inherit"
@@ -171,7 +171,7 @@ const Header = () => {
                   ml: 0
                 }}
               >
-                Register
+                {t('register')}
               </Button>
             </>
           ) : (
@@ -190,7 +190,7 @@ const Header = () => {
                 ml: 0
               }}
             >
-              Logout
+              {t('logout')}
             </Button>
           )}
 
