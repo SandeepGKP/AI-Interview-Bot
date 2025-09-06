@@ -396,7 +396,7 @@ const Visualizer = () => {
 
   const handleStepBack = () => {
     setIsPlaying(false);
-    // toast.success(t('algorithm_moved_backward'));
+    // toast.success(t('algorithm_moved_backward')); 
     setCurrentStep((prevStep) => Math.max(prevStep - 1, 0));
   };
 
