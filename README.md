@@ -2,6 +2,18 @@
 
 This project is an AI-powered video interview bot designed to streamline the recruitment process by automating initial candidate screenings.
 
+## Features
+
+*   **Candidate Registration & Login**: Secure authentication system for candidates.
+*   **Multi-Round Interview Process**: Supports various interview rounds including Technical, HR, and Coding Assessments.
+*   **AI-Powered Question Generation**: Dynamically generates interview questions using Groq LLMs based on the job role.
+*   **Video Response Recording**: Candidates can record and submit video responses to interview questions.
+*   **Audio Transcription**: Transcribes candidate video responses using Groq's Whisper model.
+*   **AI Evaluation & Reporting**: Generates comprehensive performance reports with skill breakdowns and suggestions using Groq LLMs.
+*   **Data Structure & Algorithm Visualizer**: Interactive visualizations for common data structures and algorithms (sorting, searching, graphs, trees, stacks, queues) to aid understanding.
+*   **Internationalization (i18n)**: Supports multiple languages for a broader user base.
+*   **Recruiter Dashboard**: (Implied, based on `RecruiterDashboard.js`) A dashboard for recruiters to manage candidates and view reports.
+
 ## Documentation
 This section provides detailed insights into the project's architecture, technologies, and implementation specifics.
 
@@ -31,9 +43,51 @@ The project is divided into a backend (server) and a frontend (client).
 *   **Tailwind CSS**: (Development) A utility-first CSS framework for styling.
 *   **Autoprefixer & PostCSS**: (Development) For processing CSS.
 
-### Data Structure and Algorithm Visualizations is also embedded to get more clear idea how to searching, sorting, graph, tree, stack and queue work
+### Data Structure and Algorithm Visualizations
 
 The frontend includes a dedicated section for visualizing various data structures and algorithms. This feature allows users to interactively understand the step-by-step execution of algorithms like sorting, searching, and operations on data structures such as stacks, queues, and trees. It serves as an educational tool to enhance comprehension of complex computational concepts.
+
+### Authentication
+
+The application provides a robust authentication system for candidates, including:
+
+*   **Registration**: New candidates can create accounts.
+*   **Login**: Registered candidates can securely log in to access their interviews and reports.
+*   **Session Management**: Secure handling of user sessions to maintain authentication state.
+
+### Interview Process Overview
+
+The interview process is structured into multiple rounds to thoroughly assess candidates:
+
+1.  **Technical Round**: Focuses on evaluating the candidate's technical knowledge and problem-solving skills.
+2.  **HR Round**: Assesses soft skills, cultural fit, and communication abilities.
+3.  **Coding Assessment Round**: (Implied, based on `CodingAssessmentRound.js`) Candidates may be presented with coding challenges to solve.
+
+### Reporting and Analytics
+
+The platform generates detailed reports for each candidate's interview performance, including:
+
+*   **Skill Breakdown**: A comprehensive analysis of technical and soft skills with ratings.
+*   **Strengths and Weaknesses**: Identified areas of proficiency and areas for improvement.
+*   **Communication Skills Assessment**: Evaluation of clarity, coherence, and effectiveness in communication.
+*   **Technical Competence Assessment**: Deep dive into the candidate's technical understanding.
+*   **Cultural Fit Analysis**: Assessment of alignment with company values.
+*   **Suggested Next Steps**: Actionable recommendations for the recruitment team.
+
+### API Endpoints
+
+The backend exposes a set of RESTful API endpoints to manage the application's functionality:
+
+*   `/api/auth/register`: Register a new candidate.
+*   `/api/auth/login`: Authenticate and log in a candidate.
+*   `/api/interview/start`: Initiate a new interview session.
+*   `/api/interview/questions`: Get interview questions for a specific role.
+*   `/api/interview/upload-video`: Upload candidate video responses.
+*   `/api/interview/transcribe`: Transcribe audio from video responses.
+*   `/api/interview/evaluate`: Generate an AI evaluation report.
+*   `/api/reports/:id`: Retrieve a specific candidate's report.
+*   `/api/candidates`: (Implied, based on `RecruiterDashboard.js`) Manage candidate profiles.
+*   `/api/dashboard`: (Implied, based on `RecruiterDashboard.js`) Access recruiter dashboard data.
 
 ### Prompt Design Approach for LLM Usage
 
@@ -112,3 +166,37 @@ This command will:
 *   The frontend application will typically be accessible at `http://localhost:3000` in your web browser.
 
 You should now be able to use the AI-Powered Video Interview Bot locally.
+
+## How to Contribute
+
+We welcome contributions to the AI-Powered Video Interview Bot! If you'd like to contribute, please follow these steps:
+
+1.  **Fork the Repository**: Start by forking the project repository to your GitHub account.
+2.  **Clone Your Fork**: Clone your forked repository to your local machine.
+    ```bash
+    git clone https://github.com/your-username/AI-Interview-Bot.git
+    cd AI-Interview-Bot
+    ```
+3.  **Create a New Branch**: Create a new branch for your feature or bug fix.
+    ```bash
+    git checkout -b feature/your-feature-name
+    ```
+4.  **Make Your Changes**: Implement your changes, ensuring they adhere to the project's coding standards.
+5.  **Test Your Changes**: Thoroughly test your changes to ensure they work as expected and don't introduce new issues.
+6.  **Commit Your Changes**: Commit your changes with a clear and concise commit message.
+    ```bash
+    git commit -m "feat: Add your feature description"
+    ```
+7.  **Push to Your Fork**: Push your new branch to your forked repository on GitHub.
+    ```bash
+    git push origin feature/your-feature-name
+    ```
+8.  **Create a Pull Request**: Open a pull request from your forked repository to the `main` branch of the original repository. Provide a detailed description of your changes and why they are necessary.
+
+### Coding Standards
+
+*   Follow existing code style and conventions.
+*   Write clear, concise, and well-documented code.
+*   Ensure all new features are covered by tests (if applicable).
+
+Thank you for contributing to the project!
